@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>Sign Up</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<link rel="stylesheet" href="/css/register.css">
+
+</head>
+
+<body>
+	<section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="wrap d-md-flex">
+                        <div class="text-wrap p-4 p-lg-5 d-flex img d-flex align-items-end"
+                            style="background-image: url(/img/signup/bg.jpg);">
+                            <div class="text w-100">
+                                <h2 class="mb-4">Welcome to signup form</h2>
+                                <p>Far far away, behind the word mountains, far from the countries Vokalia and
+                                    Consonantia, there live the blind texts.</p>
+                            </div>
+                        </div>
+                        <div class="login-wrap p-4 p-md-5">
+                            <h3 class="mb-3">Create an account</h3>
+                            <form action="/register" method="post" class="signup-form" onsubmit="return validateForm()">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group d-flex flex-column align-items-start">
+                                            <label class="label" for="username">Full Name</label>
+                                            <input type="text" class="form-control" name="username" id="username"
+                                                placeholder="Full Name" onblur="validateUsername()">
+                                            <span id="usernameError" class="error-message"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group d-flex flex-column align-items-start">
+                                            <label class="label" for="email">Email Address</label>
+                                            <input type="text" class="form-control" name="email" id="email"
+                                                placeholder="johndoe@email.com" onblur="validateEmail()">
+                                            <span id="emailError" class="error-message"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group d-flex flex-column align-items-start">
+                                            <label class="label" for="phone">Phone no.</label>
+                                            <input type="text" class="form-control" name="phone" id="phone"
+                                                placeholder="+91" onblur="validatePhone()">
+                                            <span id="phoneError" class="error-message"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group d-flex flex-column align-items-start">
+                                            <label class="label" for="password">Password</label>
+                                            <input type="password" class="form-control" name="password" id="password"
+                                                placeholder="Password" onblur="validatePassword()">
+                                            <span id="passwordError" class="error-message"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group d-flex flex-column align-items-start">
+                                            <label class="label" for="confirm-password">Confirm Password</label>
+                                            <input type="password" class="form-control" name="confirm-password"
+                                                id="confirm-password" placeholder="Confirm password"
+                                                onblur="validateConfirmPassword()">
+                                            <span id="confirmPasswordError" class="error-message"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="createButton">
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-secondary submit p-3 d-block mx-auto">Create an account</button>
+                                            <span id="errorMessage" class="error-message"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                            <div class="social-wrap">
+                                <p class="or">
+                                    <span>or</span>
+                                </p>
+                                <p class="mb-3 text-center">Signup with this services</p>
+                                <p class="social-media d-flex justify-content-center">
+                                    <a href="/auth/google"
+                                        class="social-icon google d-flex align-items-center justify-content-center"><span
+                                            class="fa fa-google"></span></a>
+                                    <a href="#"
+                                        class="social-icon facebook d-flex align-items-center justify-content-center"><span
+                                            class="fa fa-facebook"></span></a>
+                                    <a href="#"
+                                        class="social-icon twitter d-flex align-items-center justify-content-center"><span
+                                            class="fa fa-twitter"></span></a>
+                                </p>
+                            </div>
+                            <div class="w-100 text-center">
+                                <p class="mt-4">I'm already a member! <a href="/login">Log In</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/popper.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/main_register.js"></script>
+	<script>
+		function validateUsername() {
+			console.log("Validating username...");
+			var username = document.getElementById('username').value;
+			var usernameError = document.getElementById('usernameError');
+			var usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+
+			if (!usernameRegex.test(username)) {
+				usernameError.textContent = 'Please use only letters, numbers, and underscores';
+			} else {
+				usernameError.textContent = '';
+			}
+		}
+
+		function validateEmail() {
+			console.log("Validating email...");
+			var email = document.getElementById('email').value;
+			var emailError = document.getElementById('emailError');
+			var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+			if (!emailRegex.test(email)) {
+				emailError.textContent = 'Invalid email format';
+			} else {
+				emailError.textContent = '';
+			}
+		}
+
+		function validatePhone() {
+			console.log("Validating phone number...");
+			var phone = document.getElementById('phone').value;
+			console.log("Validating phone number...");
+			var phone = document.getElementById('phone').value;
+			var phoneError = document.getElementById('phoneError');
+			// Add your phone validation logic here
+		}
+
+		function validatePassword() {
+			console.log("Validating password...");
+			var password = document.getElementById('password').value;
+			var passwordError = document.getElementById('passwordError');
+			// Add your password validation logic here
+		}
+
+		function validateConfirmPassword() {
+			console.log("Validating confirm password...");
+			var password = document.getElementById('password').value;
+			var confirmPassword = document.getElementById('confirm-password').value;
+			var confirmPasswordError = document.getElementById('confirmPasswordError');
+
+			if (password !== confirmPassword) {
+				confirmPasswordError.textContent = 'Passwords do not match!';
+			} else {
+				confirmPasswordError.textContent = '';
+			}
+		}
+
+		function validateForm() {
+			console.log("Validating form...");
+			validateUsername();
+			validateEmail();
+			validatePhone();
+			validatePassword();
+			validateConfirmPassword();
+		}
+
+
+
+	</script>
+
+</body>
+
+</html>

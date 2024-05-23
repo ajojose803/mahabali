@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Dark Bootstrap Admin </title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <!-- Bootstrap CSS-->
+  <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome CSS-->
+  <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+  <!-- Custom Font Icons CSS-->
+  <link rel="stylesheet" href="css/font.css">
+  <!-- Google fonts - Muli-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:300,400,700">
+  <!-- theme stylesheet-->
+  <link rel="stylesheet" href="css/style.default.css" id="theme-stylesheet">
+  <!-- Custom stylesheet - for your changes-->
+  <link rel="stylesheet" href="css/custom.css">
+  <!-- Favicon-->
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <!-- Tweaks for older IEs--><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+</head>
+
+<body>
+  <header class="header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="search-panel">
+        <div class="search-inner d-flex align-items-center justify-content-center">
+          <div class="close-btn">Close <i class="fa fa-close"></i></div>
+          <form id="searchForm" action="#">
+            <div class="form-group">
+              <input type="search" name="search" placeholder="What are you searching for...">
+              <button type="submit" class="submit">Search</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="container-fluid d-flex align-items-center justify-content-between">
+        <div class="navbar-header">
+          <!-- Navbar Header--><a href="index.html" class="navbar-brand">
+            <div class="brand-text brand-big visible text-uppercase"><strong
+                class="text-primary">Dark</strong><strong>Admin</strong></div>
+            <div class="brand-text brand-sm"><strong class="text-primary">D</strong><strong>A</strong></div>
+          </a>
+          <!-- Sidebar Toggle Btn-->
+          <button class="sidebar-toggle"><i class="fa fa-long-arrow-left"></i></button>
+        </div>
+        <div class="right-menu list-inline no-margin-bottom">
+          <div class="list-inline-item"><a href="#" class="search-open nav-link"><i
+                class="icon-magnifying-glass-browser"></i></a></div>
+          <div class="list-inline-item dropdown"><a id="navbarDropdownMenuLink1" href="http://example.com"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link messages-toggle"><i
+                class="icon-email"></i><span class="badge dashbg-1">5</span></a>
+            <div aria-labelledby="navbarDropdownMenuLink1" class="dropdown-menu messages"><a href="#"
+                class="dropdown-item message d-flex align-items-center">
+                <div class="profile"><img src="img/avatar-3.jpg" alt="..." class="img-fluid">
+                  <div class="status online"></div>
+                </div>
+                <div class="content"> <strong class="d-block">Nadia Halsey</strong><span class="d-block">lorem ipsum
+                    dolor sit amit</span><small class="date d-block">9:30am</small></div>
+              </a><a href="#" class="dropdown-item message d-flex align-items-center">
+                <div class="profile" style="color: black;"><img src="img/avatar-2.jpg"
+                    alt="+++++++++++++++++++++++++++++++++++++++++++" class="img-fluid">
+                  <div class="status away"></div>
+                </div>
+                <div class="content"> <strong class="d-block">Peter Ramsy</strong><span class="d-block">lorem ipsum
+                    dolor sit amit</span><small class="date d-block">7:40am</small></div>
+              </a><a href="#" class="dropdown-item message d-flex align-items-center">
+                <div class="profile"><img src="img/avatar-1.jpg" alt="..." class="img-fluid">
+                  <div class="status busy"></div>
+                </div>
+                <div class="content"> <strong class="d-block">Sam Kaheil</strong><span class="d-block">lorem ipsum dolor
+                    sit amit</span><small class="date d-block">6:55am</small></div>
+              </a><a href="#" class="dropdown-item message d-flex align-items-center">
+                <div class="profile"><img src="img/avatar-5.jpg" alt="..." class="img-fluid">
+                  <div class="status offline"></div>
+                </div>
+                <div class="content"> <strong class="d-block">Sara Wood</strong><span class="d-block">lorem ipsum dolor
+                    sit amit</span><small class="date d-block">10:30pm</small></div>
+              </a><a href="#" class="dropdown-item text-center message"> <strong>See All Messages <i
+                    class="fa fa-angle-right"></i></strong></a></div>
+          </div>
+          <!-- Tasks-->
+          <div class="list-inline-item dropdown"><a id="navbarDropdownMenuLink2" href="http://example.com"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link tasks-toggle"><i
+                class="icon-new-file"></i><span class="badge dashbg-3">9</span></a>
+            <div aria-labelledby="navbarDropdownMenuLink2" class="dropdown-menu tasks-list"><a href="#"
+                class="dropdown-item">
+                <div class="text d-flex justify-content-between"><strong>Task 1</strong><span>40% complete</span></div>
+                <div class="progress">
+                  <div role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"
+                    class="progress-bar dashbg-1"></div>
+                </div>
+              </a><a href="#" class="dropdown-item">
+                <div class="text d-flex justify-content-between"><strong>Task 2</strong><span>20% complete</span></div>
+                <div class="progress">
+                  <div role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"
+                    class="progress-bar dashbg-3"></div>
+                </div>
+              </a><a href="#" class="dropdown-item">
+                <div class="text d-flex justify-content-between"><strong>Task 3</strong><span>70% complete</span></div>
+                <div class="progress">
+                  <div role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"
+                    class="progress-bar dashbg-2"></div>
+                </div>
+              </a><a href="#" class="dropdown-item">
+                <div class="text d-flex justify-content-between"><strong>Task 4</strong><span>30% complete</span></div>
+                <div class="progress">
+                  <div role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"
+                    class="progress-bar dashbg-4"></div>
+                </div>
+              </a><a href="#" class="dropdown-item">
+                <div class="text d-flex justify-content-between"><strong>Task 5</strong><span>65% complete</span></div>
+                <div class="progress">
+                  <div role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"
+                    class="progress-bar dashbg-1"></div>
+                </div>
+              </a><a href="#" class="dropdown-item text-center"> <strong>See All Tasks <i
+                    class="fa fa-angle-right"></i></strong></a>
+            </div>
+          </div>
+          <!-- Tasks end-->
+          <!-- Megamenu-->
+          <div class="list-inline-item dropdown menu-large"><a href="#" data-toggle="dropdown" class="nav-link">Mega <i
+                class="fa fa-ellipsis-v"></i></a>
+            <div class="dropdown-menu megamenu">
+              <div class="row">
+                <div class="col-lg-3 col-md-6"><strong class="text-uppercase">Elements Heading</strong>
+                  <ul class="list-unstyled mb-3">
+                    <li><a href="#">Lorem ipsum dolor</a></li>
+                    <li><a href="#">Sed ut perspiciatis</a></li>
+                    <li><a href="#">Voluptatum deleniti</a></li>
+                    <li><a href="#">At vero eos</a></li>
+                    <li><a href="#">Consectetur adipiscing</a></li>
+                    <li><a href="#">Duis aute irure</a></li>
+                    <li><a href="#">Necessitatibus saepe</a></li>
+                    <li><a href="#">Maiores alias</a></li>
+                  </ul>
+                </div>
+                <div class="col-lg-3 col-md-6"><strong class="text-uppercase">Elements Heading</strong>
+                  <ul class="list-unstyled mb-3">
+                    <li><a href="#">Lorem ipsum dolor</a></li>
+                    <li><a href="#">Sed ut perspiciatis</a></li>
+                    <li><a href="#">Voluptatum deleniti</a></li>
+                    <li><a href="#">At vero eos</a></li>
+                    <li><a href="#">Consectetur adipiscing</a></li>
+                    <li><a href="#">Duis aute irure</a></li>
+                    <li><a href="#">Necessitatibus saepe</a></li>
+                    <li><a href="#">Maiores alias</a></li>
+                  </ul>
+                </div>
+                <div class="col-lg-3 col-md-6"><strong class="text-uppercase">Elements Heading</strong>
+                  <ul class="list-unstyled mb-3">
+                    <li><a href="#">Lorem ipsum dolor</a></li>
+                    <li><a href="#">Sed ut perspiciatis</a></li>
+                    <li><a href="#">Voluptatum deleniti</a></li>
+                    <li><a href="#">At vero eos</a></li>
+                    <li><a href="#">Consectetur adipiscing</a></li>
+                    <li><a href="#">Duis aute irure</a></li>
+                    <li><a href="#">Necessitatibus saepe</a></li>
+                    <li><a href="#">Maiores alias</a></li>
+                  </ul>
+                </div>
+                <div class="col-lg-3 col-md-6"><strong class="text-uppercase">Elements Heading</strong>
+                  <ul class="list-unstyled mb-3">
+                    <li><a href="#">Lorem ipsum dolor</a></li>
+                    <li><a href="#">Sed ut perspiciatis</a></li>
+                    <li><a href="#">Voluptatum deleniti</a></li>
+                    <li><a href="#">At vero eos</a></li>
+                    <li><a href="#">Consectetur adipiscing</a></li>
+                    <li><a href="#">Duis aute irure</a></li>
+                    <li><a href="#">Necessitatibus saepe</a></li>
+                    <li><a href="#">Maiores alias</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="row megamenu-buttons text-center">
+                <div class="col-lg-2 col-md-4"><a href="#" class="d-block megamenu-button-link dashbg-1"><i
+                      class="fa fa-clock-o"></i><strong>Demo 1</strong></a></div>
+                <div class="col-lg-2 col-md-4"><a href="#" class="d-block megamenu-button-link dashbg-2"><i
+                      class="fa fa-clock-o"></i><strong>Demo 2</strong></a></div>
+                <div class="col-lg-2 col-md-4"><a href="#" class="d-block megamenu-button-link dashbg-3"><i
+                      class="fa fa-clock-o"></i><strong>Demo 3</strong></a></div>
+                <div class="col-lg-2 col-md-4"><a href="#" class="d-block megamenu-button-link dashbg-4"><i
+                      class="fa fa-clock-o"></i><strong>Demo 4</strong></a></div>
+                <div class="col-lg-2 col-md-4"><a href="#" class="d-block megamenu-button-link bg-danger"><i
+                      class="fa fa-clock-o"></i><strong>Demo 5</strong></a></div>
+                <div class="col-lg-2 col-md-4"><a href="#" class="d-block megamenu-button-link bg-info"><i
+                      class="fa fa-clock-o"></i><strong>Demo 6</strong></a></div>
+              </div>
+            </div>
+          </div>
+          <!-- Megamenu end     -->
+          <!-- Languages dropdown    -->
+          <div class="list-inline-item dropdown"><a id="languages" rel="nofollow" data-target="#" href="#"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+              class="nav-link language dropdown-toggle"><img src="img/flags/16/GB.png" alt="English"><span
+                class="d-none d-sm-inline-block">English</span></a>
+            <div aria-labelledby="languages" class="dropdown-menu"><a rel="nofollow" href="#" class="dropdown-item">
+                <img src="img/flags/16/DE.png" alt="English" class="mr-2"><span>German</span></a><a rel="nofollow"
+                href="#" class="dropdown-item"> <img src="img/flags/16/FR.png" alt="English" class="mr-2"><span>French
+                </span></a></div>
+          </div>
+          <!-- Log out               -->
+          <div class="list-inline-item logout"> <a id="logout" href="/admin/logout" class="nav-link">Logout <i
+                class="icon-logout"></i></a></div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div class="d-flex align-items-stretch">
+    <!-- Sidebar Navigation-->
+    <nav id="sidebar">
+      <!-- Sidebar Header-->
+      <!-- <div class="sidebar-header d-flex align-items-center"> -->
+      <!-- <div class="avatar"><img src="img/avatar-6.jpg" alt="..." class="img-fluid rounded-circle"></div> -->
+      <div class="title">
+        <h1 class="h5">Admin</h1>
+        <!-- <p>Web Designer</p> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- Sidebar Navidation Menus--><span class="heading"></span>
+        <ul class="list-unstyled">
+          <li class="active"><a href="/admin/adminHome"> <i class="icon-home"></i>Dashboard</a></li>
+          <li><a href="/admin/Product"> <i class="icon-grid"></i>Product</a></li>
+          <li><a href="/admin/User"><i class="fa fa-bar-chart"></i>user</a></li>
+          <li><a href="/admin/Category"> <i class="icon-padnote"></i>Category</a></li>
+        </ul>
+    </nav>
+    <!-- Sidebar Navigation end-->
+    <div class="page-content">
+      <div class="page-header">
+        <div class="container-fluid">
+          <h2 class="h5 no-margin-bottom">Product Details</h2>
+        </div>
+      </div>
+      <h4 style="color: green; margin-left: 10%;" id='updateMsg'>
+        <%= msg %>
+      </h4>
+      <div class="title" style="margin-left: 80%;"><strong><button class="btn btn-success"><a href="/admin/Product-add"
+              style="text-decoration: none;color: white;">Add New Product</a></button></strong></div>
+      <div class="table-responsive" style="padding: 5%;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Image</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Description</th>
+              <th>Edit</th>
+              <th>status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(let i=0; i< data.length ; i++) { %>
+              <tr>
+                <td>
+                  <%= data[i].product %>
+                </td>
+                <td>
+                  <img src="<%=  data[i].image[0].path %>" alt="image of the product" style="height: 75px;width: 120%;">
+                </td>
+                <td>
+                  <%= data[i].category %>
+                </td>
+                <td>
+                  <%= data[i].price %>
+                </td>
+                <td>
+                  <%= data[i].stock %>
+                </td>
+                <td>
+                  <%= data[i].description %>
+                </td>
+                <td>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal<%= i %>">
+                    Edit
+                  </button>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal<%= i %>" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalLabel<%= i %>" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel<%= i %>">Edit Product Details</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form class="form-horizontal" action="/admin/editProduct/<%= data[i]._id %>" method="post"
+                            enctype="multipart/form-data">
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Name</label>
+                              <div class="col-sm-9">
+                                <input type="text" class="form-control" name="productName" required
+                                  value="<%= data[i].product %>">
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Category</label>
+                              <div class="col-sm-9">
+                                <select name="category" class="form-control" required>
+                                  <option value="">
+                                    <%= data[i].category %>
+                                  </option>
+                                  <% for (let j=0; j < CatData.length; j++) { %>
+                                    <option value="<%= CatData[j].category %>">
+                                      <%= CatData[j].category %>
+                                    </option>
+                                    <% } %>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Description</label>
+                              <div class="col-sm-9">
+                                <textarea cols="30" rows="4" name="description" class="form-control"
+                                  required><%= data[i].description %></textarea>
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">About Product</label>
+                              <div class="col-sm-9">
+                                <textarea cols="30" rows="4" name="about" class="form-control" required>
+                                  <%= data[i].about %>
+                                </textarea>
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Price</label>
+                              <div class="col-sm-9">
+                                <input type="number" class="form-control" name="price" min="1" required
+                                  value="<%= data[i].price %>">
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Stock</label>
+                              <div class="col-sm-9">
+                                <input type="number" name="stock" class="form-control" min="1" required
+                                  value="<%= data[i].stock %>">
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <% for( let j=0; j < data[i].image.length; j++ ) { %>
+                                <div style="margin-left: 15%;">
+                                  <img src="<%= data[i].image[j].path  %>" alt="productImager" style="height: 80px;width: 80px;">
+                                </div>
+                                <% } %>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Upload Images</label>
+                              <div class="col-sm-9">
+                                <input type="file" name="image" class="form-control" multiple >
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <div class="col-sm-9 ml-auto">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <% if(data[i].status) { %>
+                    <a href="/admin/productstatus?id=<%= data[i]._id%>" class="btn btn-danger"
+                      onclick="return confirm('Are u sure, you want to list the product')">Unlist</a>
+                    <% } else {%>
+                      <a href="/admin/productstatus?id=<%= data[i]._id%>" class="btn btn-secondary"
+                        onclick="return confirm('Are u sure, you want to unlist the product')">List</a>
+                      <% } %>
+                </td>
+              </tr>
+
+              <% } %>
+          </tbody>
+        </table>
+      </div>
+      <nav aria-label="Page navigation example" style="margin-left: 40%;">
+        <ul class="pagination">
+          <% if (prev> 0) { %>
+            <li class="page-item"><a class="page-link" href="/admin/productPage?page=<%= prev %>">
+                <<< Previous</a>
+            </li>
+            <% } %>
+
+              <% if ((skip + data.length) < count) { %>
+                <li class="page-item"><a class="page-link" href="/admin/productPage?page=<%= next %>">Next >>></a></li>
+                <% } %>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+
+
+
+  <footer class="footer">
+    <div class="footer__block block no-margin-bottom">
+      <div class="container-fluid text-center">
+        <!-- Please do not remove the backlink to us unless you support us at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
+        <p class="no-margin-bottom">2018 &copy; Your company. Download From <a target="_blank"
+            href="https://templateshub.net">Templates Hub</a>.</p>
+      </div>
+    </div>
+  </footer>
+  </div>
+  </div>
+  <!-- JavaScript files-->
+
+  <script>
+    setTimeout(() => {
+      const edit = document.getElementById('updateMsg')
+      edit.style.display = "none"
+    }, 3000)
+  </script>
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/popper.js/umd/popper.min.js"> </script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="vendor/jquery.cookie/jquery.cookie.js"> </script>
+  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
+  <script src="js/charts-home.js"></script>
+  <script src="js/front.js"></script>
+</body>
+
+</html>

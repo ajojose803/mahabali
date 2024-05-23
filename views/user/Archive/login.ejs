@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <!-- MDB -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css">
+  <link rel="stylesheet" href="/assets/css/login.css">
+  <title>Login</title>
+</head>
+
+<body>
+  <section class="vh-100 gradient-custom">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card bg-dark text-white" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+
+              <div class="mb-md-5 mt-md-4 pb-5">
+                <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+
+                <!-- Display error messages -->
+                <% if (errorMessage) { %>
+                  <div class="alert alert-danger text-center mb-4">
+                    <%= errorMessage %>
+                  </div>
+                <% } %>
+
+                <!-- Display success message -->
+                <% if (successMessage) { %>
+                  <p style="color: green;">
+                    <%= successMessage %>
+                  </p>
+                <% } %>
+
+                <p class="text-white-50 mb-5">Please enter your login and password!</p>
+
+                <form action="/login" method="POST" onsubmit="return validateForm()">
+                  <!-- Email input -->
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="email" id="email" name="email" class="form-control form-control-lg" />
+                    <label class="form-label" for="email">Email</label>
+                  </div>
+                  <p id="email-error" style="color: red;"></p>
+
+                  <!-- Password input -->
+                  <div data-mdb-input-init class="form-outline form-white mb-4">
+                    <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                    <label class="form-label" for="password">Password</label>
+                  </div>
+                  <p id="password-error" style="color: red;"></p>
+
+                  <button class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+                </form>
+
+                <p class="mb-0">Don't have an account? <a href="/signup" class="text-white-50 fw-bold">Sign Up</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MDB JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
+  <script>
+    function validateForm() {
+      console.log("Validating form...");
+      var emailInput = document.getElementById('email').value;
+      var passwordInput = document.getElementById('password').value;
+
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      var emailErrorMessage = document.getElementById('email-error');
+      if (!emailRegex.test(emailInput)) {
+        emailErrorMessage.textContent = 'Invalid email address. Please enter a valid email.';
+        return false;
+      } else {
+        emailErrorMessage.textContent = '';
+      }
+
+      var passwordErrorMessage = document.getElementById('password-error');
+      if (passwordInput.length < 8) {
+        passwordErrorMessage.textContent = 'Password must be at least 8 characters long!';
+        return false;
+      } else {
+        passwordErrorMessage.textContent = '';
+      }
+
+      return true;
+    }
+  </script>
+
+</body>
+</html>
