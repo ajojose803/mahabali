@@ -10,6 +10,7 @@
   "author": "Ajo Jose",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.1626.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
@@ -29,6 +30,7 @@
     "flash": "^1.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.0",
+    "multer": "^1.4.5-lts.1",
     "nocache": "^4.0.0",
     "nodemailer": "^6.9.13",
     "passport": "^0.7.0",

@@ -14,6 +14,11 @@ const categorySchema = new mongoose.schema({
         default: true,
         require: true,
     },
+    discount:{
+        type:Number,
+        default: 0,
+        require:false,
+    }
 
 
 }, { timestamps: true })

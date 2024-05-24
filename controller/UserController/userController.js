@@ -4,16 +4,16 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const randomstring = require('randomstring')
 const otpCollection = require('../../model/otpModel')
-const nodemailer =require('nodemailer')
+const nodemailer = require('nodemailer')
 require('dotenv').config()
 
 
-const loadHome = asyncHandler(async(req,res) => {
+const loadHome = asyncHandler(async (req, res) => {
     res.render('user/home')
 })
 
 
-const register = asyncHandler(async(req,res) =>{
+const register = asyncHandler(async (req, res) => {
 
     const errorMessage = req.flash('error');
     const successMessage = req.flash('success')
@@ -24,8 +24,8 @@ const register = asyncHandler(async(req,res) =>{
 const generateOtp = () => {
     try {
         const otp = randomstring.generate({
-            length:4,
-            charset:'numeric'
+            length: 4,
+            charset: 'numeric'
         });
 
         console.log("Generated OTP :", otp);
@@ -77,7 +77,6 @@ const sendEmail = async (email, otp) => {
 
 //to create a new user
 const createUser = asyncHandler(async (req, res) => {
-    //destructuring the req.body into fields
     const { username, email, phone, password } = req.body;
 
     //checking all the fields are entered correctly
@@ -114,22 +113,22 @@ const createUser = asyncHandler(async (req, res) => {
 
     //otp process
     const otp = generateOtp();
-    const expiryTime = Date.now()+ 2 * 60 * 1000;
-    
+    const expiryTime = Date.now() + 2 * 60 * 1000;
+
     await otpCollection.updateOne(
         { email: email },
         { email, otp, expiry: new Date(expiryTime) },
         { upsert: true }
-    ); 
-    
+    );
+
     console.log(`Sending OTP to email: ${email}`)
-        await sendEmail(email, otp);
+    await sendEmail(email, otp);
 
-        res.render('user/otp', { email: email });
-        //res.redirect('/otp', { email: email }); 
+    res.render('user/otp', { email: email });
+    //res.redirect('/otp', { email: email }); 
 
 
-    
+
     try {
         await newUser.save();
     } catch (error) {
@@ -139,26 +138,26 @@ const createUser = asyncHandler(async (req, res) => {
 
 });
 
-
-const showOtp = async(req,res) =>{
+//function to 
+const showOtp = async (req, res) => {
     try {
-        const otp = await otpCollection.findOne({email:req.session.user.email})
-        res.render('user/otp',{
-            expressFlash:{
-                otpError : req.flash('otpError')
-            },otp:otp,
+        const otp = await otpCollection.findOne({ email: req.session.user.email })
+        res.render('user/otp', {
+            expressFlash: {
+                otpError: req.flash('otpError')
+            }, otp: otp,
         });
     } catch (error) {
         console.log(error.message)
     }
-   
+
 }
 
-//verify OTP
+// check and comparing to verify OTP
 
 const otpVerification = asyncHandler(async (req, res) => {
-    const { email, digit1,digit2,digit3,digit4 } = req.body;
-    const userOtp = parseInt(digit1+digit2+digit3+digit4);
+    const { email, digit1, digit2, digit3, digit4 } = req.body;
+    const userOtp = parseInt(digit1 + digit2 + digit3 + digit4);
     console.log(userOtp);
 
     const otpRecord = await otpCollection.findOne({ email });
@@ -168,7 +167,7 @@ const otpVerification = asyncHandler(async (req, res) => {
         return res.status(400).send("User does not exist or OTP expired");
     }
 
-    if (otpRecord.otp !== userOtp ) {
+    if (otpRecord.otp !== userOtp) {
         req.flash("error", "Invalid OTP");
         return res.status(400).send("Invalid OTP");
     }
@@ -190,58 +189,47 @@ const otpVerification = asyncHandler(async (req, res) => {
     return res.redirect('/');
 });
 
+//get login page
+const loadLogIn = asyncHandler(async (req, res) => {
+    const errorMessages = req.flash('error');
+    const successMessage = req.flash('success');
+    res.render('user/login', { errorMessages, successMessage })
+})
 
-
-
-const loadLogIn = async (req, res) => {
-    try {
-
-        const errorMessages = req.flash('error');
-        const successMessage = req.flash('success');
-
-        res.render('user/login', { errorMessages, successMessage })
-
-    } catch (error) {
-        console.log(error.message);
-        res.render('user/servererror')
-    }
-}
 //User Log in
 const loginUser = asyncHandler(async (req, res) => {
-   
+
     try {
         const { email, password } = req.body;
 
+        if (!email || !password) {
+            req.flash("Please fill all the fields")
+        }
 
-    if (!email || !password) {
-        throw new Error("Please fill all the fields")
-    }
+        const user = await User.findOne({ email });
+        if (!user) {
+            req.flash('error', 'Invalid Credentials');
+            return res.redirect('/login');
+        }
 
+        const checkPassword = await bcrypt.compare(password, user.password)
 
-    const user = await User.findOne({ email });
-    if (!user) {
-        req.flash('error', 'Invalid Credentials');
-        return res.redirect('/login');
-    }
+        if (!checkPassword) {
+            req.flash('error', 'Invalid Credentials');
+            return res.redirect('/login');
+        }
 
-    const checkPassword = await bcrypt.compare(password, user.password)
-
-    if (!checkPassword) {
-        req.flash('error', 'Invalid Credentials');
-        return  res.redirect('/login');
-    }
-
-    if (user.isBlocked == false) {
-        req.session.user = user;
-        req.session.userId = user._id;
-        req.session.isAuth = true;
-        console.log("User authenticated successfully. Redirecting to home page...");
-        return res.redirect('/');
-      }
-      else {
-        req.flash('error', 'This user is blocked.');
-        return res.redirect('/login');
-    }
+        if (user.isBlocked == false) {
+            req.session.user = user;
+            req.session.userId = user._id;
+            req.session.isAuth = true;
+            console.log("User authenticated successfully. Redirecting to home page...");
+            return res.redirect('/');
+        }
+        else {
+            req.flash('error', 'This user is blocked.');
+            return res.redirect('/login');
+        }
     } catch (error) {
         console.error(error); // Log the error to the console
         req.flash('error', 'Internal Server Error');
@@ -256,17 +244,19 @@ const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
     //checking if user exists
-    const user = await User.findOne({email});
-    if(!user){
+    const user = await User.findOne({ email });
+    if (!user) {
         return req.flash("User does not exist or Invalid E-mail")
+    } else {
+        res.render('user/forgot-password')
+
     }
 })
 
 
 
-
 //google oauth
-const googleAuth = passport.authenticate('google', { scope: ['email','profile'] });
+const googleAuth = passport.authenticate('google', { scope: ['email', 'profile'] });
 
 const googleCallback = passport.authenticate('google', {
     successRedirect: '/',
