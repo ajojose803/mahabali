@@ -1,61 +1,116 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Dark Bootstrap Admin </title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="all,follow">
-    <!-- Bootstrap CSS-->
-    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-    <!-- Font Awesome CSS-->
-    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
-    <!-- Custom Font Icons CSS-->
-    <link rel="stylesheet" href="css/font.css">
-    <!-- Google fonts - Muli-->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:300,400,700">
-    <!-- theme stylesheet-->
-    <link rel="stylesheet" href="css/style.default.css" id="theme-stylesheet">
-    <!-- Custom stylesheet - for your changes-->
-    <link rel="stylesheet" href="css/custom.css">
-    <!-- Favicon-->
-    <link rel="shortcut icon" href="img/favicon.ico">
-    <!-- Tweaks for older IEs--><!--[if lt IE 9]>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>mahabali </title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <!-- Bootstrap CSS-->
+  <link rel="stylesheet" href="/adminAssets/vendor/bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome CSS-->
+  <link rel="stylesheet" href="/adminAssets/vendor/font-awesome/css/font-awesome.min.css">
+  <!-- Custom Font Icons CSS-->
+  <link rel="stylesheet" href="/adminAssets/css/font.css">
+  <!-- Google fonts - Muli-->
+  <link rel="stylesheet" href="/adminAssets/https://fonts.googleapis.com/css?family=Muli:300,400,700">
+  <!-- theme stylesheet-->
+  <link rel="stylesheet" href="/adminAssets/css/style.default.css" id="theme-stylesheet">
+  <!-- Custom stylesheet - for your changes-->
+  <link rel="stylesheet" href="/adminAssets/css/custom.css">
+  <!-- Favicon-->
+  <link rel="shortcut icon" href="/adminAssets/img/favicon.ico">
+  <!-- Tweaks for older IEs--><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
-  </head>
-  <body>
-    <div class="login-page">
-      <div class="container d-flex align-items-center">
-        <div class="form-holder has-shadow">
-          <div class="row">
-            <!-- Logo & Information Panel-->
-            <div class="col-lg-6" >
-              <div class="info d-flex align-items-center" style="background-color: rgb(214, 99, 214);">
-                <div class="content">
-                  <div class="logo">
-                    <h1>Dashboard</h1>
-                  </div>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+        <style>
+    input.input-material {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #444951;
+      padding: 10px 0;
+      background: none;
+      color: #ffffff;
+    }
+
+    input.input-material.is-invalid {
+      border-color: #f5bc02 !important;
+    }
+
+    input.input-material:focus {
+      border-color: #f5bc02;
+    }
+
+    input.input-material ~ label {
+      color: #aaa;
+      position: absolute;
+      top: 14px;
+      left: 0;
+      cursor: text;
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+      font-weight: 300;
+    }
+
+    input.input-material:focus ~ label,
+    input.input-material:not(:placeholder-shown) ~ label {
+      font-size: 0.85rem;
+      top: -10px;
+      color: #f5bc02;
+    }
+
+    input.input-material.is-invalid ~ label {
+      color: #f5bc02;
+    }
+
+    .form-group-material {
+      position: relative;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-page">
+    <div class="container d-flex align-items-center">
+      <div class="form-holder has-shadow">
+        <div class="row">
+          <!-- Logo & Information Panel-->
+          <div class="col-lg-6">
+            <div class="info d-flex align-items-center" style="background-color: #f5bc02;">
+              <div class="content">
+                <div class="logo">
+                  <h1>Dashboard</h1>
                 </div>
+                <p>Hey Admin, Welcome back to your DashBoard</p>
               </div>
             </div>
-            <!-- Form Panel -->
-            <div class="col-lg-6 bg-white">
-              <div class="form d-flex align-items-center">
-                <div class="content">
-                  <form method="post" class="form-validate" >
-                    <div class="form-group">
-                      <input id="login-username" type="text" name="loginUsername" required data-msg="Please enter your username" class="input-material">
-                      <label for="login-username" class="label-material">User Name</label>
-                    </div>
-                    <div class="form-group">
-                      <input id="login-password" type="password" name="loginPassword" required data-msg="Please enter your password" class="input-material">
-                      <label for="login-password" class="label-material">Password</label>
-                    </div><button class="btn btn-primary">Login</button>
+          </div>
+          <!-- Form Panel -->
+          <div class="col-lg-6 bg-white">
+            <div class="form d-flex align-items-center">
+              <div class="content">
+                <form action="/admin/verifyLogin" method="post" class="form-validate">
+                  <div class="form-group">
+                    <input id="login-username" type="text" name="email" required
+                      data-msg="Please enter your username" class="input-material">
+                    <label for="login-username" class="label-material">Email</label>
+                  </div>
+                  <div class="form-group">
+                    <input id="login-password" type="password" name="password" required
+                      data-msg="Please enter your password" class="input-material">
+                    <label for="login-password" class="label-material">Password</label>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+              </div>
+            </div>
+          </div>
 
-                    <!-- <input id="login-username" type="text" name="loginUsername" required
+
+          <!-- <input id="login-username" type="text" name="loginUsername" required
                       data-msg="Please enter your username" class="input-material">
                     <label for="login-username" class="label-material">User Name</label>
                     <span>{{user}}</span>
@@ -67,26 +122,28 @@
                     <span>{{pass}}</span>
                   </div><button class="btn btn-primary">Login</button> -->
 
-                    <!-- This should be submit button but I replaced it with <a> for demo purposes-->
-                  <!-- </form><a href="#" class="forgot-pass">Forgot Password?</a> -->
+          <!-- This should be submit button but I replaced it with <a> for demo purposes-->
+          <!-- </form><a href="#" class="forgot-pass">Forgot Password?</a> -->
 
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-      <div class="copyrights text-center">
-         <p>2018 &copy; Your company. Download From <a target="_blank" href="https://templateshub.net">Templates Hub</a>.</p>
-      </div>
     </div>
-    <!-- JavaScript files-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/popper.js/umd/popper.min.js"> </script>
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-    <script src="vendor/jquery.cookie/jquery.cookie.js"> </script>
-    <script src="vendor/chart.js/Chart.min.js"></script>
-    <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
-    <script src="js/front.js"></script>
-  </body>
+  </div>
+  </div>
+  </div>
+  <div class="copyrights text-center">
+    <p>2018 &copy; Your company. Download From <a target="_blank" href="https://templateshub.net">Templates Hub</a>.
+    </p>
+  </div>
+  </div>
+  <!-- JavaScript files-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/popper.js/umd/popper.min.js"> </script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="vendor/jquery.cookie/jquery.cookie.js"> </script>
+  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
+  <script src="js/front.js"></script>
+</body>
+
 </html>

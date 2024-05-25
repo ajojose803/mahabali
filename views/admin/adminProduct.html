@@ -1,0 +1,216 @@
+<%- include('../partials/userHeader') -%>
+    <!-- Sidebar Navigation end-->
+    <div class="page-content">
+      <div class="page-header">
+        <div class="container-fluid">
+          <h2 class="h5 no-margin-bottom">Product Details</h2>
+        </div>
+      </div>
+      <h4 style="color: green; margin-left: 10%;" id='updateMsg'>
+        <%= msg %>
+      </h4>
+      <div class="title" style="margin-left: 80%;"><strong><button class="btn btn-success"><a href="/admin/Product-add"
+              style="text-decoration: none;color: white;">Add New Product</a></button></strong></div>
+      <div class="table-responsive" style="padding: 5%;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Image</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Description</th>
+              <th>Edit</th>
+              <th>status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(let i=0; i< data.length ; i++) { %>
+              <tr>
+                <td>
+                  <%= data[i].product %>
+                </td>
+                <td>
+                  <img src="<%=  data[i].image[0].path %>" alt="image of the product" style="height: 75px;width: 120%;">
+                </td>
+                <td>
+                  <%= data[i].category %>
+                </td>
+                <td>
+                  <%= data[i].price %>
+                </td>
+                <td>
+                  <%= data[i].stock %>
+                </td>
+                <td>
+                  <%= data[i].description %>
+                </td>
+                <td>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal<%= i %>">
+                    Edit
+                  </button>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal<%= i %>" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalLabel<%= i %>" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel<%= i %>">Edit Product Details</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <form class="form-horizontal" action="/admin/editProduct/<%= data[i]._id %>" method="post"
+                            enctype="multipart/form-data">
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Name</label>
+                              <div class="col-sm-9">
+                                <input type="text" class="form-control" name="productName" required
+                                  value="<%= data[i].product %>">
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Category</label>
+                              <div class="col-sm-9">
+                                <select name="category" class="form-control" required>
+                                  <option value="">
+                                    <%= data[i].category %>
+                                  </option>
+                                  <% for (let j=0; j < CatData.length; j++) { %>
+                                    <option value="<%= CatData[j].category %>">
+                                      <%= CatData[j].category %>
+                                    </option>
+                                    <% } %>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Description</label>
+                              <div class="col-sm-9">
+                                <textarea cols="30" rows="4" name="description" class="form-control"
+                                  required><%= data[i].description %></textarea>
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">About Product</label>
+                              <div class="col-sm-9">
+                                <textarea cols="30" rows="4" name="about" class="form-control" required>
+                                  <%= data[i].about %>
+                                </textarea>
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Price</label>
+                              <div class="col-sm-9">
+                                <input type="number" class="form-control" name="price" min="1" required
+                                  value="<%= data[i].price %>">
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Stock</label>
+                              <div class="col-sm-9">
+                                <input type="number" name="stock" class="form-control" min="1" required
+                                  value="<%= data[i].stock %>">
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <% for( let j=0; j < data[i].image.length; j++ ) { %>
+                                <div style="margin-left: 15%;">
+                                  <img src="<%= data[i].image[j].path  %>" alt="productImager" style="height: 80px;width: 80px;">
+                                </div>
+                                <% } %>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <label class="col-sm-3 form-control-label">Upload Images</label>
+                              <div class="col-sm-9">
+                                <input type="file" name="image" class="form-control" multiple >
+                              </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                              <div class="col-sm-9 ml-auto">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <% if(data[i].status) { %>
+                    <a href="/admin/productstatus?id=<%= data[i]._id%>" class="btn btn-danger"
+                      onclick="return confirm('Are u sure, you want to list the product')">Unlist</a>
+                    <% } else {%>
+                      <a href="/admin/productstatus?id=<%= data[i]._id%>" class="btn btn-secondary"
+                        onclick="return confirm('Are u sure, you want to unlist the product')">List</a>
+                      <% } %>
+                </td>
+              </tr>
+
+              <% } %>
+          </tbody>
+        </table>
+      </div>
+      <nav aria-label="Page navigation example" style="margin-left: 40%;">
+        <ul class="pagination">
+          <% if (prev> 0) { %>
+            <li class="page-item"><a class="page-link" href="/admin/productPage?page=<%= prev %>">
+                <<< Previous</a>
+            </li>
+            <% } %>
+
+              <% if ((skip + data.length) < count) { %>
+                <li class="page-item"><a class="page-link" href="/admin/productPage?page=<%= next %>">Next >>></a></li>
+                <% } %>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+
+
+
+  <footer class="footer">
+    <div class="footer__block block no-margin-bottom">
+      <div class="container-fluid text-center">
+        <!-- Please do not remove the backlink to us unless you support us at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
+        <p class="no-margin-bottom">2018 &copy; Your company. Download From <a target="_blank"
+            href="https://templateshub.net">Templates Hub</a>.</p>
+      </div>
+    </div>
+  </footer>
+  </div>
+  </div>
+  <!-- JavaScript files-->
+
+  <script>
+    setTimeout(() => {
+      const edit = document.getElementById('updateMsg')
+      edit.style.display = "none"
+    }, 3000)
+  </script>
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/popper.js/umd/popper.min.js"> </script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="vendor/jquery.cookie/jquery.cookie.js"> </script>
+  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
+  <script src="js/charts-home.js"></script>
+  <script src="js/front.js"></script>
+</body>
+
+</html>

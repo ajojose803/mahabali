@@ -6,14 +6,14 @@ const Product = require('../../model/productModel');
 
 const loadCategory = asyncHandler(async (req, res) => {
     const successMessage = req.flash('Success');
-    const category = await categoryCollection.find({});
+    const category = await Category.find({});
     res.render('admin/adminCategory', { category, successMessage });
 
 })
 
 const loadaddCategory = asyncHandler(async (req, res) => {
     const successMessage = req.flash('Success');
-    const category = await categoryCollection.find({});
+    const category = await Category.find({});
     res.render('admin/adminCategory-add', { category, successMessage });
 })
 
