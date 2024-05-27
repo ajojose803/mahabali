@@ -1,116 +1,139 @@
 <%- include('../partials/adminHeader') -%>
-    <!-- Sidebar Navigation end-->
-    <div class="page-content">
-      <div class="page-header">
-        <div class="container-fluid">
-          <h2 class="h5 no-margin-bottom">Category</h2>
-        </div>
+  <ul class="list-unstyled">
+    <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
+    <li><a href="/admin/user"> <i class="fa fa-bar-chart"></i>Users</a></li>
+    <li class="active"><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
+    <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+    <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
+    <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
+    <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
+
+
+
+  </ul>
+  </nav>
+  <!-- Sidebar Navigation end-->
+  <div class="page-content">
+    <div class="page-header">
+      <div class="container-fluid">
+        <h2 class="h5 no-margin-bottom">Category</h2>
       </div>
+    </div>
 
-      <div class="title" style="margin-left: 80%;"><!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Add New Category
-        </button>
+    <div class="title" style="margin-left: 80%;"><!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Add New Category
+      </button>
 
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <form action="/admin/add-category" method="post">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <form action="/admin/add-category" method="post">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
 
+                <label class="col-sm-6 form-control-label">Name of the Category</label>
+                <br>
+                <input type="text" name="name" class="form-control" required>
+                <br>
+                <label class="col-sm-6 form-control-label">Description</label>
+                <br>
+                <input type="text" name="description" class="form-control" required>
+                <br>
+                <label class="col-sm-6 form-control-label">Discount</label>
+                <br>
+                <input type="text" name="discount" class="form-control" required>
 
-                  <label class="col-sm-3 form-control-label">Enter the Category</label>
-                  <br>
-
-                  <input type="text" name="category" class="form-control" required>
-
-
-
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-              </form>
-            </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
+    </div>
 
 
 
-      <div class="table-responsive" style="padding: 5%;">
-        <table class="table">
-          <thead>
+    <div class="table-responsive" style="padding: 5%;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Discount</th>
+            <th>Listing status</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let i=0; i < category.length; i++) {%>
             <tr>
-              <th>Name</th>
-              <th>Listing status</th>
-              <th>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% for(let i=0; i < category.length; i++) {%>
-              <tr>
-                <td>
-                  <%= category[i].category %>
-                </td>
-                <td>
-                  <% if(category[i].isListed) { %>
+              <td>
+                <%= category[i].name %>
+              </td>
+              <td>
+                <%= category[i].discount %>
+              </td>
+              <td>
+                <% if(category[i].isListed) { %>
 
-                    <a href="/admin/categoryStatus?id=<%= category[i]._id %>" class="btn btn-danger"
-                      onclick="confirmAndRedirect('<%= category[i]._id %>',event)">Unlist</a>
-                    <% } else { %>
-                      <a href="/admin/categoryStatus?id=<%= data[i]._id %>" class="btn btn-success"
-                        onclick="confirmAndRedirect('<%= category[i]._id %>',event)">List</a>
-                      <% } %>
+                  <a href="/admin/categoryisListed?<%= category[i]._id %>" class="btn btn-danger"
+                    onclick="confirmAndRedirect('<%= category[i]._id %>',event)">Unlist</a>
+                  <% } else { %>
+                    <a href="/admin/categoryisListed?<%= category[i]._id %>" class="btn btn-success"
+                      onclick="confirmAndRedirect('<%= category[i]._id %>',event)">List</a>
+                    <% } %>
 
-                </td>
+              </td>
 
-                <td>
-                  <!-- Button triggering the modal with unique identifier -->
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#staticBackdrop<%= i %>">
-                    Edit
-                  </button>
+              <td>
+                <!-- Button triggering the modal with unique identifier -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop<%= i %>">
+                  Edit
+                </button>
 
-                  <!-- Modal with unique identifier -->
-                  <div class="modal fade" id="staticBackdrop<%= i %>" data-bs-backdrop="static" data-bs-keyboard="false"
-                    tabindex="-1" aria-labelledby="staticBackdropLabel<%= i %>" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <form action="/admin/editCategory" method="post">
-                          <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel<%= i %>">Change the category</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body">
-                            <label class="col-sm-3 form-control-label">Enter the Category</label>
-                            <br>
-                            <input type="text" name="oldCat" value="<%= category[i].category %>" hidden>
-                            <input type="text" name="category" class="form-control"
-                              placeholder="<%= category[i].category %>" required>
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Change</button>
-                          </div>
-                        </form>
-                      </div>
+                <!-- Modal with unique identifier -->
+                <div class="modal fade" id="staticBackdrop<%= i %>" data-bs-backdrop="static" data-bs-keyboard="false"
+                  tabindex="-1" aria-labelledby="staticBackdropLabel<%= i %>" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form action="/admin/editCategory" method="post">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="staticBackdropLabel<%= i %>">Change the category</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <label class="col-sm-6 form-control-label">Enter the Category</label>
+                          <br>
+                          <input type="text" name="oldCat" value="<%= category[i].name %>" hidden>
+                          <input type="text" name="category" class="form-control" placeholder="<%= category[i].name %>"
+                            required>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Change</button>
+                        </div>
+                      </form>
                     </div>
                   </div>
-                  <!-- <a href="" class="btn btn-secondary">Edit</a> -->
-                </td>
-              </tr>
-              <%} %>
-          </tbody>
-        </table>
-      </div>
+                </div>
+                <!-- <a href="" class="btn btn-secondary">Edit</a> -->
+              </td>
+            </tr>
+            <%} %>
+        </tbody>
+      </table>
     </div>
   </div>
+  </div>
+  <script>
+  </script>
 
   <%- include('../partials/adminFooter') -%>

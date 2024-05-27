@@ -11,16 +11,21 @@ const loadCategory = asyncHandler(async (req, res) => {
 
 })
 
-const loadaddCategory = asyncHandler(async (req, res) => {
-    const successMessage = req.flash('Success');
-    const category = await Category.find({});
-    res.render('admin/adminCategory-add', { category, successMessage });
-})
+// const loadAddCategory = asyncHandler(async (req, res) => {
+//     const successMessage = req.flash('Success');
+//     const category = await Category.find({});
+//     res.render('admin/adminCategory-add', { category, successMessage });
+// })
 
 const addNewCategory = asyncHandler(async (req, res) => {
+    console.log('POST request received at /admin/add-category');
     const { name, description, discount } = req.body;
-
-    const existingCategory = await Category.findone({ name });
+    
+    if (name) {
+        // Simulate saving to the database
+        console.log('Category to save:', name);
+    }
+    const existingCategory = await Category.findOne({ name });
     //if the category already exists??
     if (existingCategory) {
         req.flash("error", "Category name already exists")
@@ -29,13 +34,13 @@ const addNewCategory = asyncHandler(async (req, res) => {
         //if the required fields are blank??
         if (!name || !description || !discount) {
             req.flash("error", "Please fill in all required fields");
-            return res.redirect("/add-category");
+            return res.redirect("/admin/category");
 
         }
     }
     await Category.create({ name: name, description: description, discount: discount });
     req.flash('success', 'Category Added Successfully!');
-    res.redirect('/admin/categories');
+    res.redirect('/admin/category');
 })
 
 const loadUpdateCategory = asyncHandler(async (req, res) => {
@@ -50,7 +55,7 @@ const updateCategory = asyncHandler(async (req, res) => {
         const category = await Category.findById(id);
         if (!category) {
             req.flash('error', "Category does not exist");
-            return res.redirect('/admin/categories');
+            return res.redirect('/admin/category');
         }
 
         // Initialize an empty object to hold the fields to update
@@ -62,18 +67,18 @@ const updateCategory = asyncHandler(async (req, res) => {
         // Check if there are updates to apply
         if (Object.keys(updates).length === 0) {
             req.flash("error", "No fields to update");
-            return res.redirect(`/admin/categories/edit/${id}`);
+            return res.redirect(`/admin/category/edit/${id}`);
         }
 
         // Update the category
         await Category.findByIdAndUpdate(id, { $set: updates });
 
         req.flash('success', 'Category updated successfully');
-        res.redirect('/admin/categories');
+        res.redirect('/admin/category');
     } catch (error) {
         console.error('Error updating category:', error);
         req.flash('error', 'Failed to update category');
-        res.redirect(`/admin/categories/edit/${id}`);
+        res.redirect(`/admin/category/edit/${id}`);
     }
 });
 
@@ -83,21 +88,21 @@ const updateCategory = asyncHandler(async (req, res) => {
 const unlistCategory = asyncHandler(async (req, res) => {
     //if it is already unlisted
     const id = req.params.id;
-    const category = await Category.findByID(id);
+    const category = await Category.findById(id);
     if (!category) {
         req.flash('error', "Category does not Exists");
-        return res.redirect('/category')
+        return res.redirect('/admin/category')
     } else {
         category.isListed = !category.isListed;
         await category.save();
-        req.flash('sucess', "Categpry status updated successfully")
-        res.redirect('/category',)
+        req.flash('success', "Category status updated successfully")
+        res.redirect('/admin/category',)
     }
 })
 
 module.exports = {
     loadCategory,
-    loadaddCategory,
+    //loadAddCategory,
     loadUpdateCategory,
     addNewCategory,
     updateCategory,

@@ -14,10 +14,13 @@ adminRouter.route('/dashboard').get(adminController.adminDashboard)
 //category and new categories
 adminRouter.route('/category').get(categoryController.loadCategory)
 
-adminRouter.route('/add-category')
-.get(categoryController.loadaddCategory)
-.post(categoryController.addNewCategory)
+adminRouter.route('/add-category').post(categoryController.addNewCategory);
+    //.get(categoryController.loadAddCategory)
+    
 
 
 //adminRouter.route('/users').get(adminController.)
+
+//Changing the listing of the Categories
+adminRouter.route('/categoryisListed/:id').post(categoryController.unlistCategory)
 module.exports = adminRouter

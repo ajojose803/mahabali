@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Ashion Template">
@@ -12,7 +11,7 @@
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+          rel="stylesheet">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -26,8 +25,8 @@
 </head>
 
 <body>
-     <!-- Page Preloder -->
-     <div id="preloder">
+    <!-- Page Preloder -->
+    <div id="preloder">
         <div class="loader"></div>
     </div>
 
@@ -49,8 +48,22 @@
         </div>
         <div id="mobile-menu-wrap"></div>
         <div class="offcanvas__auth">
-            <a href="#">Login</a>
-            <a href="/register">Register</a>
+            <% if (user) { %>
+                <div class="dropdown">
+                    <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= user.username %></a>
+                    <div class="dropdown-menu" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#">Orders</a>
+                        <a class="dropdown-item" href="#">Wishlist</a>
+                        <a class="dropdown-item" href="#">Cart</a>
+                        <a class="dropdown-item" href="#">Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout">Logout</a>
+                    </div>
+                </div>
+            <% } else { %>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            <% } %>
         </div>
     </div>
     <!-- Offcanvas Menu End -->
@@ -61,34 +74,40 @@
             <div class="row">
                 <div class="col-xl-3 col-lg-2">
                     <div class="header__logo">
-                        <a href="/views/user/home.ejs"><img src="img/logo.png" alt=""></a>
+                        <a href="/"><img src="img/logo.png" alt=""></a>
                     </div>
                 </div>
                 <div class="col-xl-6 col-lg-7">
                     <nav class="header__menu">
                         <ul>
-                            <li class="active"><a href="./index.html">Home</a></li>
+                            <li class="active"><a href="/">Home</a></li>
                             <li><a href="#">Posters</a></li>
                             <li><a href="#">Merchandise</a></li>
-                            <li><a href="./shop.html">Coasters</a></li>
-                            <li><a href="#">Accesories</a>
-                                <!-- <ul class="dropdown">
-                                    <li><a href="./product-details.html">Product Details</a></li>
-                                    <li><a href="./shop-cart.html">Shop Cart</a></li>
-                                    <li><a href="./checkout.html">Checkout</a></li>
-                                    <li><a href="./blog-details.html">Blog Details</a></li>
-                                </ul> -->
-                            </li>
-                            <!-- <li><a href="./blog.html">Blog</a></li> -->
-                            <li><a href="./contact.html">Contact</a></li>
+                            <li><a href="/shop">Coasters</a></li>
+                            <li><a href="#">Accessories</a></li>
+                            <li><a href="/contact">Contact</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="col-lg-3">
                     <div class="header__right">
                         <div class="header__right__auth">
-                            <a href="/login">Login</a>
-                            <a href="/register">Register</a>
+                            <% if (user) { %>
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= user.username %></a>
+                                    <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                        <a class="dropdown-item" href="#">Orders</a>
+                                        <a class="dropdown-item" href="#">Wishlist</a>
+                                        <a class="dropdown-item" href="#">Cart</a>
+                                        <a class="dropdown-item" href="#">Profile</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="/logout">Logout</a>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <a href="/login">Login</a>
+                                <a href="/register">Register</a>
+                            <% } %>
                         </div>
                         <ul class="header__right__widget">
                             <li><span class="icon_search search-switch"></span></li>
@@ -108,5 +127,3 @@
         </div>
     </header>
     <!-- Header Section End -->
-
-   
