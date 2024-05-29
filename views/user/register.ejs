@@ -141,21 +141,38 @@
 			}
 		}
 
-		function validatePhone() {
-			console.log("Validating phone number...");
-			var phone = document.getElementById('phone').value;
-			console.log("Validating phone number...");
-			var phone = document.getElementById('phone').value;
-			var phoneError = document.getElementById('phoneError');
-			// Add your phone validation logic here
-		}
+        function validatePhone() {
+      console.log("Validating phone number...");
+      var phone = document.getElementById('phone').value;
+      var phoneError = document.getElementById('phoneError');
+      
+      var phonePattern = /^[6-9]\d{9}$/;
 
-		function validatePassword() {
-			console.log("Validating password...");
-			var password = document.getElementById('password').value;
-			var passwordError = document.getElementById('passwordError');
-			// Add your password validation logic here
-		}
+      if (phonePattern.test(phone)) {
+        phoneError.textContent = ""; 
+        return true;
+      } else {
+        phoneError.textContent = "Please enter a valid 10-digit number";
+        return false; 
+      }
+    }
+
+
+    function validatePassword() {
+      console.log("Validating password...");
+      var password = document.getElementById('password').value;
+      var passwordError = document.getElementById('passwordError');
+
+      var passwordPattern = /^(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+
+      if (passwordPattern.test(password)) {
+        passwordError.textContent = ""; 
+        return true;
+      } else {
+        passwordError.textContent = "Please enter a password with a minimum of 8 characters including at least one special character.";
+        return false; // Prevent form submission
+      }
+    }
 
 		function validateConfirmPassword() {
 			console.log("Validating confirm password...");
@@ -165,8 +182,10 @@
 
 			if (password !== confirmPassword) {
 				confirmPasswordError.textContent = 'Passwords do not match!';
+                return false;
 			} else {
 				confirmPasswordError.textContent = '';
+                return true;
 			}
 		}
 
