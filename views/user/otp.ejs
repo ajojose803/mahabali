@@ -84,18 +84,20 @@
     <div class="position-relative">
       <div class="card p-2 text-center">
         <h6>Please enter the one-time password <br> to verify your account</h6>
-        <div> <span>A code has been sent to</span> <small><%= email %></small> </div>
+        <div> <span>A code has been sent to</span> <small>
+            <%= email %>
+          </small> </div>
         <form action="/verify-otp" method="post" class="otp-form">
-            <input type="hidden" name="email" value="<%= email %>">
-            <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
-                <input class="m-2 text-center form-control rounded" type="number" id="first" name="digit1"maxlength="1" />
-                <input class="m-2 text-center form-control rounded" type="number" id="second"name="digit2" maxlength="1" />
-                <input class="m-2 text-center form-control rounded" type="number" id="third"name="digit3" maxlength="1" />
-                <input class="m-2 text-center form-control rounded" type="number" id="fourth"name="digit4" maxlength="1" />
-            </div>
-            <div class="mt-4">
-                <button type="submit" class="btn btn-danger px-4 validate">Verify-OTP</button>
-            </div>
+          <input type="hidden" name="email" value="<%= email %>">
+          <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
+            <input class="m-2 text-center form-control rounded" type="number" id="first" name="digit1" maxlength="1" />
+            <input class="m-2 text-center form-control rounded" type="number" id="second" name="digit2" maxlength="1" />
+            <input class="m-2 text-center form-control rounded" type="number" id="third" name="digit3" maxlength="1" />
+            <input class="m-2 text-center form-control rounded" type="number" id="fourth" name="digit4" maxlength="1" />
+          </div>
+          <div class="mt-4">
+            <button type="submit" class="btn btn-danger px-4 validate">Verify-OTP</button>
+          </div>
         </form>
       </div>
     </div>
@@ -130,27 +132,50 @@
         }
       }
       OTPInput();
-      
-    OTPInput();
 
-const otpForm = document.querySelector('.otp-form');
-const otpInputs = document.querySelectorAll('.otp-form input[type="text"]');
+      OTPInput();
 
-otpForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    let otp = '';
-    otpInputs.forEach(input => {
-        otp += input.value;
+      const otpForm = document.querySelector('.otp-form');
+      const otpInputs = document.querySelectorAll('.otp-form input[type="text"]');
+
+      otpForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        let otp = '';
+        otpInputs.forEach(input => {
+          otp += input.value;
+        });
+
+        // Add OTP value to the hidden input field
+        document.getElementById('otp').value = otp;
+
+        // Submit the form
+        this.submit();
+      });
     });
 
-    // Add OTP value to the hidden input field
-    document.getElementById('otp').value = otp;
+    //to move
+    document.addEventListener("DOMContentLoaded", function (event) {
 
-    // Submit the form
-    this.submit();
-});
+      function OTPInput() {
+        const inputs = document.querySelectorAll('#otp > *[id]');
+        for (let i = 0; i < inputs.length; i++) {
+          inputs[i].addEventListener('input', function (event) {
+            if (inputs[i].value.length === 1 && i < inputs.length - 1) {
+              inputs[i + 1].focus();
+            }
+          });
+          inputs[i].addEventListener('keydown', function (event) {
+            if (event.key === "Backspace" && i > 0) {
+              inputs[i - 1].focus();
+            }
+          });
+        }
+      }
+
+      OTPInput();
     });
+
   </script>
 </body>
 
