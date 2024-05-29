@@ -1,15 +1,12 @@
 <%- include('../partials/adminHeader') -%>
   <ul class="list-unstyled">
     <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
-    <li><a href="/admin/user"> <i class="fa fa-bar-chart"></i>Users</a></li>
+    <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
     <li class="active"><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
     <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
     <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
     <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
     <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
-
-
-
   </ul>
   </nav>
   <!-- Sidebar Navigation end-->
@@ -106,15 +103,21 @@
                     <div class="modal-content">
                       <form action="/admin/editCategory" method="post">
                         <div class="modal-header">
-                          <h1 class="modal-title fs-5" id="staticBackdropLabel<%= i %>">Change the category</h1>
+                          <h1 class="modal-title fs-5" id="staticBackdropLabel<%= i %>">Edit the category</h1>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <label class="col-sm-6 form-control-label">Enter the Category</label>
+                          <label class="col-sm-6 form-control-label">Name </label>
                           <br>
                           <input type="text" name="oldCat" value="<%= category[i].name %>" hidden>
                           <input type="text" name="category" class="form-control" placeholder="<%= category[i].name %>"
                             required>
+                            <br>
+                            <label class="col-sm-6 form-control-label">Discount </label>
+                            <br>
+                          <input type="text" name="oldDiscount" value="<%= category[i].discount %>" hidden>
+                          <input type="text" name="discount" class="form-control"
+                            placeholder="<%= category[i].discount%>" required>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

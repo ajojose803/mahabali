@@ -9,7 +9,7 @@ const adminPage = asyncHandler((req,res) => {
         res.redirect('/admin/dashboard')
     }
     const errorMessages  = req.flash("error");
-    res.render('admin/adminLogin',{errorMessages})     
+    res.render('admin/adminLogin',{errorMessages})   
 })
 
 const adminLogin = asyncHandler(async (req, res) => {
@@ -38,7 +38,7 @@ const adminLogin = asyncHandler(async (req, res) => {
 
 
 const adminDashboard = asyncHandler(async(req,res)=>{
-    res.render('admin/adminHome')
+    res.render('admin/adminHome');
 })
 const adminLogout = asyncHandler(async(req,res)=>{
     req.session.destroy();

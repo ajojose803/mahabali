@@ -18,7 +18,7 @@ const loadCategory = asyncHandler(async (req, res) => {
 // })
 
 const addNewCategory = asyncHandler(async (req, res) => {
-    console.log('POST request received at /admin/add-category');
+    //console.log('POST request received at /admin/add-category');
     const { name, description, discount } = req.body;
     
     if (name) {
