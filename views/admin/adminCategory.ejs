@@ -1,4 +1,5 @@
 <%- include('../partials/adminHeader') -%>
+
   <ul class="list-unstyled">
     <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
     <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
@@ -80,10 +81,10 @@
               <td>
                 <% if(category[i].isListed) { %>
 
-                  <a href="/admin/categoryisListed?<%= category[i]._id %>" class="btn btn-danger"
+                  <a href="/admin/category/update-status?<%= category[i]._id %>" class="btn btn-danger"
                     onclick="confirmAndRedirect('<%= category[i]._id %>',event)">Unlist</a>
                   <% } else { %>
-                    <a href="/admin/categoryisListed?<%= category[i]._id %>" class="btn btn-success"
+                    <a href="/admin/category/update-status?<%= category[i]._id %>" class="btn btn-success"
                       onclick="confirmAndRedirect('<%= category[i]._id %>',event)">List</a>
                     <% } %>
 
@@ -101,29 +102,31 @@
                   tabindex="-1" aria-labelledby="staticBackdropLabel<%= i %>" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
-                      <form action="/admin/editCategory" method="post">
+                      <form action="/admin/update-category" method="post">
                         <div class="modal-header">
                           <h1 class="modal-title fs-5" id="staticBackdropLabel<%= i %>">Edit the category</h1>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <label class="col-sm-6 form-control-label">Name </label>
+                          <input type="hidden" name="id" value="<%= category[i]._id %>"> <!-- Hidden input for category ID -->
+                          <label class="col-sm-6 form-control-label">Name</label>
                           <br>
-                          <input type="text" name="oldCat" value="<%= category[i].name %>" hidden>
-                          <input type="text" name="category" class="form-control" placeholder="<%= category[i].name %>"
-                            required>
-                            <br>
-                            <label class="col-sm-6 form-control-label">Discount </label>
-                            <br>
-                          <input type="text" name="oldDiscount" value="<%= category[i].discount %>" hidden>
-                          <input type="text" name="discount" class="form-control"
-                            placeholder="<%= category[i].discount%>" required>
+                          <input type="text" name="name" value="<%= category[i].name %>" class="form-control" required>
+                          <br>
+                          <label class="col-sm-6 form-control-label">Description</label>
+                          <br>
+                          <input type="text" name="description" value="<%= category[i].description %>" class="form-control" required>
+                          <br>
+                          <label class="col-sm-6 form-control-label">Discount</label>
+                          <br>
+                          <input type="text" name="discount" value="<%= category[i].discount %>" class="form-control" required>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                           <button type="submit" class="btn btn-primary">Change</button>
                         </div>
                       </form>
+                      
                     </div>
                   </div>
                 </div>
@@ -137,6 +140,26 @@
   </div>
   </div>
   <script>
+    async function confirmAndRedirect(userId, event) {
+      console.log("Category ID:", userId);
+      event.preventDefault();
+
+      const result = await Swal.fire({
+        title: "Warning!",
+        text: "The changes you are about to make will have effect on the user side",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        dangerMode: true,
+      });
+
+      if (result.isConfirmed) {
+        window.location.href = "/admin/category/update-status?id=" + userId;
+      }
+    }
   </script>
 
   <%- include('../partials/adminFooter') -%>

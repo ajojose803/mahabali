@@ -17,10 +17,12 @@ const loadCategory = asyncHandler(async (req, res) => {
 //     res.render('admin/adminCategory-add', { category, successMessage });
 // })
 
+
+//post
 const addNewCategory = asyncHandler(async (req, res) => {
-    //console.log('POST request received at /admin/add-category');
+
     const { name, description, discount } = req.body;
-    
+
     if (name) {
         // Simulate saving to the database
         console.log('Category to save:', name);
@@ -43,14 +45,15 @@ const addNewCategory = asyncHandler(async (req, res) => {
     res.redirect('/admin/category');
 })
 
-const loadUpdateCategory = asyncHandler(async (req, res) => {
+const editCategory = asyncHandler(async (req, res) => {
 
 })
+
 
 const updateCategory = asyncHandler(async (req, res) => {
     const { name, description, discount } = req.body;
     const id = req.params.id;
-    
+
     try {
         const category = await Category.findById(id);
         if (!category) {
@@ -85,26 +88,23 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 
 
-const unlistCategory = asyncHandler(async (req, res) => {
-    //if it is already unlisted
-    const id = req.params.id;
+const listingStatusCategory = asyncHandler(async (req, res) => {
+
+    const id = req.query.id;
+    console.log("Received ID:", id);
     const category = await Category.findById(id);
-    if (!category) {
-        req.flash('error', "Category does not Exists");
-        return res.redirect('/admin/category')
-    } else {
-        category.isListed = !category.isListed;
-        await category.save();
-        req.flash('success', "Category status updated successfully")
-        res.redirect('/admin/category',)
-    }
-})
+    category.isListed = !category.isListed;
+    await category.save();
+    req.flash('success', "Category status updated successfully")
+    res.redirect('/admin/category',)
+}
+)
 
 module.exports = {
     loadCategory,
     //loadAddCategory,
-    loadUpdateCategory,
     addNewCategory,
     updateCategory,
-    unlistCategory
+    listingStatusCategory,
+   
 }

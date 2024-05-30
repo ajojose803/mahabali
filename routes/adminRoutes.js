@@ -20,15 +20,20 @@ adminRouter.route('/users').get(userManagement.getUser)
 
 //category and new categories
 adminRouter.route('/category').get(categoryController.loadCategory)
+adminRouter.route('/category/update-status').get(categoryController.listingStatusCategory);
 adminRouter.route('/add-category').post(categoryController.addNewCategory);
-
-    
+adminRouter.route('/update-category').post(categoryController.updateCategory);
 
 //Changing the listing of the Categories
-adminRouter.route('/categoryisListed/:id').post(categoryController.unlistCategory)
-module.exports = adminRouter
+//adminRouter.route('/categoryisListed/:id').get(categoryController.listingStatusCategory)
 
 
 //products
 adminRouter.route('/products').get(productController.loadProduct)
-adminRouter.route('/add-products').get(productController.loadAddProduct)
+adminRouter.route('/add-product').get(productController.loadAddProduct)
+
+
+
+
+
+module.exports = adminRouter
