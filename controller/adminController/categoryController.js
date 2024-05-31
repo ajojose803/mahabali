@@ -91,7 +91,7 @@ const updateCategory = asyncHandler(async (req, res) => {
 const listingStatusCategory = asyncHandler(async (req, res) => {
 
     const id = req.query.id;
-    console.log("Received ID:", id);
+    //console.log("Received ID:", id);
     const category = await Category.findById(id);
     category.isListed = !category.isListed;
     await category.save();
