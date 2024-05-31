@@ -1,75 +1,89 @@
 <%- include('../partials/adminHeader') -%>
-<ul class="list-unstyled">
-  <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
-  <li class="active"><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
-  <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
-  <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
-  <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
-  <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
-  <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
-</ul>
-</nav>
+  <ul class="list-unstyled">
+    <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
+    <li class="active"><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
+    <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
+    <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+    <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
+    <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
+    <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
+  </ul>
+  </nav>
 
-<div class="page-content">
-  <div class="page-header">
-    <div class="container-fluid">
-      <h2 class="h5 no-margin-bottom">User Management</h2>
+  <div class="page-content">
+    <div class="page-header">
+      <div class="container-fluid">
+        <h2 class="h5 no-margin-bottom">User Management</h2>
+      </div>
     </div>
-  </div>
 
-  <div class="table-responsive" style="padding: 5%;">
-    <table class="table">
-      <thead>
-        <tr>
-          <!-- <th>#</th> -->
-          <th>UserName</th>
-          <th>Email Address</th>
-          <th>Phone Number</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (let i=0; i < data.length; i++) { %>
+    <div class="table-responsive" style="padding: 5%;">
+      <table class="table">
+        <thead>
           <tr>
-            <td>
-              <%= data[i].username %>
-            </td>
-            <td>
-              <%= data[i].email %>
-            </td>
-            <td>
-              <%= data[i].phone %>
-            </td>
-            <td>
-              <% if (data[i].isBlocked) { %>
-                <p style="color: red;">Blocked</p>
-                <% } else { %>
-                  <p style="color: green;">UnBlocked</p>
-                  <% } %>
-            </td>
-            <td>
-              <% if (data[i].isBlocked) { %>
-                <!-- <a href="/admin/changeStatus?id=<%= data[i]._id %>" class="btn btn-success" onclick="return confirm('Are u sure, You want to unblock the user') ">Un Block</a> -->
-                <a href="/admin/changeStatus?id=<%= data[i]._id %>" class="btn btn-danger"
-                  onclick="confirmAndRedirect('<%= data[i]._id %>',event)">Block</a>
-
-
-                <% } else { %>
-                  <a href="/admin/changeStatus?id=<%= data[i]._id %>" class="btn btn-danger"
-                    onclick="confirmAndRedirect('<%= data[i]._id %>',event)">Block</a>
-
-                  <!-- <a href="/admin/changeStatus?id=<%= data[i]._id %>" class="btn btn-danger"
-                        onclick="return confirm('Are u sure, You want to block the user')">Block</a> -->
-                  <% } %>
-
-            </td>
-
+            <!-- <th>#</th> -->
+            <th>UserName</th>
+            <th>Email Address</th>
+            <th>Phone Number</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
-          <% } %>
+        </thead>
+        <tbody>
+          <% for (let i=0; i < data.length; i++) { %>
+            <tr>
+              <td>
+                <%= data[i].username %>
+              </td>
+              <td>
+                <%= data[i].email %>
+              </td>
+              <td>
+                <%= data[i].phone %>
+              </td>
+              <td>
+                <% if (data[i].isBlocked) { %>
+                  <p style="color: red;">Blocked</p>
+                  <% } else { %>
+                    <p style="color: green;">UnBlocked</p>
+                    <% } %>
+              </td>
+              <td>
+                <% if (data[i].isBlocked) { %>
+                  <a href="/admin/users/changeStatus?id=<%= data[i]._id %>" class="btn btn-success"
+                    onclick="confirmAndRedirect('<%= data[i]._id %>',event)">UnBlock</a>
 
-      </tbody>
-    </table>
-  </div>
+                  <% } else { %>
+                    <a href="/admin/users/changeStatus?id=<%= data[i]._id %>" class="btn btn-danger"
+                      onclick="confirmAndRedirect('<%= data[i]._id %>',event)">Block</a>
+                    <% } %>
+              </td>
+            </tr>
+            <% } %>
+        </tbody>
+      </table>
+    </div>
 
-  <%- include('../partials/adminFooter') -%>
+    <script>
+      async function confirmAndRedirect(userId) {
+        console.log("User ID:", userId);
+        event.preventDefault();
+
+        const result = await Swal.fire({
+          title: "Warning!",
+          text: "The changes you are about to make will have effect on the user side",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          dangerMode: true,
+        });
+
+        if (result.isConfirmed) {
+          window.location.href = "/admin/users/changeStatus?id=" + userId;
+        }
+      }
+    </script>
+    <%- include('../partials/adminFooter') -%>
