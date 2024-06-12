@@ -32,19 +32,33 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-				<form class="login100-form validate-form" action ="/login" method="POST">
+				<form class="login100-form validate-form" action="/login" method="POST">
 					<span class="login100-form-title p-b-26">
 						Welcome
 					</span>
 					<span class="login100-form-title p-b-48">
 						<!-- <i class="zmdi zmdi-font"></i> -->
 					</span>
-
-					<div class="wrap-input100 validate-input" data-validate = "Valid email is: a@b.c">
+	
+					<% if (errorMessages.length > 0) { %>
+						<div class="alert alert-danger flash-message">
+							<% errorMessages.forEach(function(error) { %>
+								<p><%= error %></p>
+							<% }) %>
+						</div>
+					<% } %>
+	
+					<% if (successMessage.length > 0) { %>
+						<div class="alert alert-success flash-message">
+							<p><%= successMessage %></p>
+						</div>
+					<% } %>
+	
+					<div class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
 						<input class="input100" type="text" name="email">
 						<span class="focus-input100" data-placeholder="Email"></span>
 					</div>
-
+	
 					<div class="wrap-input100 validate-input" data-validate="Enter password">
 						<span class="btn-show-pass">
 							<i class="zmdi zmdi-eye"></i>
@@ -52,7 +66,7 @@
 						<input class="input100" type="password" name="password">
 						<span class="focus-input100" data-placeholder="Password"></span>
 					</div>
-
+	
 					<div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
@@ -65,27 +79,45 @@
 						<span class="txt1">
 							forgot
 						</span>
-
+	
 						<a class="txt1" href="/register">
 							<u>password?</u>
 						</a>
 					</div>
-
+	
 					<div class="text-center p-t-50">
 						<span class="txt1">
 							Don’t have an account?
 						</span>
-
+	
 						<a class="txt1" href="/register">
 							<u>Sign Up</u>
+						</a>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 	
+	
+	
+	
+	
 
 	<div id="dropDownSelect1"></div>
+	<script>
+		// Hide flash messages after 5 seconds
+		setTimeout(function() {
+			const flashMessages = document.querySelectorAll('.flash-message');
+			flashMessages.forEach(message => {
+				message.style.transition = 'opacity 1s';
+				message.style.opacity = '0';
+				setTimeout(() => {
+					message.remove();
+				}, 1000); // Wait for the transition to complete before removing the element
+			});
+		}, 5000); // 5 seconds
+	</script>
 	
 <!--===============================================================================================-->
 	<script src="/userAssets/vendor/jquery/jquery-3.2.1.min.js"></script>
