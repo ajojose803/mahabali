@@ -102,7 +102,7 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      <form id="editProductForm<%= i %>" class="form-horizontal" action="/admin/editProduct/<%= data[i]._id %>" method="post" enctype="multipart/form-data" onsubmit="return validateForm(event, 'editProductForm<%= i %>')">
+                      <form id="editProductForm<%= i %>" class="form-horizontal" action="/admin/edit-product/<%= data[i]._id %>" method="post" enctype="multipart/form-data" onsubmit="return validateForm(event, 'editProductForm<%= i %>')">
                         <div class="form-group row">
                           <label class="col-sm-3 form-control-label">Name</label>
                           <div class="col-sm-9">
@@ -129,7 +129,7 @@
                         </div>
                         <div class="line"></div>
                         <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">aboutProduct Product</label>
+                          <label class="col-sm-3 form-control-label">About Product</label>
                           <div class="col-sm-9">
                             <textarea cols="30" id="aboutProduct<%= i %>" rows="4" name="aboutProduct" class="form-control" oninput="validateField('aboutProduct<%= i %>')"><%= data[i].aboutProduct %></textarea>
                           </div>

@@ -140,8 +140,8 @@
   </div>
   </div>
   <script>
-    async function confirmAndRedirect(userId, event) {
-      console.log("Category ID:", userId);
+    async function confirmAndRedirect(categoryId) {
+      console.log("Category ID:", categoryId);
       event.preventDefault();
 
       const result = await Swal.fire({
@@ -157,7 +157,7 @@
       });
 
       if (result.isConfirmed) {
-        window.location.href = "/admin/category/update-status?id=" + userId;
+        window.location.href = "/admin/category/update-status?id=" + categoryId;
       }
     }
   </script>
