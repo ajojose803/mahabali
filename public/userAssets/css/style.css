@@ -325,6 +325,9 @@ ol {
 .header__logo {
 	padding: 26px 0;
 }
+.header__logo img {
+	max-width: 40%;
+}
 
 .header__logo a {
 	display: inline-block;
@@ -1065,22 +1068,23 @@ ol {
 
 .categories__text h1 {
 	font-family: "Cookie", cursive;
-	color: #111111;
+	color: #fffbfb;
 	margin-bottom: 5px;
 }
 
 .categories__text h4 {
-	color: #111111;
+	color: #fffcfc;
 	font-weight: 700;
 }
 
 .categories__text p {
 	margin-bottom: 10px;
+	color:white;
 }
 
 .categories__text a {
 	font-size: 14px;
-	color: #111111;
+	color: #ffffff;
 	text-transform: uppercase;
 	font-weight: 600;
 	position: relative;
@@ -1094,7 +1098,7 @@ ol {
 	bottom: 0;
 	height: 2px;
 	width: 100%;
-	background: #ca1515;
+	background: #fcfcfc;
 	content: "";
 }
 
@@ -3329,7 +3333,9 @@ ol {
 	}
 	.offcanvas__logo {
 		margin-bottom: 25px;
+		max-width: 40%;
 	}
+	
 	.offcanvas__widget {
 		text-align: center;
 		margin-bottom: 20px;
