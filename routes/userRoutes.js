@@ -56,7 +56,7 @@ userRouter.route('/add-to-cart/:productId').post(auth.userAuth,cartController.ad
 userRouter.route('/cart/delete/:productId').get(auth.userAuth,cartController.deleteCart);
 userRouter.route('/cart/update').post(auth.userAuth,cartController.updateCart);
 userRouter.route('/cart/update-cart/:id').put(auth.userAuth,cartController.updateQuantity);
-// router.post('/cart/update-cart/:id', 
+//router.post('/cart/update-cart/:id', 
 
 //checkout
 userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
