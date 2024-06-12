@@ -65,12 +65,14 @@ userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
 userRouter.route('/profile').get(auth.userAuth,userProfile.LoadProfile)
 
 //address
-userRouter.route('/profile/addAddress').get(auth.userAuth,userProfile.LoadAddAddress)
-userRouter.route('profile/address/new').post(auth.userAuth, userProfile.addaddress)
+userRouter.route('/profile/address/new')
+.get(auth.userAuth,userProfile.LoadAddAddress)
+.post(auth.userAuth, userProfile.addAddress)
 userRouter.route('/profile/address').get(auth.userAuth,userProfile.showaddress)
-userRouter.route('/profile/editAddress/:id').get(auth.userAuth,userProfile.LoadEditAddress)
-userRouter.route('/addressupdated/:id').post(auth.userAuth,userProfile.editaddress)
-userRouter.route('/deleteAddress/:id').get(auth.userAuth,userProfile.deleteAddress)
+userRouter.route('/profile/address/:id/edit')
+.get(auth.userAuth,userProfile.LoadEditAddress)
+.post(auth.userAuth,userProfile.editaddress)
+userRouter.route('/profile/address/:id/delete').get(auth.userAuth,userProfile.deleteAddress)
 
 
 

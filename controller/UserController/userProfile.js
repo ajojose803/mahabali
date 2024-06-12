@@ -18,8 +18,8 @@ const LoadProfile = async (req, res) => {
             path: 'items.productId',
             select: 'name image description'
         })
-      const itemCount = req.session.cartCount;
-        res.render('user/myAccount', { title: "User-Profile", user, categories,itemCount, currentPage, orders,successMessages })
+        const itemCount = req.session.cartCount;
+        res.render('user/myAccount', { title: "User-Profile", user, categories, itemCount, currentPage, orders, successMessages })
     } catch (err) {
         console.log(err)
         res.render('user/servererror')
@@ -27,63 +27,73 @@ const LoadProfile = async (req, res) => {
     }
 }
 
-const showaddress=async (req,res)=>{
-    try{
-        const successMessages  = req.flash('success')
-        const errorMessages = req.flash('error')
-        const currentPage='profile';
-        const userId = req.session.userId
-        const categories=await Category.find({status:true}).limit(3)
-        const data = await Address.findOne({ userId: userId })
-        req.session.checkoutSave=false;
-      const itemCount = req.session.cartCount;
-        res.render('user/address', { title:'UrbanKicks - Addresses',itemCount,user: data ,categories,currentPage,errorMessages,successMessages})
-    }catch(error){
-        console.log(error)
-        res.render('user/servererror')
+const showaddress = async (req, res) => {
+    try {
+        const successMessages = req.flash('success');
+        const errorMessages = req.flash('error');
+        const currentPage = 'profile';
+        const userId = req.session.userId;
+        
+        const user = await User.findOne({ userId });
+        console.log("User:", user);
+
+        const categories = await Category.find({ status: true }).limit(3);
+        
+        const addresses = await Address.findOne({ userId: userId });
+        console.log("Addresses:", addresses); // Add this line to log addresses
+
+        req.session.checkoutSave = false;
+        const itemCount = req.session.cartCount;
+        
+        res.render('user/address', {
+            itemCount, 
+            user, 
+            addresses, 
+            categories, 
+            currentPage, 
+            errorMessages, 
+            successMessages
+        });
+    } catch (error) {
+        console.log(error);
+        res.render('user/servererror');
     }
-}
+};
+
 
 const LoadAddAddress = async (req, res) => {
     try {
         const currentPage = 'profile';
-        const categories = await Category.find({ status: true }).limit(3)
+        const categories = await Category.find({ status: true }).limit(3);
         const id = req.session.userId;
-        const user = await User.findOne({ _id: id })
-      const itemCount = req.session.cartCount;
-        res.render('user/addAddress', { title: "Urban Kicks - profile", categories,itemCount, currentPage, user })
+        const user = await User.findOne({ _id: id });
+        const itemCount = req.session.cartCount;
+        res.render('user/Profile/addAddress', { title: "Urban Kicks - Add Address", categories, itemCount, currentPage, user });
     } catch (error) {
-        console.log(error)
-        res.render('user/servererror')
+        console.log(error);
+        res.render('user/servererror');
     }
-}
+};
 
-const addaddress = async (req, res) => {
+const addAddress = async (req, res) => {
     try {
-        const { name, mobile, email, housename, street, city, state, country, pincode, saveas } = req.body;
+        const { firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode, } = req.body;
         const userId = req.session.userId;
+        console.log(userId)
+        console.log(req.body)
         const existingUser = await Address.findOne({ userId: userId });
-
+        console.log("existingUser: "+existingUser)
         if (existingUser) {
             const existingAddress = existingUser.address.find(addr => addr.save_as === saveas);
 
             if (existingAddress) {
-                const errorMessage = req.session.checkoutSave ? `${existingAddress.save_as} address already exists!` : `${existingAddress.save_as} address already exists! Use edit address..`;
+                const errorMessage = req.session.checkoutSave ? `${existingAddress.save_as} address already exists!` : `${existingAddress.save_as} address already exists! Use edit address.`;
                 req.flash('error', errorMessage);
                 return res.redirect(req.session.checkoutSave ? `/checkout` : `/address`);
             }
 
             existingUser.address.push({
-                name: name,
-                mobile: mobile,
-                email: email,
-                housename: housename,
-                street: street,
-                city: city,
-                state: state,
-                country: country,
-                pincode: pincode,
-                save_as: saveas
+                firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode,
             });
 
             await existingUser.save();
@@ -91,38 +101,31 @@ const addaddress = async (req, res) => {
             return res.redirect(req.session.checkoutSave ? `/checkout` : `/address`);
         }
 
-        const newAddress = await Address.create({
+        const newAddress = new Address({
             userId: userId,
-            address: {
-                name: name,
-                mobile: mobile,
-                email: email,
-                housename: housename,
-                street: street,
-                city: city,
-                state: state,
-                country: country,
-                pincode: pincode,
-                save_as: saveas,
-            },
+            address: [{
+                firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode,
+            }],
         });
 
+        await newAddress.save();
         req.flash('success', "Address added successfully!!!");
-        return res.redirect(req.session.checkoutSave ? `/checkout` : `/address`);
+        console.log("Adrressss saveddddddddddddd")
+        return res.redirect(req.session.checkoutSave ? `/checkout` : `/profile/address`);
     } catch (error) {
         console.log(error);
         res.render('user/servererror');
     }
-}
+};
 
 
 const LoadEditAddress = async (req, res) => {
     try {
         const currentPage = 'profile';
         const userId = req.session.userId;
-        const categories = await Category.find({ status: true }).limit(3)
+        const categories = await Category.find({ status: true }).limit(3);
         const id = req.params.id;
-      const itemCount = req.session.cartCount;
+        const itemCount = req.session.cartCount;
         const address = await Address.aggregate([
             {
                 $match: { userId: new mongoose.Types.ObjectId(userId) }
@@ -135,17 +138,17 @@ const LoadEditAddress = async (req, res) => {
             }
         ]);
 
-        res.render('user/editAddress', { title:"Urban Kicks- edit address", adress: address[0],itemCount, categories , currentPage });
+        res.render('user/editAddress', { title: "Urban Kicks - edit address", address: address[0], itemCount, categories, currentPage });
     } catch (error) {
         console.log(error);
         res.render('user/servererror');
     }
-}
+};
 
 const editaddress = async (req, res) => {
     try {
         const { name, mobile, email, housename, street, city, state, country, pincode, saveas } = req.body;
-        const addressId = req.params.id
+        const addressId = req.params.id;
         const userId = req.session.userId;
 
         const isAddressExists = await Address.findOne({
@@ -163,15 +166,16 @@ const editaddress = async (req, res) => {
                     'city': city,
                     'state': state,
                     'country': country,
-
                 }
             }
         });
 
         if (isAddressExists) {
-            return res.status(400).send('Address already exists');
+            req.flash('error', 'Address already exists');
+            return res.redirect(`/address/${addressId}/edit`);
         }
-        const result = await Address.updateOne(
+
+        await Address.updateOne(
             { 'userId': userId, 'address._id': addressId },
             {
                 $set: {
@@ -185,33 +189,48 @@ const editaddress = async (req, res) => {
                     'address.$.city': city,
                     'address.$.state': state,
                     'address.$.country': country,
-
                 }
             }
         );
-        req.flash('success',"Address updated successfully!!!")
+
+        req.flash('success', "Address updated successfully!!!");
         res.redirect('/address');
     } catch (error) {
-        console.log(error)
-        res.render('user/servererror')
+        console.log(error);
+        res.render('user/servererror');
     }
-}
+};
+
 
 const deleteAddress = async (req, res) => {
     try {
         const userId = req.session.userId;
         const id = req.params.id;
-        const result = await Address.updateOne(
-            { userId: userId, 'address._id': id },
+        await Address.updateOne(
+            { userId: userId },
             { $pull: { address: { _id: id } } }
         );
-        req.flash('error',"Address deleted successfully!!!")
+        req.flash('success', "Address deleted successfully!!!");
         res.redirect('/address');
     } catch (error) {
-        console.log(error)
-        res.render('user/servererror')
+        console.log(error);
+        res.render('user/servererror');
     }
-}
+};
+const setDefaultAddress = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const id = req.params.id;
+        await Address.updateMany({ userId: userId }, { $set: { 'address.$[].default': false } });
+        await Address.updateOne({ userId: userId, 'address._id': id }, { $set: { 'address.$.default': true } });
+        req.flash('success', "Default address set successfully!!!");
+        res.redirect('/address');
+    } catch (error) {
+        console.log(error);
+        res.render('user/servererror');
+    }
+};
+
 
 
 const LoadResetPassword = async (req, res) => {
@@ -219,8 +238,8 @@ const LoadResetPassword = async (req, res) => {
         const currentPage = 'profile';
         const categories = await Category.find({ status: true }).limit(3)
         const pass = req.flash('pass')
-      const itemCount = req.session.cartCount;
-        res.render('user/resetpassword', { title:"Urbankicks - Reset password ",pass,itemCount, categories,currentPage })
+        const itemCount = req.session.cartCount;
+        res.render('user/resetpassword', { title: "Urbankicks - Reset password ", pass, itemCount, categories, currentPage })
     } catch (error) {
         console.log(error)
         res.render('user/servererror')
@@ -229,7 +248,7 @@ const LoadResetPassword = async (req, res) => {
 
 const updatePassword = async (req, res) => {
     try {
-        const { pass, npass} = req.body
+        const { pass, npass } = req.body
         const userId = req.session.userId
         const user = await User.findOne({ _id: userId })
 
@@ -265,13 +284,14 @@ const updatePassword = async (req, res) => {
 
 
 module.exports = {
+    setDefaultAddress,
     LoadProfile,
     LoadAddAddress,
-    addaddress,
+    addAddress,
     showaddress,
     LoadEditAddress,
-   editaddress,
-   deleteAddress,
-   LoadResetPassword,
-   updatePassword,
+    editaddress,
+    deleteAddress,
+    LoadResetPassword,
+    updatePassword,
 }

@@ -1,0 +1,170 @@
+<%- include('../partials/userHeader')-%>
+<style>
+    .shop__sidebar {
+        padding: 20px;
+    }
+
+    .contact__content ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .contact__content ul a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: black;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .contact__content ul a.active {
+        background-color: #c91414;
+        color: white;
+    }
+
+    .contact__content ul a:hover {
+        background-color: #f0f0f0;
+    }
+
+    .form-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .form-group input[readonly] {
+        background-color: #f9f9f9;
+    }
+
+    .checkout__form__input input:focus {
+        border-color: #c91414;
+        outline: none;
+    }
+
+    .site-btn-container {
+        text-align: center;
+    }
+
+    .site-btn {
+        padding: 12px 25px;
+        background-color: #c91414;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .site-btn:hover {
+        background-color: #811111;
+    }
+</style>
+
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <a href="/profile">My Account</a>
+                    <span>Personal Information</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3">
+                <div class="shop__sidebar">
+                    <div class="contact__content">
+                        <h5>My Account</h5>
+                        <br>
+                        <ul>
+                            <a href="/profile/personal-information" class="active">
+                                <span class="fa fa-info-circle" style="margin-right: 10px;"></span> Personal Information
+                            </a>
+                            <a href="/profile/address">
+                                <span class="fa fa-address-card" style="margin-right: 10px;"></span> Address
+                            </a>
+                            <a href="/profile/orders">
+                                <span class="fa fa-shopping-bag" style="margin-right: 10px;"></span> Orders
+                            </a>
+                            <a href="/profile/wallet">
+                                <span class="fa fa-credit-card" style="margin-right: 10px;"></span> Wallet
+                            </a>
+                            <a href="/profile/change-password">
+                                <span class="fa fa-key" style="margin-right: 10px;"></span> Change Password
+                            </a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="form-container">
+                    <h2>Manage Addresses</h2>
+                    <div class="site-btn-container">
+                        <a href="/profile/address/new" class="site-btn">Add New Address</a>
+                    </div>
+
+                    <% if (addresses && addresses.address.length > 0) { %>
+                        <% addresses.address.forEach(function(address) { %>
+                            <div class="address-card <%= address.status ? 'default' : '' %>">
+                                <p><strong><%= address.firstName %> <%= address.lastName %></strong></p>
+                                <p><%= address.addressline1 %></p>
+                                <p><%= address.addressline2 %></p>
+                                <p><%= address.city %> - <%= address.pincode %></p>
+                                <p><%= address.state %>, <%= address.country %></p>
+                                <p>Mobile: <%= address.phone %></p>
+                                <p>Email: <%= address.email %></p>
+                                <div class="actions">
+                                    <a href="/address/<%= address._id %>/edit">Edit</a>
+                                    <a href="/address/<%= address._id %>/delete" onclick="return confirm('Are you sure you want to delete this address?');">Delete</a>
+                                    <% if (!address.status) { %>
+                                        <a href="/address/<%= address._id %>/default">Set as Default</a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No addresses found. <a href="/profile/address/new">Add a new address</a></p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<%- include('../partials/userFooter')-%>

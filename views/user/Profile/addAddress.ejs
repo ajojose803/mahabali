@@ -1,5 +1,5 @@
-<%- include('../partials/userHeader')-%>
-    <!-- Breadcrumb Begin -->
+<%- include('../../partials/userHeader')-%>
+
     <style>
         .shop__sidebar {
             padding: 20px;
@@ -88,6 +88,7 @@
             background-color: #811111;
         }
     </style>
+    <!-- Breadcrumb Begin -->
     <div class="breadcrumb-option">
         <div class="container">
             <div class="row">
@@ -95,7 +96,8 @@
                     <div class="breadcrumb__links">
                         <a href="/"><i class="fa fa-home"></i> Home</a>
                         <a href="/profile">My Account</a>
-                        <span>Personal Information</span>
+                        <a href="/profile">Address</a>
+                        <span> Add Address</span>
                     </div>
                 </div>
             </div>
@@ -114,11 +116,11 @@
                             <h5 class=>My Account</h5>
                             <br>
                             <ul>
-                                <a href="/profile/personal-information" class="active">
+                                <a href="/profile/personal-information">
                                     <span class="fa fa-info-circle" style="margin-right: 10px;"></span> Personal
                                     Information
                                 </a>
-                                <a href="/profile/address">
+                                <a href="/profile/address" class="active">
                                     <span class="fa fa-address-card" style="margin-right: 10px;"></span> Address
                                 </a>
                                 <a href="/profile/orders">
@@ -131,29 +133,56 @@
                                     <span class="fa fa-key" style="margin-right: 10px;"></span> Change Password
                                 </a>
                             </ul>
-
-
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-9 col-md-9">
                     <div class="form-container">
-                        <h2>Update Personal Information</h2>
-                        <form action="/update-profile" class="checkout__form">
+                        <h2>Add Address</h2>
+                        <form action="/profile/address/new" method="POST" class="checkout__form">
                             <div class="checkout__form__input">
-                                <p>Name <span>*</span></p>
-                                <input type="text" id="name" name="name" placeholder="Name">
+                                <p>First Name <span>*</span></p>
+                                <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
                             </div>
                             <div class="checkout__form__input">
-                                <p>Email <span>*</span></p>
-                                <input type="text" id="email" name="email" placeholder="Email" readonly>
+                                <p>Last Name <span>*</span></p>
+                                <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
                             </div>
                             <div class="checkout__form__input">
                                 <p>Phone <span>*</span></p>
-                                <input type="number" id="phone" name="phone" placeholder="+918123456789">
+                                <input type="number" id="phone" name="phone" placeholder="Phone Number" required>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Email <span>*</span></p>
+                                <input type="email" id="email" name="email" placeholder="Email" required>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Address Line 1 <span>*</span></p>
+                                <input type="text" id="addressline1" name="addressline1" placeholder="Address Line 1"
+                                    required>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Address Line 2</p>
+                                <input type="text" id="addressline2" name="addressline2" placeholder="Address Line 2">
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>City <span>*</span></p>
+                                <input type="text" id="city" name="city" placeholder="City" required>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>State <span>*</span></p>
+                                <input type="text" id="state" name="state" placeholder="State" required>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Country <span>*</span></p>
+                                <input type="text" id="country" name="country" placeholder="Country" required>
+                            </div>
+                            <div class="checkout__form__input">
+                                <p>Pincode <span>*</span></p>
+                                <input type="number" id="pincode" name="pincode" placeholder="Pincode" required>
                             </div>
                             <div class="site-btn-container">
-                                <button type="submit" class="site-btn">Update</button>
+                                <button type="submit" class="site-btn">Add Address</button>
                             </div>
                         </form>
                     </div>
@@ -163,4 +192,4 @@
     </section>
     <!-- Contact Section End -->
 
-    <%- include('../partials/userFooter')-%>
+    <%- include('../../partials/userFooter')-%>
