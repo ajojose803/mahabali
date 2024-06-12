@@ -1,173 +1,248 @@
-<%-include('header') -%>
+<%- include('../partials/userHeader')-%>
+    <style>
+        .pro-qty {
+            display: flex;
+            align-items: center;
+        }
 
+        .pro-qty .qtybtn {
+            cursor: pointer;
+            font-size: 14px;
+            color: #666666;
+        }
 
-<!-- Breadcrumb Begin -->
-<div class="breadcrumb-option">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="breadcrumb__links">
-                    <a href="./index.html"><i class="fa fa-home"></i> Home</a>
-                    <span>Shopping cart</span>
+        .pro-qty input {
+            font-size: 14px;
+            color: #666666;
+            font-weight: 500;
+            border: 1px solid #ebebeb;
+            border-radius: 4px;
+            text-align: center;
+            padding: 8px;
+            margin: 0 8px;
+            width: 50px;
+        }
+    </style>
+
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="/"><i class="fa fa-home"></i> Home</a>
+                        <span>Shopping cart</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Breadcrumb End -->
+    <!-- Breadcrumb End -->
 
-<!-- Shop Cart Section Begin -->
-<section class="shop-cart spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="shop__cart__table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="cart__product__item">
-                                    <img src="img/shop-cart/cp-1.jpg" alt="">
-                                    <div class="cart__product__item__title">
-                                        <h6>Chain bucket bag</h6>
-                                        <div class="rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="cart__price">$ 150.0</td>
-                                <td class="cart__quantity">
-                                    <div class="pro-qty">
-                                        <input type="text" value="1">
-                                    </div>
-                                </td>
-                                <td class="cart__total">$ 300.0</td>
-                                <td class="cart__close"><span class="icon_close"></span></td>
-                            </tr>
-                            <tr>
-                                <td class="cart__product__item">
-                                    <img src="img/shop-cart/cp-2.jpg" alt="">
-                                    <div class="cart__product__item__title">
-                                        <h6>Zip-pockets pebbled tote briefcase</h6>
-                                        <div class="rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="cart__price">$ 170.0</td>
-                                <td class="cart__quantity">
-                                    <div class="pro-qty">
-                                        <input type="text" value="1">
-                                    </div>
-                                </td>
-                                <td class="cart__total">$ 170.0</td>
-                                <td class="cart__close"><span class="icon_close"></span></td>
-                            </tr>
-                            <tr>
-                                <td class="cart__product__item">
-                                    <img src="img/shop-cart/cp-3.jpg" alt="">
-                                    <div class="cart__product__item__title">
-                                        <h6>Black jean</h6>
-                                        <div class="rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="cart__price">$ 85.0</td>
-                                <td class="cart__quantity">
-                                    <div class="pro-qty">
-                                        <input type="text" value="1">
-                                    </div>
-                                </td>
-                                <td class="cart__total">$ 170.0</td>
-                                <td class="cart__close"><span class="icon_close"></span></td>
-                            </tr>
-                            <tr>
-                                <td class="cart__product__item">
-                                    <img src="img/shop-cart/cp-4.jpg" alt="">
-                                    <div class="cart__product__item__title">
-                                        <h6>Cotton Shirt</h6>
-                                        <div class="rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="cart__price">$ 55.0</td>
-                                <td class="cart__quantity">
-                                    <div class="pro-qty">
-                                        <input type="text" value="1">
-                                    </div>
-                                </td>
-                                <td class="cart__total">$ 110.0</td>
-                                <td class="cart__close"><span class="icon_close"></span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <!-- Shop Cart Section Begin -->
+    <section class="shop-cart spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="shop__cart__table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (cart && cart.length> 0) { %>
+                                    <% cart.forEach(function(item, index) { %>
+                                        <tr data-item-id="<%= item._id %>">
+                                            <td class="cart__product__item">
+                                                <% if (item.imageUrls && item.imageUrls.length> 0) { %>
+                                                    <img src="<%= item.imageUrls[0] %>" alt="<%= item.name %>">
+                                                    <% } else { %>
+                                                        <img src="/path/to/default-image.jpg" alt="<%= item.name %>">
+                                                        <% } %>
+                                                            <div class="cart__product__item__title">
+                                                                <h6>
+                                                                    <%= item.name %>
+                                                                </h6>
+                                                                <div class="rating">
+                                                                    <% for (let i=0; i < 5; i++) { %>
+                                                                        <i
+                                                                            class="fa fa-star<%= i < item.rating ? '' : '-o' %>"></i>
+                                                                        <% } %>
+                                                                </div>
+                                                            </div>
+                                            </td>
+                                            <td class="cart__price" id="price-<%= index %>">₹ <%= item.price %>
+                                            </td>
+                                            <td class="cart__quantity">
+                                                <div class="pro-qty">
+                                                    <span class="qtybtn"
+                                                        onclick="updateQuantity('<%= item._id %>', '<%= index %>' , 'decrement')">-</span>
+                                                    <input type="text" id="qty-<%= index %>"
+                                                        value="<%= item.quantity %>" class="quantity" readonly>
+                                                    <span class="qtybtn"
+                                                        onclick="updateQuantity('<%= item._id %>', '<%= index %>', 'increment')">+</span>
+                                                </div>
+                                            </td>
+                                            <td class="cart__total" id="total-<%= index %>">₹ <%= item.total %>
+                                            </td>
+                                            <td class="cart__close">
+                                                <a onclick="confirm('/cart/delete/<%= item._id %>')"
+                                                    class="btn btn-danger"
+                                                    style="color: white; border-radius: 10px;">x</a>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="5">Your cart is empty.</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            <div id="flashMessage" class="alert" style="display: none;">*</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <p>*The maximum quantity for all products is limited to 3</p>
+                    <br>
+                    <div class="cart__btn">
+                        <a href="/products">Continue Shopping</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 offset-lg-2">
+                    <div class="cart__total__procced">
+                        <h6>Cart total</h6>
+                        <ul>
+                            <li>Subtotal <span id="subtotal">₹ <%= cart.reduce((acc, item)=> acc + item.total, 0)
+                                        %></span></li>
+                            <li>Total <span id="total">₹ <%= cart.reduce((acc, item)=> acc + item.total, 0) %></span>
+                            </li>
+                        </ul>
+                        <a href="/checkout" class="primary-btn">Proceed to checkout</a>
+                    </div>
+                </div>
+                <!-- <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="cart__btn update__btn">
+                        <a href="#" onclick="updateCart()"><span class="icon_loading"></span> Update cart</a>
+                    </div>
+                </div> -->
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="discount__content">
+                        <h6>Discount codes</h6>
+                        <form action="#">
+                            
+                            <input type="text" placeholder="Enter your coupon code">
+                            <button type="submit" class="site-btn">Apply</button>
+                        </form>
+                    </div>
+                </div>
+              
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-6">
-                <div class="cart__btn">
-                    <a href="#">Continue Shopping</a>
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-6">
-                <div class="cart__btn update__btn">
-                    <a href="#"><span class="icon_loading"></span> Update cart</a>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="discount__content">
-                    <h6>Discount codes</h6>
-                    <form action="#">
-                        <input type="text" placeholder="Enter your coupon code">
-                        <button type="submit" class="site-btn">Apply</button>
-                    </form>
-                </div>
-            </div>
-            <div class="col-lg-4 offset-lg-2">
-                <div class="cart__total__procced">
-                    <h6>Cart total</h6>
-                    <ul>
-                        <li>Subtotal <span>$ 750.0</span></li>
-                        <li>Total <span>$ 750.0</span></li>
-                    </ul>
-                    <a href="#" class="primary-btn">Proceed to checkout</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- Shop Cart Section End -->
+    </section>
+    <!-- Shop Cart Section End -->
 
+    <script>
 
+        function updateQuantity(itemId, index, action) {
+            const qtyInput = document.getElementById(`qty-${index}`);
+            let quantity = parseInt(qtyInput.value);
 
+            if (action === 'decrement' && quantity > 1) {
+                quantity--;
+            } else if (action === 'increment' && quantity < 3) {
+                quantity++;
+            }
 
-<%-include('footer') -%>
+            qtyInput.value = quantity;
+            updateTotal(index);
+
+            // Send the updated quantity to the server
+            fetch(`/cart/update-cart/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity: quantity })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Quantity updated successfully');
+                    } else {
+                        console.error('Failed to update quantity');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateTotal(index) {
+            const qtyInput = document.getElementById(`qty-${index}`);
+            const priceElem = document.getElementById(`price-${index}`);
+            const totalElem = document.getElementById(`total-${index}`);
+
+            const price = parseFloat(priceElem.innerText.replace('₹ ', ''));
+            const quantity = parseInt(qtyInput.value);
+            const newTotal = price * quantity;
+
+            totalElem.innerText = `₹ ${newTotal.toFixed(2)}`;
+            updateCartTotal();
+        }
+
+        function updateCartTotal() {
+            let subtotal = 0;
+            const cartRows = document.querySelectorAll('.shop__cart__table tbody tr');
+
+            cartRows.forEach(row => {
+                const totalElem = row.querySelector('.cart__total');
+                const total = parseFloat(totalElem.innerText.replace('₹ ', ''));
+                subtotal += total;
+            });
+
+            document.getElementById('subtotal').innerText = `₹ ${subtotal.toFixed(2)}`;
+            document.getElementById('total').innerText = `₹ ${subtotal.toFixed(2)}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartRows = document.querySelectorAll('.shop__cart__table tbody tr');
+
+            cartRows.forEach((row, index) => {
+                const qtyInput = document.getElementById(`qty-${index}`);
+                qtyInput.addEventListener('change', () => updateTotal(index));
+                updateTotal(index);
+            });
+        });
+
+        function confirm(deleteUrl) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Are you sure you want to delete this item from your cart?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+                cancelButtonText: "Cancel",
+                dangerMode: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the delete URL if confirmed
+                    window.location.href = deleteUrl;
+                } else {
+                    console.log("User canceled the deletion.");
+                }
+            });
+        }
+    </script>
+
+    <%- include('../partials/userFooter')-%>
