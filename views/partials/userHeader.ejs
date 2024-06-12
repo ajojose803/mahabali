@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Ashion Template">
@@ -10,7 +11,8 @@
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="/userAssets/css/font-awesome.min.css" type="text/css">
@@ -21,6 +23,45 @@
     <link rel="stylesheet" href="/userAssets/css/owl.carousel.min.css" type="text/css">
     <link rel="stylesheet" href="/userAssets/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="/userAssets/css/style.css" type="text/css">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.css">
+
+    <style>
+        .dropdown-toggle::after {
+            display: inline-block;
+            margin-left: 5px;
+            /* Adjust as needed */
+            vertical-align: middle;
+            content: "\25BE";
+            /* Unicode character for a downward arrow */
+        }
+
+        .dropdown-menu {
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            font-size: 15px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            /* Change to your desired hover color */
+        }
+
+        .dropdown-divider {
+            margin: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+            /* Change to your desired color */
+        }
+    </style>
 </head>
 
 <body>
@@ -36,11 +77,11 @@
         <ul class="offcanvas__widget">
             <li><span class="icon_search search-switch"></span></li>
             <li><a href="#"><span class="icon_heart_alt"></span>
-                <div class="tip">2</div>
-            </a></li>
+                    <div class="tip">2</div>
+                </a></li>
             <li><a href="#"><span class="icon_bag_alt"></span>
-                <div class="tip">2</div>
-            </a></li>
+                    <div class="tip">2</div>
+                </a></li>
         </ul>
         <div class="offcanvas__logo">
             <a href="/"><img src="img/logo.png" alt=""></a>
@@ -49,21 +90,24 @@
         <div class="offcanvas__auth">
             <% if (user) { %>
                 <div class="dropdown">
-                    <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= user.username %></a>
+                    <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <%= user.username %>
+                    </a>
                     <div class="dropdown-menu" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="#">Orders</a>
-                        <a class="dropdown-item" href="#">Wishlist</a>
-                        <a class="dropdown-item" href="#">Cart</a>
-                        <a class="dropdown-item" href="#">Profile</a>
+                        <a class="dropdown-item" href="/orders">Orders</a>
+                        <a class="dropdown-item" href="/wishlist">Wishlist</a>
+                        <a class="dropdown-item" href="/cart">Cart</a>
+                        <a class="dropdown-item" href="/profile">Profile</a>
                         <a class="dropdown-item" href="/logout">Logout</a>
                         <div class="dropdown-divider"></div>
-                       
+
                     </div>
                 </div>
-            <% } else { %>
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
-            <% } %>
+                <% } else { %>
+                    <a href="/login">Login</a>
+                    <a href="/register">Register</a>
+                    <% } %>
         </div>
     </div>
     <!-- Offcanvas Menu End -->
@@ -81,9 +125,9 @@
                     <nav class="header__menu">
                         <ul>
                             <li class="active"><a href="/">Home</a></li>
+                            <li><a href="/products">All</a></li>
                             <li><a href="#">Posters</a></li>
-                            <li><a href="#">Merchandise</a></li>
-                            <li><a href="/shop">Coasters</a></li>
+                            <li><a href="#">Coasters</a></li>
                             <li><a href="#">Accessories</a></li>
                             <li><a href="/contact">Contact</a></li>
                         </ul>
@@ -94,29 +138,32 @@
                         <div class="header__right__auth">
                             <% if (user) { %>
                                 <div class="dropdown">
-                                    <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= user.username %></a>
+                                    <a class="dropdown-toggle" href="#" role="button" id="userDropdown"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <%= user.username %>
+                                    </a>
                                     <div class="dropdown-menu" aria-labelledby="userDropdown">
-                                        <a class="dropdown-item" href="#">Orders</a>
-                                        <a class="dropdown-item" href="#">Wishlist</a>
-                                        <a class="dropdown-item" href="#">Cart</a>
-                                        <a class="dropdown-item" href="#">Profile</a>
+                                        <a class="dropdown-item" href="/orders">Orders</a>
+                                        <a class="dropdown-item" href="/wishlist">Wishlist</a>
+                                        <a class="dropdown-item" href="/cart">Cart</a>
+                                        <a class="dropdown-item" href="/profile">Profile</a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="/logout">Logout</a>
                                     </div>
                                 </div>
-                            <% } else { %>
-                                <a href="/login">Login</a>
-                                <a href="/register">Register</a>
-                            <% } %>
+                                <% } else { %>
+                                    <a href="/login">Login</a>
+                                    <a href="/register">Register</a>
+                                    <% } %>
                         </div>
                         <ul class="header__right__widget">
                             <li><span class="icon_search search-switch"></span></li>
-                            <li><a href="#"><span class="icon_heart_alt"></span>
-                                <div class="tip">2</div>
-                            </a></li>
-                            <li><a href="#"><span class="icon_bag_alt"></span>
-                                <div class="tip">2</div>
-                            </a></li>
+                            <li><a href="/wishlist"><span class="icon_heart_alt"></span>
+                                    <div class="tip">2</div>
+                                </a></li>
+                            <li><a href="/cart"><span class="icon_bag_alt"></span>
+                                    <div class="tip">2</div>
+                                </a></li>
                         </ul>
                     </div>
                 </div>
