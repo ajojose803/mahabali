@@ -4,12 +4,12 @@ const User = require('../../model/userModel');
 const asyncHandler = require("../../middleware/asyncHandler");
 
 
-const adminPage = asyncHandler((req,res) => {
-    if(req.session.isAdAuth){
+const adminPage = asyncHandler((req, res) => {
+    if (req.session.isAdAuth) {
         res.redirect('/admin/dashboard')
     }
-    const errorMessages  = req.flash("error");
-    res.render('admin/adminLogin',{errorMessages})   
+    const errorMessages = req.flash("error");
+    res.render('admin/adminLogin', { errorMessages })
 })
 
 const adminLogin = asyncHandler(async (req, res) => {
@@ -37,11 +37,19 @@ const adminLogin = asyncHandler(async (req, res) => {
 })
 
 
-const adminDashboard = asyncHandler(async(req,res)=>{
+const adminDashboard = asyncHandler(async (req, res) => {
+    if (!req.session.isAdAuth) {
+        req.flash('error', 'Please log in to access the dashboard');
+        return res.redirect('/admin/login');
+    }
     res.render('admin/adminHome');
-})
-const adminLogout = asyncHandler(async(req,res)=>{
-    req.session.destroy();
+});
+
+const adminLogout = asyncHandler(async (req, res) => {
+    req.session.isAdAuth = false;
+    req.session.admin = null;
+    res.clearCookie('connect.sid');
+    res.redirect('/admin/login');
 })
 
 

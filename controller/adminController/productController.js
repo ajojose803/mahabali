@@ -28,6 +28,8 @@ const loadProduct = asyncHandler(async (req, res) => {
   const prev = page > 1 ? page - 1 : null;
   const next = page < totalPages ? page + 1 : null;
   const category = await Category.find({});
+  category.forEach(category => console.log(category.name));
+
   const msg = req.query.msg || "";
 
   res.render("admin/adminProduct", {
@@ -164,8 +166,97 @@ const addNewProduct = asyncHandler(async (req, res) => {
   res.redirect("/admin/products");
 });
 
+const editProduct = asyncHandler(async (req, res) => {
+  // Extract product ID from the request
+  const productId = req.params.id;
+
+  // Check if files were uploaded
+  const files = req.files || [];
+  const uploadedImages = await Promise.all(files.map(async file => {
+    const resizedImageBuffer = await sharp(file.buffer)
+      .resize({ width: 500, height: 500, fit: "contain" })
+      .toBuffer();
+    const imageName = Date.now() + "-" + file.originalname;
+    await uploadFile(resizedImageBuffer, imageName, file.mimetype);
+    return imageName;
+  }));
+
+  // Extract product data from request body
+  const { name, description, aboutProduct, price, category, discount, color, material, type, dimensions } = req.body;
+
+  // Find the product by ID
+  let product = await Product.findById(productId).populate('category');
+  if (!product) {
+    return res.status(404).send("Product not found.");
+  }
+
+  // Update the product fields
+  product.name = name || product.name;
+  product.description = description || product.description;
+  product.aboutProduct = aboutProduct || product.aboutProduct;
+  product.price = price || product.price;
+  product.category = category || product.category._id;
+  product.discount = discount || product.discount;
+  product.color = color || product.color;
+  if (uploadedImages.length > 0) {
+    product.image = uploadedImages;
+  }
+
+  // Find the selected category
+  const selectedCategory = await Category.findById(category);
+
+  // Parse stock based on category
+  let parsedStock;
+  switch (selectedCategory.name) {
+    case 'Coasters':
+    case 'Accessories':
+    case 'Posters':
+      parsedStock = parseInt(req.body.stock, 10);
+      if (isNaN(parsedStock)) {
+        return res.status(400).send("Invalid stock value.");
+      }
+      product.stock = parsedStock;
+      break;
+    case 'Apparels':
+      parsedStock = {};
+      for (const [size, quantity] of Object.entries(req.body.sizes)) {
+        parsedStock[size] = parseInt(quantity, 10);
+        if (isNaN(parsedStock[size])) {
+          return res.status(400).send("Invalid stock value.");
+        }
+      }
+      product.sizes = parsedStock;
+      break;
+    default:
+      return res.status(400).send("Invalid category type.");
+  }
+
+  // Update other specific fields based on category
+  switch (selectedCategory.name) {
+    case 'Coasters':
+      product.material = material || product.material;
+      break;
+    case 'Accessories':
+      product.type = type || product.type;
+      break;
+    case 'Posters':
+      product.dimensions = dimensions || product.dimensions;
+      break;
+    case 'Apparels':
+      product.material = material || product.material;
+      break;
+    default:
+      return res.status(400).send("Invalid category type.");
+  }
+
+  // Save the updated product
+  await product.save();
+  res.redirect("/admin/products");
+});
+
 module.exports = {
   loadProduct,
   loadAddProduct,
   addNewProduct,
+  editProduct,
 };

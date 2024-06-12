@@ -20,30 +20,38 @@ const loadCategory = asyncHandler(async (req, res) => {
 
 //post
 const addNewCategory = asyncHandler(async (req, res) => {
-
     const { name, description, discount } = req.body;
 
-    if (name) {
-        // Simulate saving to the database
-        console.log('Category to save:', name);
+    // Validate required fields
+    if (!name || !description) {
+        req.flash("error", "Please fill in all required fields");
+        return res.redirect("/admin/category");
     }
-    const existingCategory = await Category.findOne({ name });
-    //if the category already exists??
-    if (existingCategory) {
-        req.flash("error", "Category name already exists")
-        return res.redirect("/add-category")
-    } else {
-        //if the required fields are blank??
-        if (!name || !description || !discount) {
-            req.flash("error", "Please fill in all required fields");
-            return res.redirect("/admin/category");
 
+    try {
+        // Normalize the category name to lowercase
+        const normalizedCategoryName = name.toLowerCase();
+
+        // Create the new category with the normalized name
+        const newCategory = new Category({
+            name: normalizedCategoryName,
+            description,
+            discount
+        });
+
+        await newCategory.save();
+        req.flash('success', 'Category Added Successfully!');
+        res.redirect('/admin/category');
+    } catch (error) {
+        if (error.code === 11000) { // Duplicate key error
+            req.flash("error", "Category name already exists");
+        } else {
+            req.flash("error", "An error occurred while adding the category");
         }
+        res.redirect("/admin/category");
     }
-    await Category.create({ name: name, description: description, discount: discount });
-    req.flash('success', 'Category Added Successfully!');
-    res.redirect('/admin/category');
-})
+});
+
 
 const editCategory = asyncHandler(async (req, res) => {
 
