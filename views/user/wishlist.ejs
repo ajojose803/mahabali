@@ -1,0 +1,92 @@
+<%- include('../partials/userHeader')-%>
+<style>
+    .wishlist-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .wishlist-item img {
+        max-width: 100px;
+        margin-right: 20px;
+    }
+</style>
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <span>Wishlist</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Wishlist Section Begin -->
+<section class="wishlist spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="wishlist__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (wishlist && wishlist.length > 0) { %>
+                                <% wishlist.forEach(function(item, index) { %>
+                                    <tr data-item-id="<%= item._id %>">
+                                        <td class="wishlist-item">
+                                            <% if (item.imageUrls && item.imageUrls.length > 0) { %>
+                                                <img src="<%= item.imageUrls[0] %>" alt="<%= item.name %>">
+                                            <% } else { %>
+                                                <img src="/path/to/default-image.jpg" alt="<%= item.name %>">
+                                            <% } %>
+                                            <div class="wishlist-item__title">
+                                                <h6><%= item.name %></h6>
+                                                <div class="rating">
+                                                    <% for (let i = 0; i < 5; i++) { %>
+                                                        <i class="fa fa-star<%= i < item.rating ? '' : '-o' %>"></i>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="wishlist__price">₹ <%= item.price %></td>
+                                        <td class="wishlist__close">
+                                            <form action="/remove-from-wishlist/<%= item._id %>" method="POST">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit" class="icon_close"></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3">Your wishlist is empty.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="wishlist__btn">
+                    <a href="/">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Wishlist Section End -->
+
+<%- include('../partials/userFooter')-%>

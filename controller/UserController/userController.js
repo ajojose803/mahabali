@@ -1,14 +1,59 @@
 const User = require('../../model/userModel');
+const Category = require('../../model/categoryModel');
+const Product = require('../../model/productModel');
 const asyncHandler = require('../../middleware/asyncHandler');
+const Cart = require('../../model/cartModel')
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const randomstring = require('randomstring');
 const otpCollection = require('../../model/otpModel');
+const mongoose = require('mongoose')
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const loadHome = asyncHandler(async (req, res) => {
-    res.render('user/home',{user:req.session.user});
+    const id = req.session.userId;
+    const currentPage = 'home';
+    const categories = await Category.find({ status: true }).limit(3);
+    const searchQuery = req.query.search;
+    let products;
+
+    if (searchQuery) {
+        const searchRegex = new RegExp(searchQuery, 'i');
+        let searchCriteria = { description: searchRegex, status: true };
+        products = await Product.find(searchCriteria).exec();
+    } else {
+        products = await Product.find({ status: true }).exec();
+    }
+
+    if (req.user) {
+        req.session.isAuth = true;
+        req.session.userId = req.user._id;
+    }
+
+    let itemCount = 0;
+    if (id) {
+        const result = await Cart.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(id) } },
+            { $unwind: '$item' },
+            { $group: { _id: null, itemCount: { $sum: 1 } } },
+        ]);
+
+        if (result.length > 0) {
+            itemCount = result[0].itemCount;
+            req.session.cartCount = itemCount;
+        }
+    }
+
+    res.render('user/home', {
+        user:req.session.user,
+        products,
+        categories,
+        itemCount,
+        currentPage,
+        searchQuery,
+        scrollToResults: searchQuery && products.length > 0,
+    });
 });
 
 const register = asyncHandler(async (req, res) => {
@@ -96,7 +141,9 @@ const createUser = asyncHandler(async (req, res) => {
     );
 
     await sendEmail(email, otp);
-    res.render('user/otp', { email: email });
+    const succesMessage = req.flash('success');
+    const errorMessage = req.flash('error');
+    res.render('user/otp', { email: email, errorMessage });
 });
 
 const showOtp = async (req, res) => {
@@ -119,17 +166,17 @@ const otpVerification = asyncHandler(async (req, res) => {
 
     if (!otpRecord) {
         req.flash("error", "User does not exist or OTP expired");
-        return res.status(400).send("User does not exist or OTP expired");
+        return res.redirect("/otp");
     }
 
     if (otpRecord.otp !== userOtp) {
         req.flash("error", "Invalid OTP");
-        return res.status(400).send("Invalid OTP");
+        return res.redirect("/otp");
     }
 
     if (otpRecord.expiry.getTime() < Date.now()) {
         req.flash("error", "OTP expired");
-        return res.status(400).send("OTP expired");
+        return res.redirect("/otp");
     }
 
     const newUser = new User(req.session.tempUser);
@@ -138,6 +185,9 @@ const otpVerification = asyncHandler(async (req, res) => {
     await otpCollection.deleteOne({ email });
 
     req.flash("success", "OTP verification successful");
+    req.session.user = newUser;
+    req.session.userId = newUser._id;
+    req.session.isAuth = true;
     return res.redirect('/');
 });
 
@@ -145,7 +195,7 @@ const loadLogIn = asyncHandler(async (req, res) => {
     const errorMessages = req.flash('error');
     const successMessage = req.flash('success');
     const user = req.session.user;
-    res.render('user/login', { errorMessages, successMessage,user });
+    res.render('user/login', { errorMessages, successMessage, user });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -159,13 +209,13 @@ const loginUser = asyncHandler(async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            req.flash('error', 'Invalid Credentials');
+            req.flash('error', 'Email');
             return res.redirect('/login');
         }
 
         const checkPassword = await bcrypt.compare(password, user.password);
         if (!checkPassword) {
-            req.flash('error', 'Invalid Credentials');
+            req.flash('error', 'Invalid password');
             return res.redirect('/login');
         }
 
@@ -176,7 +226,7 @@ const loginUser = asyncHandler(async (req, res) => {
             console.log("User authenticated successfully. Redirecting to home page...");
             return res.redirect('/');
         } else {
-            req.flash('error', 'This user is blocked.');
+            req.flash('error', 'The website is temporarily down, Contact Admin');
             return res.redirect('/login');
         }
     } catch (error) {
@@ -198,9 +248,13 @@ const forgotPassword = asyncHandler(async (req, res) => {
     }
 });
 
-const logout = asyncHandler(async(req,res) => {
+const logout = asyncHandler(async (req, res) => {
     req.session.isAuth = false;
-})
+    req.session.user = null;
+    req.session.userId = null;
+    req.flash('success', 'Logged out successfully.');
+    res.redirect('/login');
+});
 
 const googleAuth = passport.authenticate('google', { scope: ['email', 'profile'] });
 

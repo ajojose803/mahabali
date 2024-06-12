@@ -1,0 +1,72 @@
+<%- include('../partials/userHeader')-%>
+
+<!-- My Account Section Begin -->
+<section class="bg-gray-100 py-8">
+    <div class="container mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="col-span-1">
+                <!-- Sidebar -->
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <h3 class="text-lg font-semibold mb-4">My Account</h3>
+                    <div class="space-y-2">
+                        <a href="/my-account/profile" class="block text-blue-500 hover:text-blue-700">Profile</a>
+                        <a href="/my-account/address" class="block text-blue-500 hover:text-blue-700">Address</a>
+                        <a href="/my-account/orders" class="block text-blue-500 hover:text-blue-700">Orders</a>
+                        <a href="/my-account/edit-profile" class="block text-blue-500 hover:text-blue-700">Edit Profile</a>
+                        <a href="/my-account/cancel-orders" class="block text-blue-500 hover:text-blue-700">Cancel Orders</a>
+                        <a href="/my-account/change-password" class="block text-blue-500 hover:text-blue-700">Change Password</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-3">
+                <!-- Content -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <!-- Profile -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2">Profile Details</h3>
+                        <ul class="list-disc pl-4">
+                            <li>Name: <%= user.name %></li>
+                            <li>Email: <%= user.email %></li>
+                            <li>Phone: <%= user.phone %></li>
+                            <!-- Add more profile details as needed -->
+                        </ul>
+                    </div>
+                    <!-- Address -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2">Address</h3>
+                        <% if (user.address) { %>
+                            <p><%= user.address %></p>
+                        <% } else { %>
+                            <p>No address added yet.</p>
+                        <% } %>
+                    </div>
+                    <!-- Orders -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2">Orders</h3>
+                        <!-- Display user's orders here -->
+                    </div>
+                    <!-- Edit Profile -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2">Edit Profile</h3>
+                        <!-- Form to edit profile details -->
+                        <!-- Include form elements for editing profile details -->
+                    </div>
+                    <!-- Cancel Orders -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2">Cancel Orders</h3>
+                        <!-- Display user's orders with an option to cancel -->
+                    </div>
+                    <!-- Change Password -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2">Change Password</h3>
+                        <!-- Form to change password -->
+                        <!-- Include form elements for changing password -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- My Account Section End -->
+
+<%- include('../partials/userFooter')-%>

@@ -1,0 +1,106 @@
+<%- include('../partials/userHeader')-%>
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <span>Products</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Shop Section Begin -->
+<section class="shop spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3">
+                <div class="shop__sidebar">
+                    <!-- Filter Sidebar -->
+                    <form id="filter-form" method="GET" action="/products">
+                        <div class="sidebar__filter">
+                            <div class="section-title">
+                                <h4>Sort By</h4>
+                            </div>
+                            <select name="sort" class="form-control">
+                                <option value="popularity">Popularity</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                                <option value="rating">Average Ratings</option>
+                                <option value="new-arrivals">New Arrivals</option>
+                                <option value="name-asc">Name: A to Z</option>
+                                <option value="name-desc">Name: Z to A</option>
+                            </select>
+                        </div>
+                        <div class="sidebar__filter">
+                            <div class="section-title">
+                                <h4>Show Out of Stock</h4>
+                            </div>
+                            <label>
+                                <input type="checkbox" name="showOutOfStock" value="true" <%= showOutOfStock ? 'checked' : '' %>>
+                                Show Out of Stock Products
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-9">
+                <div class="row">
+                   <% products.forEach(product => { %>
+    <div class="col-lg-4 col-md-6">
+        <div class="product__item">
+            <div class="product__item__pic set-bg" data-setbg="<%= product.imageUrls[0] %>">
+                <% if (product.isNew) { %>
+                    <div class="label new">New</div>
+                <% } else if (product.discount > 0) { %>
+                    <div class="label">Sale</div>
+                <% } else if (product.stock === 0 || (product.productType === 'Apparels' && ![...product.sizes.values()].some(qty => qty > 0))) { %>
+                    <div class="label stockout stockblue">Out Of Stock</div>
+                <% } %>
+                <ul class="product__hover">
+                    <li><a href="<%= product.imageUrls[0] %>" class="image-popup"><span class="arrow_expand"></span></a></li>
+                    <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                    <li><a href="#"><span class="icon_bag_alt"></span></a></li>
+                </ul>
+            </div>
+            <div class="product__item__text">
+                <!-- Modify the line below to add an anchor tag around the product name -->
+                <h6><a href="/product/<%= product._id %>"><%= product.name %></a></h6>
+                <div class="rating">
+                    <% for (let i = 0; i < 5; i++) { %>
+                        <i class="fa fa-star <%= i < product.rating ? '' : 'star-empty' %>"></i>
+                    <% } %>
+                </div>
+                <div class="product__price">
+                    ₹ <%= product.price %>
+                    <% if (product.oldPrice) { %>
+                        <span>₹ <%= product.oldPrice %></span>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+<% }) %>
+
+                    <div class="col-lg-12 text-center">
+                        <div class="pagination__option">
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a href="?page=<%= i %>&limit=<%= limit %>&sort=<%= sort %>&showOutOfStock=<%= showOutOfStock %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                            <% } %>
+                            <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&sort=<%= sort %>&showOutOfStock=<%= showOutOfStock %>"><i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Shop Section End -->
+
+<%- include('../partials/userFooter')-%>

@@ -1,0 +1,205 @@
+<%- include('../partials/userHeader')-%>
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="/"><i class="fa fa-home"></i> Home</a>
+                        <a href="/products">Products</a>
+                        <span>
+                            <%= product.name %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Product Details Section Begin -->
+    <section class="product-details spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="product__details__pic">
+                        <div class="product__details__pic__left product__thumb nice-scroll">
+                            <% product.imageUrls.forEach(function(imageUrl, index) { %>
+                                <a class="pt <%= index === 0 ? 'active' : '' %>" href="#product-<%= index + 1 %>">
+                                    <img class="zoom-img" src="<%= imageUrl %>" data-zoom-image="<%= imageUrl %>" alt="">
+
+                                </a>
+                                <% }); %>
+                        </div>
+                        <div class="product__details__slider__content">
+                            <div class="product__details__pic__slider owl-carousel">
+                                <% product.imageUrls.forEach(function(imageUrl, index) { %>
+                                    <img data-hash="product-<%= index + 1 %>" class="product__big__img"
+                                        src="<%= imageUrl %>" alt="">
+                                    <% }); %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="product__details__text">
+                        <h3>
+                            <%= product.name %> 
+                            <!-- <span>Brand:Mahabali <%= product.brand %></span> -->
+                        </h3>
+                        <div class="rating">
+                            <% for (let i=0; i < 5; i++) { %>
+                                <i class="fa fa-star<%= i < product.rating ? '' : '-o' %>"></i>
+                                <% } %>
+                                    <span>( <%= product.reviews && product.reviews.length ? product.reviews.length : 0
+                                            %> reviews )</span>
+                        </div>
+                        <div class="product__details__price">₹ <%= product.price %> <span>₹ <%= product.originalPrice %>
+                                        </span></div>
+                        <p>
+                            <%= product.description %>
+                        </p>
+                        <div class="product__details__button">
+                            <div class="quantity">
+                                <span>Quantity:</span>
+                                <div class="pro-qty">
+                                    <input type="number" name="quantity" value="1" min="1"  max="3" required >
+                                </div>
+                            </div>
+                            <form action="/add-to-cart/<%= product._id %>" method="POST">
+                                <!-- <input type="hidden" name="productId" value="<%= product._id %>"> -->
+                                <% if (product.category==='Apparels' ) { %>
+                                    <label for="size">Size:</label>
+                                    <select name="size" required>
+                                        <% product.sizes.forEach(size=> { %>
+                                            <option value="<%= size %>">
+                                                <%= size %>
+                                            </option>
+                                            <% }); %>
+                                    </select>
+                                    <% } %>
+                                        <button type="submit" class="cart-btn"><span class="icon_bag_alt"></span> Add to
+                                            cart</button>
+                            </form>
+                            <ul>
+                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
+                            </ul>
+                        </div>
+                        <div class="product__details__widget">
+                            <ul>
+                                <li>
+                                    <span>Availability:</span>
+                                    <div class="stock__checkbox">
+                                        <label for="stockin">
+                                            In Stock
+                                            <input type="checkbox" id="stockin" checked>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </li>
+                                <span>Promotions:</span>
+                                <p>Free shipping</p>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="product__details__tab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">Description</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">Specification</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">Reviews ( <%=
+                                        product.reviews && product.reviews.length ? product.reviews.length : 0 %> )</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                                <h6>Description</h6>
+                                <p>
+                                    <%= product.description %>
+                                </p>
+                            </div>
+                            <div class="tab-pane" id="tabs-2" role="tabpanel">
+                                <h6>Specification</h6>
+                                <p>
+                                    <%= product.specification %>
+                                </p>
+                            </div>
+                            <div class="tab-pane" id="tabs-3" role="tabpanel">
+                                <h6>Reviews ( <%= product.reviews && product.reviews.length ? product.reviews.length : 0
+                                        %> )</h6>
+                                <% if (product.reviews && product.reviews.length) { %>
+                                    <% product.reviews.forEach(function(review) { %>
+                                        <p>
+                                            <%= review.text %>
+                                        </p>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <p>No reviews yet.</p>
+                                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Related Products Section Begin -->
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="related__title">
+                        <h5>RELATED PRODUCTS</h5>
+                    </div>
+                </div>
+                <% relatedProducts.forEach(function(relatedProduct) { %>
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="product__item">
+                            <div class="product__item__pic set-bg" data-setbg="<%= relatedProduct.imageUrls[0] %>">
+                                <% if (relatedProduct.isNew) { %>
+                                    <div class="label new">New</div>
+                                    <% } %>
+                                        <ul class="product__hover">
+                                            <li><a href="<%= relatedProduct.imageUrls[0] %>" class="image-popup"><span
+                                                        class="arrow_expand"></span></a></li>
+                                            <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                            <li><a href="#"><span class="icon_bag_alt"></span></a></li>
+                                        </ul>
+                            </div>
+                            <div class="product__item__text">
+                                <h6><a href="/product/<%= relatedProduct._id %>">
+                                        <%= relatedProduct.name %>
+                                    </a></h6>
+                                <div class="rating">
+                                    <% for (let i=0; i < 5; i++) { %>
+                                        <i class="fa fa-star<%= i < relatedProduct.rating ? '' : '-o' %>"></i>
+                                        <% } %>
+                                </div>
+                                <div class="product__price">₹ <%= relatedProduct.price %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+            <!-- Related Products Section End -->
+        </div>
+    </section>
+    <!-- Product Details Section End -->
+    <script>
+        $(document).ready(function() {
+            // Initialize Elevate Zoom
+            $('.zoom-img').elevateZoom({
+                zoomType: "inner",
+                cursor: "crosshair",
+                zoomWindowFadeIn: 500,
+                zoomWindowFadeOut: 750
+            });
+        });
+    </script>
+
+    <%- include('../partials/userFooter')-%>

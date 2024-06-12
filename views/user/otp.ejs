@@ -84,9 +84,10 @@
     <div class="position-relative">
       <div class="card p-2 text-center">
         <h6>Please enter the one-time password <br> to verify your account</h6>
-        <div> <span>A code has been sent to</span> <small>
-            <%= email %>
-          </small> </div>
+        <div>
+          <span>A code has been sent to</span>
+          <small><%= email %></small>
+        </div>
         <form action="/verify-otp" method="post" class="otp-form">
           <input type="hidden" name="email" value="<%= email %>">
           <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
@@ -95,6 +96,11 @@
             <input class="m-2 text-center form-control rounded" type="number" id="third" name="digit3" maxlength="1" />
             <input class="m-2 text-center form-control rounded" type="number" id="fourth" name="digit4" maxlength="1" />
           </div>
+          <% if (errorMessage.length>0) { %>
+          <div class="alert alert-danger mt-3" role="alert">
+            <%= errorMessage %>
+          </div>
+          <% } %>
           <div class="mt-4">
             <button type="submit" class="btn btn-danger px-4 validate">Verify-OTP</button>
           </div>
@@ -102,6 +108,7 @@
       </div>
     </div>
   </div>
+  
 
   <!-- MDB -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>

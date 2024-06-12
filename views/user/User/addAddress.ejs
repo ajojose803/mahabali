@@ -1,0 +1,83 @@
+<%- include('../../partials/userHeader')-%>
+
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                        <span>Add Address</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Add Address Section Begin -->
+    <section class="add-address spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h5>Add New Address</h5>
+                    <br>
+                    <form action="/profile/address/new" method="POST" class="checkout__form">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="checkout__form__input">
+                                    <p>First Name <span>*</span></p>
+                                    <input type="text" name="firstName" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="checkout__form__input">
+                                    <p>Last Name <span>*</span></p>
+                                    <input type="text" name="lastName" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="checkout__form__input">
+                                    <p>Country <span>*</span></p>
+                                    <input type="text" name=" country" required>
+                                </div>
+                                <div class="checkout__form__input">
+                                    <p>Address <span>*</span></p>
+                                    <input type="text" placeholder="Street Address" name=" addressline1" required>
+                                    <input type="text" placeholder="Apartment. suite, unit etc" name=" addressline1">
+                                </div>
+                                <div class="checkout__form__input">
+                                    <p>Town/City <span>*</span></p>
+                                    <input type="text" name="city" required>
+                                </div>
+                                <div class="checkout__form__input">
+                                    <p>State <span>*</span></p>
+                                    <input type="text" name="state" required>
+                                </div>
+                                <div class="checkout__form__input">
+                                    <p>Postcode/Zip <span>*</span></p>
+                                    <input type="Number" name="pincode" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="checkout__form__input">
+                                    <p>Phone <span>*</span></p>
+                                    <input type="text" name="phone" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="checkout__form__input">
+                                    <p>Email <span>*</span></p>
+                                    <input type="text" name="email" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="site-btn">Add Address</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Add Address Section End -->
+
+    <%- include('../../partials/userFooter')-%>
