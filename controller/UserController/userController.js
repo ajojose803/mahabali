@@ -2,13 +2,12 @@ const User = require('../../model/userModel');
 const Category = require('../../model/categoryModel');
 const Product = require('../../model/productModel');
 const asyncHandler = require('../../middleware/asyncHandler');
-const Cart = require('../../model/cartModel')
+const Cart = require('../../model/cartModel');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const randomstring = require('randomstring');
-const otpCollection = require('../../model/otpModel');
-const mongoose = require('mongoose')
 const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const loadHome = asyncHandler(async (req, res) => {
@@ -46,7 +45,7 @@ const loadHome = asyncHandler(async (req, res) => {
     }
 
     res.render('user/home', {
-        user:req.session.user,
+        user: req.session.user,
         products,
         categories,
         itemCount,
@@ -132,57 +131,64 @@ const createUser = asyncHandler(async (req, res) => {
     };
 
     const otp = generateOtp();
-    const expiryTime = Date.now() + 2 * 60 * 1000;
+    const expiryTime = Date.now() + 2 * 60 * 1000; // 120 seconds from now
 
-    await otpCollection.updateOne(
-        { email: email },
-        { email, otp, expiry: new Date(expiryTime) },
-        { upsert: true }
-    );
+    req.session.otp = {
+        value: otp,
+        expiry: expiryTime
+    };
 
     await sendEmail(email, otp);
-    const succesMessage = req.flash('success');
-    const errorMessage = req.flash('error');
-    res.render('user/otp', { email: email, errorMessage });
+    req.flash('success', 'OTP sent to your email');
+    res.redirect('/otp');
 });
 
 const showOtp = async (req, res) => {
     try {
-        const otp = await otpCollection.findOne({ email: req.session.tempUser.email });
-        res.render('user/otp', {
-            expressFlash: {
-                otpError: req.flash('otpError')
-            }, otp: otp,
-        });
+        const email = req.session.tempUser?.email;
+        if (!email) {
+            req.flash('error', 'Session expired. Please try again.');
+            return res.redirect('/register');
+        }
+
+        const errorMessage = req.flash('error');
+        res.render('user/otp', { email, errorMessage });
     } catch (error) {
         console.log(error.message);
+        res.redirect('/register');
     }
 };
 
 const otpVerification = asyncHandler(async (req, res) => {
-    const { email, digit1, digit2, digit3, digit4 } = req.body;
-    const userOtp = parseInt(digit1 + digit2 + digit3 + digit4);
-    const otpRecord = await otpCollection.findOne({ email });
+    const { digit1, digit2, digit3, digit4 } = req.body;
+    const userOtp = (digit1 + digit2 + digit3 + digit4).padStart(4, '0'); // Ensure leading zeros are included
 
-    if (!otpRecord) {
-        req.flash("error", "User does not exist or OTP expired");
-        return res.redirect("/otp");
+    console.log('User entered OTP:', userOtp);
+    
+    const { otp, tempUser } = req.session;
+    console.log(" otp codeeeee",otp)
+
+    if (!otp || !tempUser) {
+        req.flash("error", "Session expired. Please try again.");
+        return res.redirect("/register");
     }
 
-    if (otpRecord.otp !== userOtp) {
+    if (otp.value !== userOtp) {
         req.flash("error", "Invalid OTP");
         return res.redirect("/otp");
     }
 
-    if (otpRecord.expiry.getTime() < Date.now()) {
+    if (otp.expiry < Date.now()) {
         req.flash("error", "OTP expired");
         return res.redirect("/otp");
     }
 
-    const newUser = new User(req.session.tempUser);
+    const newUser = new User(tempUser);
     await newUser.save();
 
-    await otpCollection.deleteOne({ email });
+    // Clear session data
+    req.session.tempUser = null;
+    req.session.otp = null;
 
     req.flash("success", "OTP verification successful");
     req.session.user = newUser;
@@ -190,6 +196,29 @@ const otpVerification = asyncHandler(async (req, res) => {
     req.session.isAuth = true;
     return res.redirect('/');
 });
+
+const resendOtp = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    const otp = generateOtp();
+    req.session.otp = {
+        code: otp,
+        expiry: Date.now() + 120000  // 120 seconds
+    };
+
+    try {
+        await sendEmail(email, otp);
+        res.json({ success: true, message: 'OTP resent successfully' });
+    } catch (error) {
+        console.log("Error in sending mail:", error);
+        res.status(500).json({ success: false, message: 'Failed to resend OTP' });
+    }
+});
+
 
 const loadLogIn = asyncHandler(async (req, res) => {
     const errorMessages = req.flash('error');
@@ -278,6 +307,7 @@ module.exports = {
     authFailure,
     showOtp,
     otpVerification,
+    resendOtp,
     loadLogIn,
     logout
 };

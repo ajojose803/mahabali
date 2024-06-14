@@ -23,10 +23,11 @@ userRouter.route('/register')
 
 userRouter.route('/otp').get(userController.showOtp)
 userRouter.route('/verify-otp').post(userController.otpVerification)
+userRouter.route('/resend-otp').post(userController.resendOtp)
 
 
-userRouter.route('/login')
-.get(userController.loadLogIn)
+userRouter.route('/login').get(userController.loadLogIn)
+userRouter.route('/logout').get(userController.logout)
 
 
 
@@ -60,6 +61,8 @@ userRouter.route('/cart/update-cart/:id').put(auth.userAuth,cartController.updat
 
 //checkout
 userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
+userRouter.route('/checkout/place-order').post(auth.userAuth,checkout.order);
+userRouter.route('/checkout/order-status').post(auth.userAuth,checkout.getOrderStatus);
 
 //profile.route()
 userRouter.route('/profile').get(auth.userAuth,userProfile.LoadProfile)
@@ -73,6 +76,7 @@ userRouter.route('/profile/address/:id/edit')
 .get(auth.userAuth,userProfile.LoadEditAddress)
 .post(auth.userAuth,userProfile.editaddress)
 userRouter.route('/profile/address/:id/delete').get(auth.userAuth,userProfile.deleteAddress)
+userRouter.route('/profile/address/:id/default').get(auth.userAuth, userProfile.setDefaultAddress);
 
 
 

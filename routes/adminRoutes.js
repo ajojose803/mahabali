@@ -29,7 +29,7 @@ adminRouter.route('/update-category').post(categoryController.updateCategory);
 
 // Products
 adminRouter.route('/products').get(auth.isAdAuth,productController.loadProduct);
-adminRouter.route('/add-product').get(productController.loadAddProduct);
+adminRouter.route('/add-product').get(auth.isAdAuth,productController.loadAddProduct);
 adminRouter.route('/add-product').post(upload.array ('image', 5),productController.addNewProduct);
 adminRouter.route('/edit-product/:id').post(upload.array ('image', 5),productController.editProduct);
 
