@@ -29,12 +29,20 @@ const addNewCategory = asyncHandler(async (req, res) => {
     }
 
     try {
-        // Normalize the category name to lowercase
+        // Create the normalized category name
         const normalizedCategoryName = name.toLowerCase();
 
-        // Create the new category with the normalized name
+        // Check if a category with the same normalized name already exists
+        const existingCategory = await Category.findOne({ normalized_name: normalizedCategoryName });
+        if (existingCategory) {
+            req.flash("error", "Category name already exists");
+            return res.redirect("/admin/category");
+        }
+
+        // Create the new category with the desired casing and normalized name
         const newCategory = new Category({
-            name: normalizedCategoryName,
+            name,  // Store the desired casing
+            normalized_name: normalizedCategoryName,  // Store the normalized name
             description,
             discount
         });
@@ -53,9 +61,7 @@ const addNewCategory = asyncHandler(async (req, res) => {
 });
 
 
-const editCategory = asyncHandler(async (req, res) => {
 
-})
 
 
 const updateCategory = asyncHandler(async (req, res) => {
@@ -110,7 +116,6 @@ const listingStatusCategory = asyncHandler(async (req, res) => {
 
 module.exports = {
     loadCategory,
-    //loadAddCategory,
     addNewCategory,
     updateCategory,
     listingStatusCategory,

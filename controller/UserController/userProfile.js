@@ -34,20 +34,20 @@ const showaddress = async (req, res) => {
         const currentPage = 'profile';
         const userId = req.session.userId;
         
-        const user = await User.findOne({ userId });
-        console.log("User:", user);
+
+        const user = await User.findOne({ _id: userId });
+   
 
         const categories = await Category.find({ status: true }).limit(3);
         
         const addresses = await Address.findOne({ userId: userId });
-        console.log("Addresses:", addresses); // Add this line to log addresses
-
+        
         req.session.checkoutSave = false;
         const itemCount = req.session.cartCount;
         
         res.render('user/address', {
             itemCount, 
-            user, 
+           user,
             addresses, 
             categories, 
             currentPage, 
@@ -68,7 +68,7 @@ const LoadAddAddress = async (req, res) => {
         const id = req.session.userId;
         const user = await User.findOne({ _id: id });
         const itemCount = req.session.cartCount;
-        res.render('user/Profile/addAddress', { title: "Urban Kicks - Add Address", categories, itemCount, currentPage, user });
+        res.render('user/profile/addAddress',{user, categories, itemCount, currentPage, user });
     } catch (error) {
         console.log(error);
         res.render('user/servererror');
@@ -77,40 +77,47 @@ const LoadAddAddress = async (req, res) => {
 
 const addAddress = async (req, res) => {
     try {
-        const { firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode, } = req.body;
+        const { firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode, setDefault } = req.body;
         const userId = req.session.userId;
-        console.log(userId)
-        console.log(req.body)
+
+        console.log(userId);
+        console.log(req.body);
+
         const existingUser = await Address.findOne({ userId: userId });
-        console.log("existingUser: "+existingUser)
+        console.log("existingUser:", existingUser);
+
         if (existingUser) {
-            const existingAddress = existingUser.address.find(addr => addr.save_as === saveas);
-
-            if (existingAddress) {
-                const errorMessage = req.session.checkoutSave ? `${existingAddress.save_as} address already exists!` : `${existingAddress.save_as} address already exists! Use edit address.`;
-                req.flash('error', errorMessage);
-                return res.redirect(req.session.checkoutSave ? `/checkout` : `/address`);
-            }
-
             existingUser.address.push({
-                firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode,
+                firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode
             });
+
+            if (setDefault === 'on') {
+                // Reset the 'status' field for all addresses of the user
+                await Address.updateMany(
+                    { userId: userId },
+                    { $set: { 'address.$[].status': false } }
+                );
+
+                // Set the 'status' field to true for the newly added address
+                existingUser.address[existingUser.address.length - 1].status = true;
+            }
 
             await existingUser.save();
             req.flash('success', "Address added successfully!!!");
-            return res.redirect(req.session.checkoutSave ? `/checkout` : `/address`);
+            return res.redirect(req.session.checkoutSave ? `/checkout` : `/profile/address`);
         }
 
         const newAddress = new Address({
             userId: userId,
             address: [{
                 firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode,
-            }],
+                status: setDefault === 'on'  // Set status true if checkbox is checked
+            }]
         });
 
         await newAddress.save();
         req.flash('success', "Address added successfully!!!");
-        console.log("Adrressss saveddddddddddddd")
+        console.log("Address saved successfully");
         return res.redirect(req.session.checkoutSave ? `/checkout` : `/profile/address`);
     } catch (error) {
         console.log(error);
@@ -119,35 +126,54 @@ const addAddress = async (req, res) => {
 };
 
 
+
 const LoadEditAddress = async (req, res) => {
     try {
         const currentPage = 'profile';
         const userId = req.session.userId;
+        const user = await User.findById(userId);
         const categories = await Category.find({ status: true }).limit(3);
         const id = req.params.id;
         const itemCount = req.session.cartCount;
-        const address = await Address.aggregate([
-            {
-                $match: { userId: new mongoose.Types.ObjectId(userId) }
-            },
-            {
-                $unwind: '$address'
-            },
-            {
-                $match: { 'address._id': new mongoose.Types.ObjectId(id) }
-            }
-        ]);
 
-        res.render('user/editAddress', { title: "Urban Kicks - edit address", address: address[0], itemCount, categories, currentPage });
+        // Log the raw IDs
+        console.log("Raw User ID:", userId);
+        console.log("Raw Address ID:", id);
+
+        // Convert IDs to ObjectId
+        const userIdObject = new mongoose.Types.ObjectId(userId);
+        const addressIdObject = new mongoose.Types.ObjectId(id);
+
+        console.log("Converted User ID:", userIdObject);
+        console.log("Converted Address ID:", addressIdObject);
+
+        // Fetch the user document
+        const userDocument = await Address.findOne({ userId: userIdObject });
+        console.log("User Document:", JSON.stringify(userDocument, null, 2));
+
+        // Find the address by Id within the user document
+        const address = userDocument.address.find(addr => addr._id.toString() === addressIdObject.toString());
+
+        if (!address) {
+            console.error("No address found with the given ID for the user.");
+            req.flash('error', 'Address not found');
+            return res.redirect('/profile/address');
+        }
+
+        res.render('user/profile/editAddress', { user, address, itemCount, categories, currentPage });
     } catch (error) {
-        console.log(error);
+        console.error("Error loading edit address page:", error);
         res.render('user/servererror');
     }
 };
 
+
+
+
+
 const editaddress = async (req, res) => {
     try {
-        const { name, mobile, email, housename, street, city, state, country, pincode, saveas } = req.body;
+        const { firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode } = req.body;
         const addressId = req.params.id;
         const userId = req.session.userId;
 
@@ -156,16 +182,16 @@ const editaddress = async (req, res) => {
             'address': {
                 $elemMatch: {
                     '_id': { $ne: addressId },
-                    'save_as': saveas,
-                    'email': email,
-                    'name': name,
-                    'mobile': mobile,
-                    'housename': housename,
-                    'street': street,
-                    'pincode': pincode,
-                    'city': city,
-                    'state': state,
-                    'country': country,
+                    'address.$.firstname': firstName,
+                    'address.$.lastName': lastName,
+                    'address.$.email': email,
+                    'address.$.phone': phone,
+                    'address.$.addressline1': addressline1,
+                    'address.$.addressline2': addressline2,
+                    'address.$.city': city,
+                    'address.$.state': state,
+                    'address.$.country': country,
+                    'address.$.pincode': pincode,
                 }
             }
         });
@@ -179,22 +205,22 @@ const editaddress = async (req, res) => {
             { 'userId': userId, 'address._id': addressId },
             {
                 $set: {
-                    'address.$.save_as': saveas,
-                    'address.$.name': name,
+                    'address.$.firstname': firstName,
+                    'address.$.lastName': lastName,
                     'address.$.email': email,
-                    'address.$.mobile': mobile,
-                    'address.$.housename': housename,
-                    'address.$.street': street,
-                    'address.$.pincode': pincode,
+                    'address.$.phone': phone,
+                    'address.$.addressline1': addressline1,
+                    'address.$.addressline2': addressline2,
                     'address.$.city': city,
                     'address.$.state': state,
                     'address.$.country': country,
+                    'address.$.pincode': pincode,
                 }
             }
         );
 
         req.flash('success', "Address updated successfully!!!");
-        res.redirect('/address');
+        res.redirect('/profile/address');
     } catch (error) {
         console.log(error);
         res.render('user/servererror');
@@ -205,26 +231,39 @@ const editaddress = async (req, res) => {
 const deleteAddress = async (req, res) => {
     try {
         const userId = req.session.userId;
-        const id = req.params.id;
+        const addressId = req.params.id;
         await Address.updateOne(
             { userId: userId },
-            { $pull: { address: { _id: id } } }
+            { $pull: { address: { _id: addressId } } }
         );
         req.flash('success', "Address deleted successfully!!!");
-        res.redirect('/address');
+        res.redirect('/profile/address');
     } catch (error) {
         console.log(error);
         res.render('user/servererror');
     }
 };
+
+
 const setDefaultAddress = async (req, res) => {
     try {
         const userId = req.session.userId;
         const id = req.params.id;
-        await Address.updateMany({ userId: userId }, { $set: { 'address.$[].default': false } });
-        await Address.updateOne({ userId: userId, 'address._id': id }, { $set: { 'address.$.default': true } });
+
+        // Reset the 'status' field for all addresses of the user
+        await Address.updateMany(
+            { userId: userId },
+            { $set: { 'address.$[].status': false } }
+        );
+
+        // Set the 'status' field to true for the specified address
+        await Address.updateOne(
+            { userId: userId, 'address._id': id },
+            { $set: { 'address.$.status': true } }
+        );
+
         req.flash('success', "Default address set successfully!!!");
-        res.redirect('/address');
+        res.redirect('/profile/address');  // Corrected the redirect URL
     } catch (error) {
         console.log(error);
         res.render('user/servererror');

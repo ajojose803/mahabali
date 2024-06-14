@@ -11,7 +11,8 @@ const { uploadFile, getObjectSignedUrl } = require('../../utils/s3');
 const ITEMS_PER_PAGE = 8;
 
 const loadProduct = asyncHandler(async (req, res) => {
-  let page = +req.query.page || 1;
+  const page = +req.query.page || 1;
+  const ITEMS_PER_PAGE = 10; // Adjust this value as needed
   const totalProducts = await Product.countDocuments();
   const totalPages = Math.max(Math.ceil(totalProducts / ITEMS_PER_PAGE), 1);
   const skipAmount = Math.max(0, (page - 1) * ITEMS_PER_PAGE);
@@ -27,9 +28,9 @@ const loadProduct = asyncHandler(async (req, res) => {
 
   const prev = page > 1 ? page - 1 : null;
   const next = page < totalPages ? page + 1 : null;
-  const category = await Category.find({});
-  category.forEach(category => console.log(category.name));
-
+  const categories = await Category.find({});
+  products.forEach(product => console.log(product.imageUrls));
+console.log(products)
   const msg = req.query.msg || "";
 
   res.render("admin/adminProduct", {
@@ -38,10 +39,12 @@ const loadProduct = asyncHandler(async (req, res) => {
     next,
     totalPages,
     currentPage: page,
-    CatData: category,
+    CatData: categories,
     msg,
   });
 });
+
+
 
 const loadAddProduct = asyncHandler(async (req, res) => {
   const category = await Category.find({});
