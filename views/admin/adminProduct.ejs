@@ -69,18 +69,18 @@
             <td>
               <% if (data[i].imageUrls && data[i].imageUrls.length > 0) { %>
                 <% data[i].imageUrls.forEach(imageUrl => { %>
-                  <img src="<%= imageUrl %>" alt="image" style="height: 75px;width: auto;">
+                  <img src="<%= imageUrl %>" alt="image" style="height: 75px; width: auto;">
                 <% }) %>
               <% } else { %>
                 <span>No image available</span>
               <% } %>
             </td>
-            <td><%= data[i].category.name %></td>
+            <td><%= data[i].category ? data[i].category.name : 'No Category' %></td>
             <td><%= data[i].price %></td>
             <td><%= data[i].discount %></td>
             <td>
               <% if (data[i].sizes) { %>
-                <% for (let [size, quantity] of data[i].sizes) { %>
+                <% for (let [size, quantity] of Object.entries(data[i].sizes)) { %>
                   <div><strong><%= size %>:</strong> <%= quantity %></div>
                 <% } %>
               <% } else { %>
@@ -115,7 +115,7 @@
                           <div class="col-sm-9">
                             <select name="category" id="category<%= i %>" class="form-control" onchange="validateField('category<%= i %>')" required>
                               <% CatData.forEach(function(cat) { %>
-                                <option value="<%= cat._id %>" <%= data[i].category._id.equals(cat._id) ? 'selected' : '' %>><%= cat.category %></option>
+                                <option value="<%= cat._id %>" <%= data[i].category && data[i].category._id.equals(cat._id) ? 'selected' : '' %>><%= cat.name %></option>
                               <% }); %>
                             </select>
                           </div>
@@ -127,13 +127,13 @@
                             <textarea cols="30" rows="4" id="description<%= i %>" name="description" class="form-control" oninput="validateField('description<%= i %>')"><%= data[i].description %></textarea>
                           </div>
                         </div>
-                        <div class="line"></div>
+                        <!-- <div class="line"></div>
                         <div class="form-group row">
                           <label class="col-sm-3 form-control-label">About Product</label>
                           <div class="col-sm-9">
                             <textarea cols="30" id="aboutProduct<%= i %>" rows="4" name="aboutProduct" class="form-control" oninput="validateField('aboutProduct<%= i %>')"><%= data[i].aboutProduct %></textarea>
                           </div>
-                        </div>
+                        </div> -->
                         <div class="line"></div>
                         <div class="form-group row">
                           <label class="col-sm-3 form-control-label">Price</label>
@@ -146,40 +146,30 @@
                           <label class="col-sm-3 form-control-label">Stock</label>
                           <div class="col-sm-9">
                             <% if (data[i].sizes) { %>
-                              <% for (let [size, quantity] of data[i].sizes) { %>
+                              <% for (let [size, quantity] of Object.entries(data[i].sizes)) { %>
                                 <div class="form-group row">
-                                  <label class="col-sm-3 form-control-label"><%= size %></label>
+                                  <label class="col-sm-3 form-control-label"><%= size %> Size</label>
                                   <div class="col-sm-9">
-                                    <input type="number" id="size-<%= i %>-<%= size %>" class="form-control" name="sizes[<%= size %>]" min="0" oninput="validateField('size-<%= i %>-<%= size %>')" value="<%= quantity %>">
+                                    <input type="number" id="sizes<%= i %>-<%= size %>" class="form-control" name="sizes[<%= size %>]" min="0" value="<%= quantity %>" oninput="validateField('sizes<%= i %>-<%= size %>')">
                                   </div>
                                 </div>
-                                <div class="line"></div>
                               <% } %>
                             <% } else { %>
-                              <input type="number" id="stock<%= i %>" name="stock" class="form-control" min="1" oninput="validateField('stock<%= i %>')" value="<%= data[i].stock %>">
+                              <input type="number" id="stock<%= i %>" class="form-control" name="stock" min="1" value="<%= data[i].stock %>" oninput="validateField('stock<%= i %>')">
                             <% } %>
-                          </div>
-                        </div>
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Upload Images</label>
-                          <div class="col-sm-9">
-                            <div id="image-preview-container<%= i %>" class="d-flex flex-wrap">
-                              <!-- Existing image previews will be added here -->
-                              <% for (let j = 0; j < data[i].imageUrls.length; j++) { %>
-                                <div class="position-relative mr-2 mb-2">
-                                  <img src="<%= data[i].imageUrls[j] %>" alt="productImage" class="img-thumbnail" style="height: 100px; width: 100px;">
-                                  <button type="button" class="btn btn-danger btn-sm position-absolute" style="top: 5px; right: 5px;" onclick="removeExistingImage('<%= i %>', '<%= j %>')">X</button>
-                                </div>
-                              <% } %>
-                            </div>
-                            <input type="file" class="form-control" name="image" id="fileInput<%= i %>" onchange="previewImage(event, '<%= i %>')" accept="image/*" multiple>
                           </div>
                         </div>
                         <div class="line"></div>
                         <div class="form-group row">
-                          <div class="col-sm-9 ml-auto">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                          <label class="col-sm-3 form-control-label">Image</label>
+                          <div class="col-sm-9">
+                            <input type="file" id="image<%= i %>" class="form-control" name="image" onchange="validateField('image<%= i %>')">
                           </div>
+                        </div>
+                        <div class="line"></div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
                         </div>
                       </form>
                     </div>
@@ -188,12 +178,9 @@
               </div>
             </td>
             <td>
-              <form action="/admin/toggle-product-status/<%= data[i]._id %>" method="post">
-                <input type="hidden" name="currentStatus" value="<%= data[i].status %>">
-                <button type="submit" class="btn <%= data[i].status === 'active' ? 'btn-success' : 'btn-danger' %>">
-                  <%= data[i].status === 'active' ? 'Deactivate' : 'Activate' %>
-                </button>
-              </form>
+              <button class="btn btn-primary" onclick="changeStatus('<%= data[i]._id %>')">
+                <%= data[i].status %>
+              </button>
             </td>
           </tr>
         <% } %>
@@ -202,90 +189,46 @@
   </div>
 </div>
 
-<%- include('../partials/adminFooter') -%>
-
 <script>
-  // Function to preview selected images before upload
-  function previewImage(event, i) {
-    var files = event.target.files;
-    var previewContainer = document.getElementById('image-preview-container' + i);
-    previewContainer.innerHTML = ''; // Clear previous previews
-    for (var j = 0; j < files.length; j++) {
-      var file = files[j];
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var img = document.createElement('img');
-        img.src = e.target.result;
-        img.classList.add('img-thumbnail', 'mr-2', 'mb-2');
-        img.style.height = '100px';
-        img.style.width = '100px';
-        previewContainer.appendChild(img);
-      }
-      reader.readAsDataURL(file);
-    }
-  }
-
-  // Function to handle removal of existing images
-  function removeExistingImage(i, j) {
-    var previewContainer = document.getElementById('image-preview-container' + i);
-    var imageElement = previewContainer.children[j];
-    if (imageElement) {
-      previewContainer.removeChild(imageElement);
-      // Optionally, you can add a hidden input to mark this image for removal on the server-side
-      var removalInput = document.createElement('input');
-      removalInput.type = 'hidden';
-      removalInput.name = 'removeImages[]';
-      removalInput.value = j; // Index of the image to be removed
-      document.getElementById('editProductForm' + i).appendChild(removalInput);
-    }
-  }
-
-  // Basic field validation logic
   function validateField(fieldId) {
-    var field = document.getElementById(fieldId);
-    if (field) {
-      if (field.value.trim() === '') {
-        field.classList.add('is-invalid');
-      } else {
-        field.classList.remove('is-invalid');
-      }
+    const field = document.getElementById(fieldId);
+    if (field.value.trim() === '') {
+      field.style.border = '1px solid red';
+    } else {
+      field.style.border = '1px solid #ccc';
     }
   }
 
-  // Form validation logic
   function validateForm(event, formId) {
-    var form = document.getElementById(formId);
-    var isValid = true;
-
-    // Example validation for text fields
-    var textFields = ['productName', 'description', 'aboutProduct'];
-    textFields.forEach(function(fieldName) {
-      var field = form.querySelector('[name="' + fieldName + '"]');
-      if (field && field.value.trim() === '') {
-        field.classList.add('is-invalid');
+    const form = document.getElementById(formId);
+    const inputs = form.querySelectorAll('input, select, textarea');
+    let isValid = true;
+    inputs.forEach(input => {
+      if (input.value.trim() === '') {
+        input.style.border = '1px solid red';
         isValid = false;
-      } else if (field) {
-        field.classList.remove('is-invalid');
+      } else {
+        input.style.border = '1px solid #ccc';
       }
     });
-
-    // Example validation for numeric fields
-    var numericFields = ['price', 'stock'];
-    numericFields.forEach(function(fieldName) {
-      var field = form.querySelector('[name="' + fieldName + '"]');
-      if (field && (field.value.trim() === '' || isNaN(field.value) || field.value <= 0)) {
-        field.classList.add('is-invalid');
-        isValid = false;
-      } else if (field) {
-        field.classList.remove('is-invalid');
-      }
-    });
-
-    // Prevent form submission if any field is invalid
     if (!isValid) {
       event.preventDefault();
     }
-
     return isValid;
   }
+
+  function changeStatus(productId) {
+    fetch(`/admin/change-status/${productId}`, {
+      method: 'PUT'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert('Failed to change status');
+      }
+    });
+  }
 </script>
+<%- include('../partials/adminFooter') -%>

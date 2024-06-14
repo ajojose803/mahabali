@@ -62,7 +62,7 @@ userRouter.route('/cart/update-cart/:id').put(auth.userAuth,cartController.updat
 //checkout
 userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
 userRouter.route('/checkout/place-order').post(auth.userAuth,checkout.order);
-userRouter.route('/checkout/order-status').post(auth.userAuth,checkout.getOrderStatus);
+userRouter.route('/checkout/order-status').get(auth.userAuth,checkout.getOrderStatus);
 
 //profile.route()
 userRouter.route('/profile').get(auth.userAuth,userProfile.LoadProfile)

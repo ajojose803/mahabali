@@ -8,7 +8,14 @@ const { getObjectSignedUrl } = require('../../utils/s3');
 const addtocart = asyncHandler(async (req, res) => {
   const productId = req.params.productId;
   const userId = req.session.user._id;
-  console.log(productId +" "+userId)
+
+  // Retrieve the product information to check stock quantity
+  const product = await Product.findById(productId);
+  
+  if (!product) {
+    req.flash('error', 'Product not found');
+    return res.redirect('/cart');
+  }
 
   // Find the user's cart
   let cart = await Cart.findOne({ userId });
@@ -23,9 +30,21 @@ const addtocart = asyncHandler(async (req, res) => {
 
   if (productIndex !== -1) {
     // If the product already exists in the cart, increase the quantity
-    cart.items[productIndex].quantity += 1;
+    let newQuantity = cart.items[productIndex].quantity + 1;
+
+    if (newQuantity > product.stock) {
+      req.flash('error', 'Requested quantity exceeds available stock');
+      return res.redirect('/cart');
+    }
+
+    cart.items[productIndex].quantity = newQuantity;
   } else {
     // Otherwise, add the product to the cart
+    if (product.stock < 1) {
+      req.flash('error', 'Product is out of stock');
+      return res.redirect('/cart');
+    }
+
     cart.items.push({ productId, quantity: 1 });
   }
 
@@ -69,12 +88,13 @@ const LoadCart = asyncHandler(async (req, res) => {
     };
   }));
 
-  req.flash('success', 'success message');
+  req.flash('success', '');
   const successMessage = req.flash('success')[0];
-  console.log('successMessage:', successMessage);
+  const errorMessage = req.flash('error');
+  // console.log('successMessage:', successMessage);
 
   // Render the cart page with the updated cart items
-  res.render("user/cart", { userName, user, cart: cartItems, successMessage });
+  res.render("user/cart", { userName, user, cart: cartItems, successMessage,errorMessage });
 });
 
 
@@ -140,35 +160,33 @@ const updateQuantity = asyncHandler(async (req, res) => {
   let newQuantity = parseInt(req.body.quantity, 10); // Ensure quantity is an integer
 
   // Ensure the new quantity does not exceed the maximum allowed
-  const MAX_QUANTITY = 3;
+  const MAX_QUANTITY = 10;
   let flashMessage = null;
 
   if (newQuantity > MAX_QUANTITY) {
     newQuantity = MAX_QUANTITY;
-    flashMessage = '3 is the maximum quantity allowed for each item';
+    flashMessage = '10 is the maximum quantity allowed for each item';
   }
 
   // Retrieve the product information to check stock quantity
   const product = await Product.findById(itemId);
-  
+
   if (!product) {
-    return req.flash('error', 'Product not found').redirect('/cart'); // Redirect to cart page
+    req.flash('error', 'Product not found');
+    return res.status(404).json({ success: false, message: 'Product not found' });
   }
 
-  if (newQuantity > product.quantity) {
-    req.flash('error', 'Requested quantity exceeds available stock'); // Set flash message
-    return res.redirect('/cart'); // Redirect to cart page
+  if (newQuantity > product.stock) {
+    req.flash('error', `Requested quantity exceeds available stock. Only ${product.stock} left in stock.`);
+    return res.status(400).json({ success: false, message: `Requested quantity exceeds available stock. Only ${product.stock} left in stock.` });
   }
-
-  req.flash('success', 'Your success message here');
-  const successMessage = req.flash('success');
 
   try {
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      req.flash('error', 'Cart not found'); 
-      return res.redirect('/cart'); 
+      req.flash('error', 'Cart not found');
+      return res.status(404).json({ success: false, message: 'Cart not found' });
     }
 
     const itemIndex = cart.items.findIndex(item => item.productId.equals(itemId));
@@ -178,22 +196,21 @@ const updateQuantity = asyncHandler(async (req, res) => {
       await cart.save();
 
       if (flashMessage) {
-        req.flash('info', flashMessage); 
+        req.flash('info', flashMessage);
       }
 
-      req.flash('success', 'Quantity updated successfully'); 
-      return res.redirect('/cart'); 
+      req.flash('success', 'Quantity updated successfully');
+      return res.status(200).json({ success: true, message: 'Quantity updated successfully' });
     } else {
-      req.flash('error', 'Cart item not found'); // Set flash message
-      return res.redirect('/cart'); 
+      req.flash('error', 'Cart item not found');
+      return res.status(404).json({ success: false, message: 'Cart item not found' });
     }
   } catch (error) {
     console.error(error);
-    req.flash('error', 'Server error'); 
-    return res.redirect('/cart'); 
+    req.flash('error', 'Server error');
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 });
-
 
 
 

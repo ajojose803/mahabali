@@ -61,7 +61,8 @@
                                         <tr data-item-id="<%= item._id %>">
                                             <td class="cart__product__item">
                                                 <% if (item.imageUrls && item.imageUrls.length> 0) { %>
-                                                    <img src="<%= item.imageUrls[0] %>" alt="<%= item.name %>">
+                                                    <img src="<%= item.imageUrls[0] %>" alt="<%= item.name %>"
+                                                        style="height: 200px; width: auto;">
                                                     <% } else { %>
                                                         <img src="/path/to/default-image.jpg" alt="<%= item.name %>">
                                                         <% } %>
@@ -107,11 +108,11 @@
                         </table>
                     </div>
                 </div>
-            <div id="flashMessage" class="alert" style="display: none;">*</div>
+                <div id="flashMessage" class="alert" style="display: none;">*</div>
             </div>
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <p>*The maximum quantity for all products is limited to 3</p>
+                    <p>*The maximum quantity for all products is limited to 10</p>
                     <br>
                     <div class="cart__btn">
                         <a href="/products">Continue Shopping</a>
@@ -129,43 +130,33 @@
                         <a href="/checkout" class="primary-btn">Proceed to checkout</a>
                     </div>
                 </div>
-                <!-- <div class="col-lg-6 col-md-6 col-sm-6">
-                    <div class="cart__btn update__btn">
-                        <a href="#" onclick="updateCart()"><span class="icon_loading"></span> Update cart</a>
-                    </div>
-                </div> -->
             </div>
             <div class="row">
                 <div class="col-lg-6">
                     <div class="discount__content">
                         <h6>Discount codes</h6>
                         <form action="#">
-                            
+
                             <input type="text" placeholder="Enter your coupon code">
                             <button type="submit" class="site-btn">Apply</button>
                         </form>
                     </div>
                 </div>
-              
             </div>
         </div>
     </section>
     <!-- Shop Cart Section End -->
 
     <script>
-
         function updateQuantity(itemId, index, action) {
             const qtyInput = document.getElementById(`qty-${index}`);
             let quantity = parseInt(qtyInput.value);
 
             if (action === 'decrement' && quantity > 1) {
                 quantity--;
-            } else if (action === 'increment' && quantity < 3) {
+            } else if (action === 'increment' && quantity < 10) { // assuming 10 is the maximum per product
                 quantity++;
             }
-
-            qtyInput.value = quantity;
-            updateTotal(index);
 
             // Send the updated quantity to the server
             fetch(`/cart/update-cart/${itemId}`, {
@@ -178,9 +169,13 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        qtyInput.value = quantity;
+                        updateTotal(index);
                         console.log('Quantity updated successfully');
                     } else {
                         console.error('Failed to update quantity');
+                        // Show an alert message or other UI feedback to the user
+                        // alert(data.message);
                     }
                 })
                 .catch(error => console.error('Error:', error));

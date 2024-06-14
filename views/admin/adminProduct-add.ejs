@@ -1,4 +1,40 @@
-<%- include('../partials/adminHeader') -%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/crop.guide/1.5.12/crop.guide.min.css" rel="stylesheet">
+  <script src="https://cdn.crop.guide/crop.guide.min.js"></script>
+  <style>
+    .thumbnail {
+      position: relative;
+      display: inline-block;
+      margin: 10px;
+    }
+    .thumbnail img {
+      max-width: 150px;
+      max-height: 150px;
+    }
+    .thumbnail .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/adminHeader') -%>
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=ZQFGVQ"></script>
   <ul class="list-unstyled">
     <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
     <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
@@ -38,7 +74,7 @@
                     <option value="<%= data[i]._id %>">
                       <%= data[i].name %>
                     </option>
-                    <% } %>
+                  <% } %>
                 </select>
               </div>
             </div>
@@ -48,18 +84,16 @@
             <div class="form-group row">
               <label class="col-sm-3 form-control-label">Description</label>
               <div class="col-sm-9">
-                <textarea cols="90" rows="4" name="description" required
-                  style="background-color: rgb(48, 48, 54); color: white;"></textarea>
+                <textarea cols="90" rows="4" name="description" required style="background-color: rgb(48, 48, 54); color: white;"></textarea>
               </div>
             </div>
-            <div class="line"></div>
+            <!-- <div class="line"></div>
             <div class="form-group row">
-              <label class="col-sm-3 form-control-label">aboutProduct Product</label>
+              <label class="col-sm-3 form-control-label">About Product</label>
               <div class="col-sm-9">
-                <textarea cols="90" rows="4" name="aboutProduct" required
-                  style="background-color: rgb(48, 48, 54); color: white;"></textarea>
+                <textarea cols="90" rows="4" name="aboutProduct" required style="background-color: rgb(48, 48, 54); color: white;"></textarea>
               </div>
-            </div>
+            </div> -->
             <div class="line"></div>
             <div class="form-group row">
               <label class="col-sm-3 form-control-label">Price</label>
@@ -92,9 +126,10 @@
             <div class="form-group row">
               <label class="col-sm-3 form-control-label">Image</label>
               <div class="col-sm-9">
-                <input type="file" class="form-control" name="image" accept="image/*" multiple required>
+                <input type="file" class="form-control" id="image-upload" name="image" accept="image/*" multiple required>
               </div>
             </div>
+            <div id="image-preview"></div>
             <div class="line"></div>
             <div class="form-group row">
               <div class="col-sm-9 ml-auto">
@@ -117,7 +152,7 @@
       const stockContainer = document.getElementById('stock-container');
       additionalFieldsDiv.innerHTML = '';  // Clear previous fields
       stockContainer.innerHTML = '';  // Clear previous stock fields
-  
+
       switch (category) {
         case 'Coasters':
           additionalFieldsDiv.innerHTML = `
@@ -161,7 +196,7 @@
               </div>
             </div>`;
           stockContainer.innerHTML = `
-            <label class="col-sm-3 form-control-label">Stock (in units per size)</label>
+                       <label class="col-sm-3 form-control-label">Stock (in units per size)</label>
             <div class="col-sm-9">
               <div class="form-group row">
                 <div class="col-sm-2">S</div>
@@ -189,5 +224,42 @@
           stockContainer.innerHTML = ''; // Clear stock container for unknown categories
       }
     });
+
+    // Image preview and delete functionality
+    document.getElementById('image-upload').addEventListener('change', function(event) {
+      const previewContainer = document.getElementById('image-preview');
+      previewContainer.innerHTML = ''; // Clear previous previews
+
+      const files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          const imageUrl = event.target.result;
+          const thumbnail = `
+            <div class="thumbnail">
+              <img src="${imageUrl}" alt="Image">
+              <button type="button" class="delete-btn" data-index="${i}" onclick="deleteImage(event)">X</button>
+            </div>`;
+          previewContainer.innerHTML += thumbnail;
+        };
+
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Function to delete an image from preview
+    function deleteImage(event) {
+      const index = event.target.getAttribute('data-index');
+      const input = document.getElementById('image-upload');
+      const files = Array.from(input.files);
+
+      files.splice(index, 1); // Remove the file from the array of files
+      input.files = new FileList(files); // Update the input's files property
+      input.dispatchEvent(new Event('change')); // Trigger change event to refresh preview
+    }
   </script>
-  
+</body>
+</html>
+
