@@ -19,10 +19,10 @@ const LoadProfile = async (req, res) => {
             select: 'name image description'
         })
         const itemCount = req.session.cartCount;
-        res.render('user/myAccount', { title: "User-Profile", user, categories, itemCount, currentPage, orders, successMessages })
+        res.render('user/myAccount', { user, categories, itemCount, currentPage, orders, successMessages })
     } catch (err) {
         console.log(err)
-        res.render('user/servererror')
+        res.render('user/lol/servererror')
 
     }
 }

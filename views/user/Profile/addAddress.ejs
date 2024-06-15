@@ -87,6 +87,18 @@
         .site-btn:hover {
             background-color: #811111;
         }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .form-group label input[type="checkbox"] {
+            margin-right: 10px;
+        }
     </style>
     <!-- Breadcrumb Begin -->
     <div class="breadcrumb-option">
@@ -140,47 +152,73 @@
                     <div class="form-container">
                         <h2>Add Address</h2>
                         <form action="/profile/address/new" method="POST" class="checkout__form">
+                            <!-- Address fields as per your existing form -->
                             <div class="checkout__form__input">
                                 <p>First Name <span>*</span></p>
                                 <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>Last Name <span>*</span></p>
                                 <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>Phone <span>*</span></p>
                                 <input type="number" id="phone" name="phone" placeholder="Phone Number" required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>Email <span>*</span></p>
                                 <input type="email" id="email" name="email" placeholder="Email" required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>Address Line 1 <span>*</span></p>
                                 <input type="text" id="addressline1" name="addressline1" placeholder="Address Line 1"
                                     required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>Address Line 2</p>
                                 <input type="text" id="addressline2" name="addressline2" placeholder="Address Line 2">
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>City <span>*</span></p>
                                 <input type="text" id="city" name="city" placeholder="City" required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>State <span>*</span></p>
                                 <input type="text" id="state" name="state" placeholder="State" required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>Country <span>*</span></p>
                                 <input type="text" id="country" name="country" placeholder="Country" required>
                             </div>
+
                             <div class="checkout__form__input">
                                 <p>Pincode <span>*</span></p>
                                 <input type="number" id="pincode" name="pincode" placeholder="Pincode" required>
                             </div>
+
+                            <!-- Place the checkbox before the label -->
+                            <!-- <div class="form-check">
+                                <label>
+                                    <input type="checkbox" id="setDefault" name="setDefault">
+                                    <span>Make this my default address</span>
+                                </label>
+                            </div> -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="setDefault" name="setDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    Make this my default address
+                                </label>
+                              </div>
+
+                            <!-- Add Address Button -->
                             <div class="site-btn-container">
                                 <button type="submit" class="site-btn">Add Address</button>
                             </div>
