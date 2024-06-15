@@ -1,94 +1,154 @@
 <%- include('../partials/userHeader')-%>
+    <style>
+        .change-address-btn {
+            border-color: red;
+            padding: 1% 2%;
+        }
 
-<!-- Breadcrumb Begin -->
-<div class="breadcrumb-option">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="breadcrumb__links">
-                    <a href="/"><i class="fa fa-home"></i> Home</a>
-                    <span>Checkout</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Breadcrumb End -->
+        .change-address-btn:hover {
+            border-color: rgb(150, 14, 14);
+        }
+    </style>
 
-<!-- Checkout Section Begin -->
-<section class="checkout spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <h6 class="coupon__link"><span class="icon_tag_alt"></span> <a href="#">Have a coupon?</a> Click
-                    here to enter your code.</h6>
-            </div>
-        </div>
-        <form action="/checkout" method="POST" class="checkout__form">
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
             <div class="row">
-                <div class="col-lg-8">
-                    <h5>Billing detail</h5>
-                    <div class="col-lg-12">
-                        <div class="checkout__form__checkbox">
-                            <label for="selectAddress">Select Address:</label>
-                            <% if (addresses && addresses.length > 0) { %>
-                                <% addresses.forEach(address => { %>
-                                    <label>
-                                        <input type="radio" name="address" value="<%= address._id %>">
-                                        <%= address.addressline1 %>, <%= address.city %>, <%= address.state %>, <%= address.country %>, <%= address. pincode %>
-                                    </label>
-                                <% }); %>
-                            <% } else { %>
-                                <p>No addresses found. Please add a new address.</p>
-                            <% } %>
-                            <label>
-                                <a href="/profile/addAddress">Add new address</a>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-10">
-                    <div class="checkout__order">
-                        <h5>Your order</h5>
-                        <div class="checkout__order__product">
-                            <ul>
-                                <% if (cart && cart.length > 0) { %>
-                                    <% cart.forEach(item => { %>
-                                        <li>
-                                            <%= item.productId.name %> <span>₹ <%= item.productId.price %> x <%= item.quantity %></span>
-                                        </li>
-                                    <% }); %>
-                                <% } else { %>
-                                    <p>No orders found.</p>
-                                <% } %>
-                            </ul>
-                        </div>
-                        <div class="checkout__order__total">
-                            <ul>
-                                <li>Subtotal <span id="subtotal">₹ <%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %></span></li>
-                                <li>Total <span id="total">₹ <%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %></span></li>
-                            </ul>
-                        </div>
-                        <div class="checkout__order__widget">
-                            <p>Select the mode of Payment</p>
-                            <label for="check-payment">
-                                Cash on Delivery
-                                <input type="checkbox" id="check-payment">
-                                <span class="checkmark"></span>
-                            </label>
-                            <label for="paypal">
-                                PayPal
-                                <input type="checkbox" id="paypal">
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                        <button type="submit" class="site-btn">Place order</button>
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="/"><i class="fa fa-home"></i> Home</a>
+                        <span>Checkout</span>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
-</section>
-<!-- Checkout Section End -->
+    <!-- Breadcrumb End -->
 
-<%- include('../partials/userFooter')-%>
+    <!-- Checkout Section Begin -->
+    <section class="checkout spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h6 class="coupon__link"><span class="icon_tag_alt"></span> <a href="#">Have a coupon?</a> Click
+                        here to enter your code.</h6>
+                </div>
+            </div>
+            <form action="/checkout/place-order" method="POST" class="checkout__form">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h5>Billing detail</h5>
+                        <div class="col-lg-12">
+                            <div class="checkout__form__checkbox">
+                                <label for="selectAddress">Select Address:</label>
+                                <% if (defaultAddress) { %>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="address"
+                                            value="<%= defaultAddress._id %>" id="defaultAddressRadio" checked>
+                                        <label class="form-check-label" for="defaultAddressRadio">
+                                            <%= defaultAddress.addressline1 %>, <%= defaultAddress.city %>, <%= defaultAddress.state %>, <%= defaultAddress.country %>, <%= defaultAddress.pincode %>
+                                        </label>
+                                    </div>
+                                <% } %>
+                                <div class="dropdown">
+                                    <button class="btn d-inline-flex align-items-center rounded collapsed change-address-btn"
+                                        type="button" id="addressDropdownButton" data-bs-toggle="collapse"
+                                        data-bs-target="#addressCollapse" aria-expanded="false" aria-controls="addressCollapse">
+                                        <i class="fa fa-caret-down"></i>&nbsp;&nbsp;Change
+                                    </button>
+            
+                                    <div class="collapse" id="addressCollapse">
+                                        <div class="card card-body">
+                                            <% if (addresses && addresses.length > 0) { %>
+                                                <% addresses.forEach(address => { %>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="address"
+                                                            value="<%= address._id %>" id="addressRadio<%= address._id %>">
+                                                        <label class="form-check-label" for="addressRadio<%= address._id %>">
+                                                            <%= address.firstName %>, <%= address.addressline1 %>, <%= address.city %>, <%= address.state %>, <%= address.country %>, <%= address.pincode %>
+                                                        </label>
+                                                    </div>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <p>No addresses found. Please add a new address.</p>
+                                            <% } %>
+                                            <a href="/profile/address/new" class="btn btn-danger mt-2">Add New Address</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="col-lg-12">
+                        <div class="checkout__order">
+                            <h5>Your order</h5>
+                            <div class="checkout__order__product">
+                                <ul>
+                                    <% if (cart && cart.length > 0) { %>
+                                        <% cart.forEach(item => { %>
+                                            <li>
+                                                <%= item.productId.name %> <span>₹ <%= item.productId.price %> x <%= item.quantity %></span>
+                                            </li>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <p>No orders found.</p>
+                                    <% } %>
+                                </ul>
+                            </div>
+                            <div class="checkout__order__total">
+                                <ul>
+                                    <li>Subtotal <span id="subtotal">₹ <%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %></span></li>
+                                    <li>Total <span id="total">₹ <%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %></span></li>
+                                </ul>
+                            </div>
+                            <div class="checkout__order__widget">
+                                <p>Select the mode of Payment</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="pay" id="flexRadioDefault1" value="Cash on Delivery">
+                                    <label class="form-check-label" for="flexRadioDefault1">
+                                        Cash on Delivery
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="pay" id="flexRadioDefault2" checked value="razorpay">
+                                    <label class="form-check-label" for="flexRadioDefault2">
+                                        Razorpay
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- Hidden inputs for amount and wallet -->
+                            <input type="hidden" name="amount" id="amount" value="<%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %>">
+                            <input type="hidden" name="wallet" id="wallet" value="<%= user.wallet %>">
+            
+                            <button type="submit" class="site-btn">Place order</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+        </div>
+    </section>
+    <!-- Checkout Section End -->
+
+    <%- include('../partials/userFooter')-%>
+
+    <script>
+        // Select the default payment method on page load
+        document.querySelector('input[name="pay"][value="razorpay"]').checked = true;
+    
+        document.querySelectorAll('.select-address-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const addressId = this.getAttribute('data-address-id');
+                document.querySelectorAll('input[name="address"]').forEach(input => {
+                    input.checked = false;
+                });
+                const newAddressInput = document.createElement('input');
+                newAddressInput.type = 'hidden';
+                newAddressInput.name = 'address';
+                newAddressInput.value = addressId;
+                document.querySelector('.checkout__form').appendChild(newAddressInput);
+            });
+        });
+    </script>
+    

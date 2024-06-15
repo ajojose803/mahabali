@@ -1,0 +1,137 @@
+<%- include('../partials/userHeader')-%>
+
+<style>
+    .pro-qty {
+        display: flex;
+        align-items: center;
+    }
+
+    .pro-qty .qtybtn {
+        cursor: pointer;
+        font-size: 14px;
+        color: #666666;
+    }
+
+    .pro-qty input {
+        font-size: 14px;
+        color: #666666;
+        font-weight: 500;
+        border: 1px solid #ebebeb;
+        border-radius: 4px;
+        text-align: center;
+        padding: 8px;
+        margin: 0 8px;
+        width: 50px;
+    }
+</style>
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <span>Order Completed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Order Details Section Begin -->
+<section class="order-details spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>Your Order Details</h3>
+                <p><strong>Order ID:</strong> <%= orderId %></p>
+                <p><strong>Status:</strong>
+                    <% if (orderStatus === 'pending') { %>
+                        Pending
+                    <% } else if (orderStatus === 'completed') { %>
+                        Completed
+                    <% } else if (orderStatus === 'cancelled') { %>
+                        Cancelled
+                    <% } else if (orderStatus === 'returned') { %>
+                        Returned
+                    <% } else if (orderStatus === 'returnrequest') { %>
+                        Return Requested
+                    <% } else if (orderStatus === 'paymentpending') { %>
+                        Payment Pending
+                    <% } else { %>
+                        Unknown
+                    <% } %>
+                </p>
+                <p><strong>Payment Method:</strong>
+                    <%= paymentMethod %>
+                </p>
+                <!-- Display other order details as needed -->
+            </div>
+        </div>
+
+        <!-- Order Items Section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shop__cart__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <!-- Adjust table headers as per your design -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orderItems.forEach(function(item, index) { %>
+                                <tr>
+                                    <td>
+                                        <% if (item.imageUrls && item.imageUrls.length > 0) { %>
+                                            <img src="<%= item.imageUrls[0] %>" alt="<%= item.product.name %>" style="width: 100px; height: 100px; object-fit: cover;">
+                                            <% } else { %>
+                                            <img src="/path/to/default-image.jpg" alt="Unknown Product">
+                                        <% } %>
+                                        <%= item.product ? item.product.name : 'Unknown Product' %>
+                                    </td>
+                                    <td>₹ <%= item.price %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td>₹ <%= item.price * item.quantity %></td>
+                                    <!-- Adjust table rows as per your design -->
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Total Section -->
+        <div class="row">
+            <div class="col-lg-6 ">
+                <div class="cart__total__procced">
+                    <h6> Amount</h6>
+                    <ul>
+                        <li>Total <span>₹ <%= totalAmount %></span></li>
+                        <!-- Display other totals as needed -->
+                    </ul>
+                </div>
+            </div>
+            <!-- Display address details here -->
+            <div class="col-lg-6">
+                <div class="cart__total__procced">
+
+                    <h6>Delivery Address:</h6>
+                    <p><%= address.addressline1%>, <%= address.city %>, <%= address.state %> - <%= address.pincode %><br>
+                        <%= address.country %>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Order Details Section End -->
+
+<%- include('../partials/userFooter')-%>
