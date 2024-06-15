@@ -1,47 +1,46 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const shortid = require('shortid');
+const Schema = mongoose.Schema;
 
 const orderSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  products: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true,
-      },
-      status: {
-        type: String,
-        enum: [
-          "pending",
-          "completed",
-          "cancelled",
-          "returned",
-          "returnrequest",
-          "paymentpending",
-        ],
-        default: "pending",
-      },
-      quantity: { type: Number, default: 1 },
-    },
-  ],
-  totalPrice: { type: Number, required: true },
-  grandTotalPrice: { type: Number },
-  reducedPrice: { type: Number, default: 0 },
-  discountedAmount: { type: Number },
-  returnedPrice: { type: Number, default: 0 },
-  paymentMethod: { type: String, required: true },
-  walletAmount: { type: Number },
-  address: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Address",
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'users',
     required: true,
   },
-  coupon: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Coupon",
-  }, // Store coupon ID
+  orderId: {
+    type: String,
+    default: shortid.generate,
+    unique: true,
+  },
+  items: [{
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: [1, 'Quantity must be at least 1'],
+    },
+    size: {
+      type: String,
+      required: false,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: [0, 'Price must be positive'],
+    },
+  }],
+  wallet: {
+    type: Number,
+    min: [0, 'Wallet amount must be positive'],
+  },
   status: {
     type: String,
+    default: "pending",
     enum: [
       "pending",
       "completed",
@@ -50,24 +49,34 @@ const orderSchema = new mongoose.Schema({
       "returnrequest",
       "paymentpending",
     ],
-    default: "pending",
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  address: {
+    type: Object,
     required: true,
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
+  amount: {
+    type: Number,
     required: true,
+    min: [0, 'Amount must be positive'],
   },
+  payment: {
+    type: String,
+    required: true,
+    enum: ["Credit Card", "Debit Card", "Cash on Delivery", "Wallet","Razorpay", "UPI"],
+  },
+  return: [{
+    reason: {
+      type: String,
+    },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
+  }]
+}, {
+  timestamps: true,
 });
 
-orderSchema.pre("save", function (next) {
-  this.updatedAt = new Date();
-  next();
-});
+const orderCollection = mongoose.model("orders", orderSchema);
 
-const Order = mongoose.model("Order", orderSchema);
-module.exports = Order;
+module.exports = orderCollection;

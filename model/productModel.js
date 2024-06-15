@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema({
         type: Number,
          default: 0,
     },
-    viewcount:{
+    viewCount:{
         type: Number,
         default: 1,
     }
