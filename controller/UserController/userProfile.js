@@ -5,6 +5,7 @@ const User = require('../../model/userModel')
 const Order = require('../../model/orderModel');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
+const asyncHandler = require('../../middleware/asyncHandler');
 
 
 const LoadProfile = async (req, res) => {
@@ -33,25 +34,25 @@ const showaddress = async (req, res) => {
         const errorMessages = req.flash('error');
         const currentPage = 'profile';
         const userId = req.session.userId;
-        
+
 
         const user = await User.findOne({ _id: userId });
-   
+
 
         const categories = await Category.find({ status: true }).limit(3);
-        
+
         const addresses = await Address.findOne({ userId: userId });
-        
+
         req.session.checkoutSave = false;
         const itemCount = req.session.cartCount;
-        
+
         res.render('user/address', {
-            itemCount, 
-           user,
-            addresses, 
-            categories, 
-            currentPage, 
-            errorMessages, 
+            itemCount,
+            user,
+            addresses,
+            categories,
+            currentPage,
+            errorMessages,
             successMessages
         });
     } catch (error) {
@@ -68,7 +69,7 @@ const LoadAddAddress = async (req, res) => {
         const id = req.session.userId;
         const user = await User.findOne({ _id: id });
         const itemCount = req.session.cartCount;
-        res.render('user/profile/addAddress',{user, categories, itemCount, currentPage, user });
+        res.render('user/profile/addAddress', { user, categories, itemCount, currentPage, user });
     } catch (error) {
         console.log(error);
         res.render('user/servererror');
@@ -126,7 +127,6 @@ const addAddress = async (req, res) => {
 };
 
 
-
 const LoadEditAddress = async (req, res) => {
     try {
         const currentPage = 'profile';
@@ -166,9 +166,6 @@ const LoadEditAddress = async (req, res) => {
         res.render('user/servererror');
     }
 };
-
-
-
 
 
 const editaddress = async (req, res) => {
@@ -271,14 +268,15 @@ const setDefaultAddress = async (req, res) => {
 };
 
 
-
 const LoadResetPassword = async (req, res) => {
     try {
+        const userId = req.session.userId;
+        const user = await User.findById(userId)
         const currentPage = 'profile';
         const categories = await Category.find({ status: true }).limit(3)
         const pass = req.flash('pass')
         const itemCount = req.session.cartCount;
-        res.render('user/resetpassword', { title: "Urbankicks - Reset password ", pass, itemCount, categories, currentPage })
+        res.render('user/profile/changePassword', { user, currentPassword: pass, itemCount, categories, currentPage })
     } catch (error) {
         console.log(error)
         res.render('user/servererror')
@@ -287,7 +285,7 @@ const LoadResetPassword = async (req, res) => {
 
 const updatePassword = async (req, res) => {
     try {
-        const { pass, npass } = req.body
+        const { currentPassword, newPassword } = req.body
         const userId = req.session.userId
         const user = await User.findOne({ _id: userId })
 
@@ -295,14 +293,14 @@ const updatePassword = async (req, res) => {
             req.flash('pass', 'You signed up with Google, try to set password through forgot password!');
             return res.redirect('/resetpassword');
         }
-        const isPassword = await bcrypt.compare(npass, user.password)
+        const isPassword = await bcrypt.compare(newPassword, user.password)
         if (isPassword) {
             req.flash('pass', 'Enter Different Password')
             return res.redirect('/resetpassword');
         }
-        const passwordmatch = await bcrypt.compare(pass, user.password)
+        const passwordmatch = await bcrypt.compare(currentPassword, user.password)
         if (passwordmatch) {
-            const hashedpassword = await bcrypt.hash(npass, 10)
+            const hashedpassword = await bcrypt.hash(newPassword, 10)
             const newuser = await User.updateOne({ _id: userId }, { password: hashedpassword })
             req.flash("success", "Password updated successfully!");
             return res.redirect('/profile')
@@ -320,6 +318,47 @@ const updatePassword = async (req, res) => {
 }
 
 
+const loadOrder = asyncHandler(async (req, res) => {
+
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+    console.log(user);
+    // Find orders for the specific user
+
+    const order = await Order.find({ userId }).sort({ createdAt: -1 })
+        .populate({
+            path: 'items.productId'
+        });
+
+    // const orderItems = await Promise.all(order.items.map(async (item) => {
+    //     const product = item.productId;
+    //     if (!product) {
+    //         console.log('Product not found for item:', item);
+    //         return null;
+    //     }
+
+    //     // Check if product.image is an array and has at least one element
+    //     let imageUrls = [];
+    //     if (Array.isArray(product.image) && product.image.length > 0) {
+    //         imageUrls = await Promise.all(product.image.map(getObjectSignedUrl));
+    //     } else {
+    //         console.log('Product image is not defined or empty for product:', product);
+    //     }
+
+    //     return {
+    //         ...item._doc,
+    //         product: product._doc,
+    //         imageUrls,
+    //         total: product.price * item.quantity
+    //     };
+    // }));
+
+    console.log(order);
+
+    // Render the orders page with the user's orders
+    res.render("user/profile/orderList", { order, user });
+});
+
 
 
 module.exports = {
@@ -333,4 +372,5 @@ module.exports = {
     deleteAddress,
     LoadResetPassword,
     updatePassword,
+    loadOrder,
 }

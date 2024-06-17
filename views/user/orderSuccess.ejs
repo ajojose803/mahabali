@@ -50,8 +50,10 @@
                 <p><strong>Status:</strong>
                     <% if (orderStatus === 'pending') { %>
                         Pending
-                    <% } else if (orderStatus === 'completed') { %>
-                        Completed
+                    <% } else if (orderStatus === 'delivered') { %>
+                        Delivered
+                    <% } else if (orderStatus === 'shipped') { %>
+                        Shipped
                     <% } else if (orderStatus === 'cancelled') { %>
                         Cancelled
                     <% } else if (orderStatus === 'returned') { %>

@@ -129,11 +129,15 @@ const order = asyncHandler(async (req, res) => {
   const savedOrder = await order.save();
   // Redirect to order completion page
   req.session.orderId = savedOrder.orderId;
-  res.redirect('/checkout/order-status');
+  res.redirect('/checkout/order-status/:id');
 });
 
+
+
 const getOrderStatus = asyncHandler(async (req, res) => {
-  const orderId = req.session.orderId;
+  const orderId = req.session.orderId || req.params.id;
+  console.log(req.params.id)
+  
   const userId = req.session.user._id;
   const user = await User.findById(userId);
 
@@ -146,6 +150,7 @@ const getOrderStatus = asyncHandler(async (req, res) => {
       path: 'items.productId',
       model: 'Product'
     });
+   
 
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found' });
@@ -175,7 +180,7 @@ const getOrderStatus = asyncHandler(async (req, res) => {
     }));
 
     const validOrderItems = orderItems.filter(item => item !== null);
-    console.log(order)    
+    //console.log(order)    
     res.render('user/orderSuccess', {
       user,
       orderId: order.orderId,

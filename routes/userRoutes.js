@@ -62,7 +62,7 @@ userRouter.route('/cart/update-cart/:id').put(auth.userAuth,cartController.updat
 //checkout
 userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
 userRouter.route('/checkout/place-order').post(auth.userAuth,checkout.order);
-userRouter.route('/checkout/order-status').get(auth.userAuth,checkout.getOrderStatus);
+userRouter.route('/checkout/order-status/:id').get(auth.userAuth,checkout.getOrderStatus);
 
 //profile.route()
 userRouter.route('/profile').get(auth.userAuth,userProfile.LoadProfile)
@@ -79,9 +79,10 @@ userRouter.route('/profile/address/:id/delete').get(auth.userAuth,userProfile.de
 userRouter.route('/profile/address/:id/default').get(auth.userAuth, userProfile.setDefaultAddress);
 
 
-
 //Password
-userRouter.route('/reset-password').get(auth.userAuth,userProfile.LoadResetPassword)
-userRouter.route('/password-update').post(auth.userAuth,userProfile.updatePassword)
+userRouter.route('/profile/change-password').get(auth.userAuth,userProfile.LoadResetPassword)
+userRouter.route('/profile/password-update').post(auth.userAuth,userProfile.updatePassword)
+//profile
+userRouter.route('/profile/orders').get(auth.userAuth,userProfile.loadOrder);
 
 module.exports = userRouter;
