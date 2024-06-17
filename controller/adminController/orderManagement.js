@@ -7,11 +7,26 @@ const asyncHandler = require("../../middleware/asyncHandler");
 
 
 
-const LoadOrder = asyncHandler(async(req,res)=>{
-        const order = await orderCollection.find({}).sort({ createdAt: -1 }).populate({
+const loadOrder = asyncHandler(async(req,res)=>{
+        const order = await Order.find({}).sort({ createdAt: -1 }).populate({
             path: 'items.productId',
-            select: 'name description'
+            model:'Product',
+            //select: 'name description'
         })
-        res.render("admin/orders", { order: order })
+        //console.log(order)
+        res.render("admin/adminOrders", { order })
    
 })
+const updateStatus = asyncHandler(async(req,res) =>{
+    const { orderId, status } = req.body
+    console.log(orderId)
+    const updateOrder = await Order.updateOne({ _id: orderId }, { status: status, updated: new Date() })
+    res.redirect('/admin/orders')
+
+})
+
+
+module.exports = {
+loadOrder,
+updateStatus,
+}
