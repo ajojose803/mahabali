@@ -1,5 +1,25 @@
 <%- include('../partials/adminHeader') -%>
 
+  <!-- Flash Messages Section -->
+  <div class="container">
+    <% if (errorMessages.length> 0) { %>
+      <div class="alert alert-danger flash-message">
+        <% errorMessages.forEach(function(error) { %>
+          <p>
+            <%= error %>
+          </p>
+          <% }) %>
+      </div>
+      <% } %>
+        <% if (successMessage.length> 0) { %>
+          <div class="alert alert-success flash-message">
+            <p>
+              <%= successMessage %>
+            </p>
+          </div>
+          <% } %>
+  </div>
+  
   <ul class="list-unstyled">
     <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
     <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
@@ -108,25 +128,28 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <input type="hidden" name="id" value="<%= category[i]._id %>"> <!-- Hidden input for category ID -->
+                          <input type="hidden" name="id" value="<%= category[i]._id %>">
+                          <!-- Hidden input for category ID -->
                           <label class="col-sm-6 form-control-label">Name</label>
                           <br>
                           <input type="text" name="name" value="<%= category[i].name %>" class="form-control" required>
                           <br>
                           <label class="col-sm-6 form-control-label">Description</label>
                           <br>
-                          <input type="text" name="description" value="<%= category[i].description %>" class="form-control" required>
+                          <input type="text" name="description" value="<%= category[i].description %>"
+                            class="form-control" required>
                           <br>
                           <label class="col-sm-6 form-control-label">Discount</label>
                           <br>
-                          <input type="text" name="discount" value="<%= category[i].discount %>" class="form-control" required>
+                          <input type="text" name="discount" value="<%= category[i].discount %>" class="form-control"
+                            required>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                           <button type="submit" class="btn btn-primary">Change</button>
                         </div>
                       </form>
-                      
+
                     </div>
                   </div>
                 </div>

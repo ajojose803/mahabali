@@ -23,6 +23,10 @@ const categorySchema = new mongoose.Schema({
     {
         type: Number,
         default: 0
+    },
+    isListed:{
+        type: Boolean,
+        default: true,
     }
 });
 
