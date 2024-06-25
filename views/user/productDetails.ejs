@@ -27,6 +27,16 @@
     overflow: hidden;
     pointer-events: none;
 }
+.wishlist{
+    display: inline-block;
+	height: 50px;
+	width: 50px;
+	border: 1px solid #ebebeb;
+	border-radius: 50%;
+	line-height: 50px;
+	text-align: center;
+	padding-top: 1px;
+}
 </style>
     <!-- Breadcrumb Begin -->
     <div class="breadcrumb-option">
@@ -60,14 +70,18 @@
                                 </a>
                                 <% }); %>
                         </div>
+
                         <div class="product__details__slider__content">
                             <div class="product__details__pic__slider owl-carousel">
                                 <% product.imageUrls.forEach(function(imageUrl, index) { %>
-                                    <img data-hash="product-<%= index + 1 %>" class="product__big__img"
-                                        src="<%= imageUrl %>" alt="">
-                                    <% }); %>
+                                    <a class="MagicZoom" data-options="zoomWidth:50%; zoomHeight:200px" id="mag" href="<%= imageUrl %>" data-hash="product-<%= index + 1 %>">
+                                        <img class="product__big__img" src="<%= imageUrl %>" alt="">
+                                    </a>
+                                <% }); %>
                             </div>
                         </div>
+                        
+                        
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -116,9 +130,14 @@
                                     <span class="icon_bag_alt"></span> Add to cart
                                 </button>
                             </form>
-                            
                             <ul>
-                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                <li>
+                                    <form action="/add-to-wishlist/<%= product._id %>" method="POST" style="display: inline;">
+                                        <button class="wishlist" type="submit">
+                                            <span class="icon_heart_alt"></span>
+                                        </button>
+                                    </form>
+                                </li>
                                 <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
                             </ul>
                         </div>
