@@ -31,7 +31,7 @@ const loadCheckout = asyncHandler(async (req, res) => {
 
     if (!userAddresses || userAddresses.address.length === 0) {
       req.flash('error', 'No addresses found. Please add a new address.');
-      return res.redirect('/profile/addAddress');
+      return res.redirect('/profile/address/');
     }
 
     const addresses = userAddresses.address;
@@ -46,7 +46,7 @@ const loadCheckout = asyncHandler(async (req, res) => {
     // Check if defaultAddress is found
     if (!defaultAddress) {
       req.flash('error', 'No default address found. Please set a default address.');
-      return res.redirect('/profile/addAddress');
+      return res.redirect('/profile/address/');
     }
 
     // Render the checkout page with user, addresses, cart, and defaultAddress
@@ -195,6 +195,7 @@ const getOrderStatus = asyncHandler(async (req, res) => {
     res.status(500).render('error');
   }
 });
+
 
 
 

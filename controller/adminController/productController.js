@@ -168,10 +168,7 @@ const addNewProduct = asyncHandler(async (req, res) => {
 });
 
 const editProduct = asyncHandler(async (req, res) => {
-  // Extract product ID from the request
   const productId = req.params.id;
-
-  // Check if files were uploaded
   const files = req.files || [];
   const uploadedImages = await Promise.all(files.map(async file => {
     const resizedImageBuffer = await sharp(file.buffer)
@@ -182,16 +179,13 @@ const editProduct = asyncHandler(async (req, res) => {
     return imageName;
   }));
 
-  // Extract product data from request body
   const { name, description, aboutProduct, price, category, discount, color, material, type, dimensions } = req.body;
 
-  // Find the product by ID
   let product = await Product.findById(productId).populate('category');
   if (!product) {
     return res.status(404).send("Product not found.");
   }
 
-  // Update the product fields
   product.name = name || product.name;
   product.description = description || product.description;
   product.aboutProduct = aboutProduct || product.aboutProduct;
@@ -203,10 +197,8 @@ const editProduct = asyncHandler(async (req, res) => {
     product.image = uploadedImages;
   }
 
-  // Find the selected category
   const selectedCategory = await Category.findById(category);
 
-  // Parse stock based on category
   let parsedStock;
   switch (selectedCategory.name) {
     case 'Coasters':
@@ -232,7 +224,6 @@ const editProduct = asyncHandler(async (req, res) => {
       return res.status(400).send("Invalid category type.");
   }
 
-  // Update other specific fields based on category
   switch (selectedCategory.name) {
     case 'Coasters':
       product.material = material || product.material;
@@ -250,10 +241,10 @@ const editProduct = asyncHandler(async (req, res) => {
       return res.status(400).send("Invalid category type.");
   }
 
-  // Save the updated product
   await product.save();
   res.redirect("/admin/products");
 });
+
 
 const listingStatusProduct = asyncHandler(async (req, res) => {
 

@@ -24,7 +24,7 @@ adminRouter.route('/users/change-status').get(userManagement.blockUser);
 
 // Category and new categories
 adminRouter.route('/category').get(auth.isAdAuth, categoryController.loadCategory);
-adminRouter.route('/category/update-status').get(categoryController.listingStatusCategory);
+adminRouter.route('/category/update-status').get(categoryController.listingStatusCategory);///use 
 adminRouter.route('/add-category').post(categoryController.addNewCategory);
 adminRouter.route('/update-category').post(categoryController.updateCategory);
 
@@ -33,6 +33,7 @@ adminRouter.route('/products').get(auth.isAdAuth, productController.loadProduct)
 adminRouter.route('/add-product').get(auth.isAdAuth, productController.loadAddProduct);
 adminRouter.route('/add-product').post(upload.array('image', 5), productController.addNewProduct);
 adminRouter.route('/edit-product/:id').post(upload.array('image', 5), productController.editProduct);
+adminRouter.route('/product/update-status').get(productController.listingStatusProduct); ///use
 
 //Orders
 adminRouter.route('/orders').get(auth.isAdAuth, orderManagement.loadOrder);

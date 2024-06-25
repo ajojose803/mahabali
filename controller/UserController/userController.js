@@ -94,7 +94,7 @@ const sendEmail = async (email, otp) => {
         const emailMessage = {
             from: process.env.EMAIL,
             to: email,
-            subject: "E-Mail Verification for your MahaBali Account",
+            subject: "Otp Verification for your MahaBali Account",
             text: "Your OTP is: " + otp,
         };
 
@@ -221,8 +221,8 @@ const resendOtp = asyncHandler(async (req, res) => {
 
 
 const loadLogIn = asyncHandler(async (req, res) => {
-    const errorMessages = req.flash('error');
-    const successMessage = req.flash('success');
+    const errorMessages = req.flash('loginError');
+    const successMessage = req.flash('loginSuccess');
     const user = req.session.user;
     res.render('user/login', { errorMessages, successMessage, user });
 });
@@ -232,19 +232,19 @@ const loginUser = asyncHandler(async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            req.flash("error", "Please fill all the fields");
+            req.flash("loginError", "Please fill all the fields");
             return res.redirect('/login');
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-            req.flash('error', 'Email');
+            req.flash('loginError', 'Email');
             return res.redirect('/login');
         }
 
         const checkPassword = await bcrypt.compare(password, user.password);
         if (!checkPassword) {
-            req.flash('error', 'Invalid password');
+            req.flash('loginError', 'Invalid password');
             return res.redirect('/login');
         }
 
@@ -255,27 +255,26 @@ const loginUser = asyncHandler(async (req, res) => {
             console.log("User authenticated successfully. Redirecting to home page...");
             return res.redirect('/');
         } else {
-            req.flash('error', 'The website is temporarily down, Contact Admin');
+            req.flash('loginError', 'The website is temporarily down, Contact Admin');
             return res.redirect('/login');
         }
     } catch (error) {
         console.error(error);
-        req.flash('error', 'Internal Server Error');
+        req.flash('loginError', 'Internal Server Error');
         res.redirect('/login');
     }
 });
 
-const forgotPassword = asyncHandler(async (req, res) => {
-    const { email } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) {
-        req.flash("error", "User does not exist or Invalid E-mail");
-        return res.redirect('/forgot-password');
-    } else {
-        res.render('user/forgot-password');
-    }
-});
+const forgotPassword = asyncHandler(async(req,res) => {
+
+
+    res.render('user/forgotPassword',{})
+})
+
+
+
+
 
 const logout = asyncHandler(async (req, res) => {
     req.session.isAuth = false;

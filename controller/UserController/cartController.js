@@ -66,7 +66,7 @@ const LoadCart = asyncHandler(async (req, res) => {
   // Find the user's cart and populate product details
   let cart = await Cart.findOne({ userId }).populate({
     path: 'items.productId',
-    model: 'Product'
+    model: 'product'
   });
 
   // Check if the cart exists and has items
@@ -157,10 +157,10 @@ const updateCart = asyncHandler(async (req, res) => {
 const updateQuantity = asyncHandler(async (req, res) => {
   const userId = req.session.user._id; // Assuming you have authenticated user
   const itemId = req.params.id;
-  let newQuantity = parseInt(req.body.quantity, 10); // Ensure quantity is an integer
+  let newQuantity = parseInt(req.body.quantity, 11); // Ensure quantity is an integer
 
   // Ensure the new quantity does not exceed the maximum allowed
-  const MAX_QUANTITY = 10;
+  const MAX_QUANTITY = 11;
   let flashMessage = null;
 
   if (newQuantity > MAX_QUANTITY) {

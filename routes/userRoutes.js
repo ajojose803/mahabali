@@ -3,6 +3,7 @@ require('../auth/auth')
 const userController = require ("../controller/UserController/userController")
 const productController = require ("../controller/UserController/userProductController")
 const cartController = require ("../controller/UserController/cartController")
+const wishlistController = require ("../controller/UserController/wishlistController")
 const auth = require("../middleware/sessionAuth")
 const nocache = require('nocache');
 const userProfile = require("../controller/UserController/userProfile")
@@ -37,7 +38,7 @@ userRouter.route('/forgot-password').post(userController.forgotPassword);
 
 //auth
 userRouter.route('/auth/google').get(userController.googleAuth);
-userRouter.route('/auth/google/callback').get(userController.googleCallback);
+userRouter.route('/google/callback').get(userController.googleCallback);
 userRouter.route('/auth/google/failure').get(userController.authFailure);
 
 
@@ -59,6 +60,11 @@ userRouter.route('/cart/update').post(auth.userAuth,cartController.updateCart);
 userRouter.route('/cart/update-cart/:id').put(auth.userAuth,cartController.updateQuantity);
 //router.post('/cart/update-cart/:id', 
 
+//wishlist
+userRouter.route('/wishlist').get(auth.userAuth,wishlistController.wishlist);
+userRouter.route('/add-to-wishlist/:productId').post(auth.userAuth,wishlistController.addtoWishlist);
+userRouter.route('/wishlist/delete/:productId').get(auth.userAuth,wishlistController.deleteWishlist);
+
 //checkout
 userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
 userRouter.route('/checkout/place-order').post(auth.userAuth,checkout.order);
@@ -66,6 +72,7 @@ userRouter.route('/checkout/order-status/:id').get(auth.userAuth,checkout.getOrd
 
 //profile.route()
 userRouter.route('/profile').get(auth.userAuth,userProfile.LoadProfile)
+userRouter.route('/update-profile').post(auth.userAuth,userProfile.updateProfile)
 
 //address
 userRouter.route('/profile/address/new')
@@ -82,7 +89,9 @@ userRouter.route('/profile/address/:id/default').get(auth.userAuth, userProfile.
 //Password
 userRouter.route('/profile/change-password').get(auth.userAuth,userProfile.LoadResetPassword)
 userRouter.route('/profile/password-update').post(auth.userAuth,userProfile.updatePassword)
-//profile
+
+//orders
 userRouter.route('/profile/orders').get(auth.userAuth,userProfile.loadOrder);
+userRouter.route('/order/:id/cancel').get(auth.userAuth,userProfile.cancelOrder);
 
 module.exports = userRouter;

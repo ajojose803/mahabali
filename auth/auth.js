@@ -1,4 +1,5 @@
 const passport = require('passport')
+const User = require("../model/userModel")
 require('dotenv').config();
 
 
@@ -12,7 +13,7 @@ passport.use(new GoogleStrategy({
   },
   async function(request, accessToken, refreshToken, profile, done) {
     try{
-      let user = await userCollection.findOneAndUpdate(
+      let user = await User.findOneAndUpdate(
         { email: profile.emails[0].value },
         {$set:{username: profile.displayName,provider:'google',}},
         {upsert:true,new:true}
@@ -35,6 +36,11 @@ passport.serializeUser(function(user, done){
     done(null, user);
   })
   
-  passport.deserializeUser(function(user, done){
-    done(null, user);
-  })
+  passport.deserializeUser(async function(id, done) {
+    try {
+      let user = await User.findById(id); // Deserialize user from stored ID
+      done(null, user); // Pass user object to req.user
+    } catch (err) {
+      done(err, null);
+    }
+  });

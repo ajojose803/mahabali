@@ -10,10 +10,10 @@ const asyncHandler = require("../../middleware/asyncHandler");
 const loadOrder = asyncHandler(async(req,res)=>{
         const order = await Order.find({}).sort({ createdAt: -1 }).populate({
             path: 'items.productId',
-            model:'Product',
-            //select: 'name description'
+            model:'product',
+            select: 'name description'
         })
-        //console.log(order)
+        console.log(order[0].items[0])
         res.render("admin/adminOrders", { order })
    
 })

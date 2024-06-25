@@ -23,10 +23,34 @@ const LoadProfile = async (req, res) => {
         res.render('user/myAccount', { user, categories, itemCount, currentPage, orders, successMessages })
     } catch (err) {
         console.log(err)
-        res.render('user/lol/servererror')
+        res.render('user/servererror')
 
     }
 }
+const updateProfile = asyncHandler(async (req, res) => {
+    const { username, phone } = req.body;
+    console.log("Name: " + username, phone) 
+
+    try {
+        const userId = req.session.userId; 
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { username, phone }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        
+        req.flash('success', 'Profile updated successfully');
+
+        res.redirect('/profile'); 
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ message: 'Server error' }); 
+    }
+});
 
 const showaddress = async (req, res) => {
     try {
@@ -80,9 +104,10 @@ const addAddress = async (req, res) => {
     try {
         const { firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode, setDefault } = req.body;
         const userId = req.session.userId;
-
-        console.log(userId);
-        console.log(req.body);
+        if (!userId) {
+            req.flash('error', "User not logged in");
+            return res.redirect('/login');
+        }
 
         const existingUser = await Address.findOne({ userId: userId });
         console.log("existingUser:", existingUser);
@@ -112,7 +137,7 @@ const addAddress = async (req, res) => {
             userId: userId,
             address: [{
                 firstName, lastName, phone, email, addressline1, addressline2, city, state, country, pincode,
-                status: setDefault === 'on'  // Set status true if checkbox is checked
+                status: true,
             }]
         });
 
@@ -359,11 +384,40 @@ const loadOrder = asyncHandler(async (req, res) => {
     res.render("user/profile/orderList", { order, user });
 });
 
+const cancelOrder = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const update = await Order.updateOne({ orderId: id}, { status: "cancelled", updated: new Date() })
+    if(!update){
+        req.flash(error, "Order not found")
+
+    }
+
+    const order = await Order.findOne({orderId:id})
+    const items = order.items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+    }))
+    console.log(items);
+
+        for(const item of items){
+            const product = await Product.findOne({_id:item.productId})
+            console.log("product : " + product)
+            product.stock += item.quantity
+            await product.save()
+        }
+        res.redirect('/profile/orders')
+})
+
+const cancelProduct = asyncHandler(async (req, res) => {
+
+})
+
 
 
 module.exports = {
     setDefaultAddress,
     LoadProfile,
+    updateProfile,
     LoadAddAddress,
     addAddress,
     showaddress,
@@ -373,4 +427,5 @@ module.exports = {
     LoadResetPassword,
     updatePassword,
     loadOrder,
+    cancelOrder,
 }

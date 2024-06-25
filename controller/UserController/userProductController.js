@@ -7,13 +7,32 @@ const { render } = require('ejs');
 const getAllProducts = asyncHandler(async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit;
 
         const showOutOfStock = req.query.showOutOfStock === 'true';
         const sort = req.query.sort;
+        const selectedCategory = req.query.category;
+        const search = req.query.search || ''; // Capture the search query
+
+        console.log("req.query.category : " + req.query.category);
 
         let query = { status: true };
+
+        if (selectedCategory) {
+            const category = await Category.findOne({ _id: selectedCategory });
+            console.log("category: ", category);
+            const categoryId = category._id;
+            console.log(categoryId);
+
+            query.category = categoryId;
+            console.log("query.category: ", query.category);
+        }
+
+        if (search) {
+            query.name = { $regex: search, $options: 'i' }; 
+        }
+
         if (!showOutOfStock) {
             query.$or = [
                 { stock: { $gt: 0 } },
@@ -31,7 +50,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
         let sortCriteria = {};
         switch (sort) {
             case 'popularity':
-                sortCriteria.popularity = {viewCount: -1};
+                sortCriteria.viewCount = -1;
                 break;
             case 'price-asc':
                 sortCriteria.price = 1;
@@ -69,8 +88,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
             product.imageUrls = await Promise.all(product.image.map(getObjectSignedUrl));
         }
 
+        const categories = await Category.find({ isListed: true });
+        console.log(categories);
 
-        const categories = await Category.find({ status: true });
         return res.render('user/products', {
             products,
             categories,
@@ -79,13 +99,17 @@ const getAllProducts = asyncHandler(async (req, res) => {
             totalPages,
             limit,
             showOutOfStock,
-            sort
+            sort,
+            selectedCategory,
+            search // Pass the search variable to the template
         });
     } catch (error) {
         console.error('Error fetching all products:', error);
         res.redirect('/error');
     }
 });
+
+
 
 const getProductsByCategory = asyncHandler(async (req, res, category) => {
     try {
@@ -145,6 +169,7 @@ const getProduct = asyncHandler(async (req, res) => {
     // console.log(product)
     res.render("user/productDetails", { product, relatedProducts, user: req.user });
 });
+
 
 
 
