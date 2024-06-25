@@ -101,7 +101,7 @@
           </div>
         </form>
         <div class="mt-3">
-          <span id="countdown">120</span> seconds remaining
+          <span id="countdown"></span> seconds remaining
         </div>
         <div class="mt-3">
           <button id="resend-otp" class="btn btn-secondary" disabled>Resend OTP</button>
@@ -113,10 +113,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function (event) {
-      let countdownElement = document.getElementById('countdown');
-      let resendButton = document.getElementById('resend-otp');
-      let initialTimeLeft = 120; // Initial time in seconds
-      let timeLeft = initialTimeLeft;
+      const countdownElement = document.getElementById('countdown');
+      const resendButton = document.getElementById('resend-otp');
+      const initialTimeLeft = 120; // Initial time in seconds
+      let timeLeft = localStorage.getItem('timeLeft') ? parseInt(localStorage.getItem('timeLeft'), 10) : initialTimeLeft;
       let countdownInterval;
 
       function startCountdown() {
@@ -126,9 +126,11 @@
             clearInterval(countdownInterval);
             resendButton.disabled = false;
             countdownElement.innerHTML = '0';
+            localStorage.removeItem('timeLeft');
           } else {
             countdownElement.innerHTML = timeLeft;
             timeLeft--;
+            localStorage.setItem('timeLeft', timeLeft);
           }
         }, 1000);
       }
@@ -136,17 +138,45 @@
       startCountdown();
 
       resendButton.addEventListener('click', function () {
-        // Resend OTP logic...
-
-        // Reset the timer
-        timeLeft = initialTimeLeft;
-        startCountdown();
-        resendButton.disabled = true;
+        fetch('/resend-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: '<%= email %>' })
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('OTP has been resent successfully');
+              timeLeft = initialTimeLeft;
+              startCountdown();
+              resendButton.disabled = true;
+            } else {
+              alert('Failed to resend OTP. Please try again.');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while resending OTP. Please try again.');
+          });
       });
 
       const otpInputs = document.querySelectorAll('#otp > input');
       otpInputs.forEach((input, index) => {
-        // Existing input event handlers...
+        input.addEventListener('input', () => {
+          if (input.value.length === 1) {
+            if (index < otpInputs.length - 1) {
+              otpInputs[index + 1].focus();
+            }
+          }
+        });
+
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Backspace' && input.value.length === 0 && index > 0) {
+            otpInputs[index - 1].focus();
+          }
+        });
       });
 
       document.querySelector('.otp-form').addEventListener('submit', function (e) {
@@ -155,9 +185,6 @@
           e.preventDefault();
           alert('Please enter a valid 4-digit OTP.');
         }
-
-        // Resume the countdown from the remaining time
-        startCountdown();
       });
     });
   </script>

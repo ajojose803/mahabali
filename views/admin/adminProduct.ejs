@@ -1,4 +1,6 @@
 <%- include('../partials/adminHeader') -%>
+<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/crop.guide/1.5.12/crop.guide.min.css" rel="stylesheet">
+<script src="https://cdn.crop.guide/crop.guide.min.js"></script> -->
 <ul class="list-unstyled">
   <!-- Sidebar links -->
   <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
@@ -172,9 +174,12 @@
                           <label class="col-sm-3 form-control-label">Existing Images</label>
                           <div class="col-sm-9">
                             <% if (data[i].imageUrls && data[i].imageUrls.length > 0) { %>
-                              <% data[i].imageUrls.forEach(imageUrl => { %>
+                              <% data[i].imageUrls.forEach((imageUrl, index) => { %>
                                 <div class="existing-image">
                                   <img src="<%= imageUrl %>" alt="image" style="height: 75px; width: auto; margin: 5px;">
+                                  <div>
+                                    <input type="checkbox" name="removeImages[]" value="<%= imageUrl %>"> Remove
+                                  </div>
                                 </div>
                               <% }) %>
                             <% } else { %>
@@ -182,11 +187,11 @@
                             <% } %>
                           </div>
                         </div>
-                        <div class="line"></div>
+                        
                         <div class="form-group row">
                           <label class="col-sm-3 form-control-label">Upload New Image</label>
                           <div class="col-sm-9">
-                            <input type="file" id="image<%= i %>" class="form-control" name="image">
+                            <input type="file" id="image<%= i %>" class="form-control" name="image" multiple>
                           </div>
                         </div>
                         <div class="line"></div>
@@ -233,7 +238,7 @@
     const inputs = form.querySelectorAll('input, select, textarea');
     let isValid = true;
     inputs.forEach(input => {
-      if (input.value.trim() === '') {
+      if (input.value.trim() === '' && input.hasAttribute('required')) {
         input.style.border = '1px solid red';
         isValid = false;
       } else {
@@ -245,7 +250,6 @@
     }
     return isValid;
   }
-
   function changeStatus(productId) {
     fetch(`/admin/change-status/${productId}`, {
       method: 'PUT'
@@ -280,6 +284,5 @@
         window.location.href = "/admin/product/update-status?id=" + productId;
       }
     }
-  </script>
 </script>
 <%- include('../partials/adminFooter') -%>

@@ -259,6 +259,39 @@
       input.files = new FileList(files); // Update the input's files property
       input.dispatchEvent(new Event('change')); // Trigger change event to refresh preview
     }
+
+    //validation
+    document.addEventListener('DOMContentLoaded', function() {
+    const priceInput = document.querySelector('input[name="price"]');
+    const stockInput = document.querySelector('input[name="stock"]');
+    const discountInput = document.querySelector('input[name="discount"]');
+
+    priceInput.addEventListener('input', function() {
+      if (parseFloat(this.value) < 0) {
+        this.value = 1; // Set a default value or handle as per your application logic
+      }
+    });
+
+    stockInput.addEventListener('input', function() {
+      if (parseInt(this.value) < 0) {
+        this.value = 1; // Set a default value or handle as per your application logic
+      }
+    });
+    
+    discountInput.addEventListener('input', function() {
+      if (parseInt(this.value) < 0) {
+        this.value = 0; // Set a default value or handle as per your application logic
+      }
+    });
+
+
+    const form = document.querySelector('form');
+    form.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+      }
+    });
+  });
   </script>
 </body>
 </html>

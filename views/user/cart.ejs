@@ -85,7 +85,7 @@
                                                     <span class="qtybtn"
                                                         onclick="updateQuantity('<%= item._id %>', '<%= index %>' , 'decrement')">-</span>
                                                     <input type="text" id="qty-<%= index %>"
-                                                        value="<%= item.quantity %>" class="quantity" readonly>
+                                                        value="<%= item.quantity %>" class="quantity"readonly>
                                                     <span class="qtybtn"
                                                         onclick="updateQuantity('<%= item._id %>', '<%= index %>', 'increment')">+</span>
                                                 </div>
@@ -112,7 +112,7 @@
             </div>
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-6">
-                    <p>*The maximum quantity for all products is limited to 10</p>
+                    <p>*The maximum quantity for all products is limited to 8</p>
                     <br>
                     <div class="cart__btn">
                         <a href="/products">Continue Shopping</a>
@@ -154,7 +154,7 @@
 
             if (action === 'decrement' && quantity > 1) {
                 quantity--;
-            } else if (action === 'increment' && quantity < 10) { // assuming 10 is the maximum per product
+            } else if (action === 'increment' && quantity < 8) { 
                 quantity++;
             }
 
@@ -174,8 +174,7 @@
                         console.log('Quantity updated successfully');
                     } else {
                         console.error('Failed to update quantity');
-                        // Show an alert message or other UI feedback to the user
-                        // alert(data.message);
+                        
                     }
                 })
                 .catch(error => console.error('Error:', error));
