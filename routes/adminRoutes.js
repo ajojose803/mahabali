@@ -5,6 +5,7 @@ const categoryController = require('../controller/adminController/categoryContro
 const productController = require('../controller/adminController/productController');
 const userManagement = require('../controller/adminController/userManagement');
 const orderManagement = require('../controller/adminController/orderManagement');
+const couponController = require('../controller/adminController/couponController');
 const auth = require('../middleware/sessionAuth');
 const upload = require('../utils/multer')
 const nocache = require('nocache');
@@ -41,6 +42,11 @@ adminRouter.route('/order/update-status').post(auth.isAdAuth, orderManagement.up
 
 
 //coupons
+adminRouter.route('/coupons').get(auth.isAdAuth, couponController.loadCoupon);
+adminRouter.route('/add-coupon').get(auth.isAdAuth, couponController.loadAddCoupon);
+adminRouter.route('/add-coupon').post(auth.isAdAuth,couponController.addNewCoupon);
+adminRouter.route('/edit-coupon/:id').post(auth.isAdAuth,couponController.editCoupon);
+adminRouter.route('/coupon/update-status').get(couponController.couponStatus); ///use
 
 
 //banners
