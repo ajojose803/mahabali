@@ -77,13 +77,16 @@ const generateOtp = () => {
 
 const password = process.env.GOOGLE_PASSWORD;
 const myEmail = process.env.EMAIL;
+const portNumber = process.env.PORT_NUMBER;
+const host = process.env.HOST;
+const service = process.env.SERVICE;
 
 const sendEmail = async (email, otp) => {
     try {
         const transporter = nodemailer.createTransport({
-            service: "gmail",
-            host: 'smtp.gmail.com',
-            port: 587,
+            service:service,
+            host: host,
+            port: portNumber,
             secure: true,
             auth: {
                 user: myEmail,
