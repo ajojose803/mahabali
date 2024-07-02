@@ -69,6 +69,11 @@ userRouter.route('/wishlist/delete/:productId').get(auth.userAuth,wishlistContro
 userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
 userRouter.route('/checkout/place-order').post(auth.userAuth,checkout.order);
 userRouter.route('/checkout/order-status/:id').get(auth.userAuth,checkout.getOrderStatus);
+userRouter.route('/checkout/apply-coupon').post(auth.userAuth,checkout.applyCoupon);
+userRouter.route('/checkout/revoke-coupon').post(auth.userAuth,checkout.revokeCoupon);
+userRouter.route('/checkout/verify-payment').post(auth.userAuth,checkout.verifyPayment);
+userRouter.route('/checkout/create/orderId').post(auth.userAuth,checkout.createRazorpayOrder);
+
 
 //profile.route()
 userRouter.route('/profile').get(auth.userAuth,userProfile.LoadProfile)

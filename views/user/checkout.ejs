@@ -1,4 +1,4 @@
-<%- include('../partials/userHeader')-%>
+<%- include('../partials/userHeader') -%>
     <style>
         .change-address-btn {
             border-color: red;
@@ -7,6 +7,11 @@
 
         .change-address-btn:hover {
             border-color: rgb(150, 14, 14);
+        }
+
+        #apply-coupon {
+            margin-top: 2%;
+            border-radius: 30px;
         }
     </style>
 
@@ -24,17 +29,16 @@
         </div>
     </div>
     <!-- Breadcrumb End -->
-
     <!-- Checkout Section Begin -->
     <section class="checkout spad">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <h6 class="coupon__link"><span class="icon_tag_alt"></span> <a href="#">Have a coupon?</a> Click
-                        here to enter your code.</h6>
+                        here to select your coupon.</h6>
                 </div>
             </div>
-            <form action="/checkout/place-order/" method="POST" class="checkout__form">
+            <form id="checkoutForm" action="/checkout/place-order/" method="POST" class="checkout__form">
                 <div class="row">
                     <div class="col-lg-12">
                         <h5>Billing detail</h5>
@@ -46,109 +50,263 @@
                                         <input class="form-check-input" type="radio" name="address"
                                             value="<%= defaultAddress._id %>" id="defaultAddressRadio" checked>
                                         <label class="form-check-label" for="defaultAddressRadio">
-                                            <%= defaultAddress.addressline1 %>, <%= defaultAddress.city %>, <%= defaultAddress.state %>, <%= defaultAddress.country %>, <%= defaultAddress.pincode %>
+                                            <%= defaultAddress.addressline1 %>, <%= defaultAddress.city %>, <%=
+                                                        defaultAddress.state %>, <%= defaultAddress.country %>, <%=
+                                                                defaultAddress.pincode %>
                                         </label>
                                     </div>
-                                <% } %>
-                                <div class="dropdown">
-                                    <button class="btn d-inline-flex align-items-center rounded collapsed change-address-btn"
-                                        type="button" id="addressDropdownButton" data-bs-toggle="collapse"
-                                        data-bs-target="#addressCollapse" aria-expanded="false" aria-controls="addressCollapse">
-                                        <i class="fa fa-caret-down"></i>&nbsp;&nbsp;Change
-                                    </button>
-            
-                                    <div class="collapse" id="addressCollapse">
-                                        <div class="card card-body">
-                                            <% if (addresses && addresses.length > 0) { %>
-                                                <% addresses.forEach(address => { %>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="address"
-                                                            value="<%= address._id %>" id="addressRadio<%= address._id %>">
-                                                        <label class="form-check-label" for="addressRadio<%= address._id %>">
-                                                            <%= address.firstName %>, <%= address.addressline1 %>, <%= address.city %>, <%= address.state %>, <%= address.country %>, <%= address.pincode %>
-                                                        </label>
-                                                    </div>
-                                                <% }); %>
-                                            <% } else { %>
-                                                <p>No addresses found. Please add a new address.</p>
-                                            <% } %>
-                                            <a href="/profile/address/new" class="btn btn-danger mt-2">Add New Address</a>
+                                    <% } %>
+                                        <div class="dropdown">
+                                            <button
+                                                class="btn d-inline-flex align-items-center rounded collapsed change-address-btn"
+                                                type="button" id="addressDropdownButton" data-bs-toggle="collapse"
+                                                data-bs-target="#addressCollapse" aria-expanded="false"
+                                                aria-controls="addressCollapse">
+                                                <i class="fa fa-caret-down"></i>&nbsp;&nbsp;Change
+                                            </button>
+                                            <div class="collapse" id="addressCollapse">
+                                                <div class="card card-body">
+                                                    <% if (addresses && addresses.length> 0) { %>
+                                                        <% addresses.forEach(address=> { %>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio"
+                                                                    name="address" value="<%= address._id %>"
+                                                                    id="addressRadio<%= address._id %>">
+                                                                <label class="form-check-label"
+                                                                    for="addressRadio<%= address._id %>">
+                                                                    <%= address.firstName %>, <%= address.addressline1
+                                                                            %>, <%= address.city %>, <%= address.state
+                                                                                    %>, <%= address.country %>, <%=
+                                                                                            address.pincode %>
+                                                                </label>
+                                                            </div>
+                                                            <% }); %>
+                                                                <% } else { %>
+                                                                    <p>No addresses found. Please add a new address.</p>
+                                                                    <% } %>
+                                                                        <a href="/profile/address/new"
+                                                                            class="btn btn-danger mt-2">Add New
+                                                                            Address</a>
+                                                </div>
+                                            </div>
                                         </div>
+                            </div>
+                            <div class="checkout__order">
+                                <h5>Your order</h5>
+                                <div class="checkout__order__product">
+                                    <ul>
+                                        <% if (cart.length> 0) { %>
+                                            <% cart.forEach((item, index)=> { %>
+                                                <li>
+                                                    <%= item.productId.name %> <span>₹ <%= item.productId.price *
+                                                                item.quantity %></span>
+                                                </li>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <p>No orders found.</p>
+                                                        <% } %>
+                                    </ul>
+                                </div>
+                                <div class="checkout__order__total">
+                                    <% const subtotal=cart.reduce((acc, item)=> acc + (item.productId.price *
+                                        item.quantity), 0); %>
+                                        <% const deliveryFee=subtotal < 1000 ? 99 : 0; %>
+                                            <% const total=subtotal + deliveryFee; %>
+                                                <ul>
+                                                    <li>Subtotal <span id="subt">₹ <%= subtotal %></span></li>
+                                                    <% if (deliveryFee> 0) { %>
+                                                        <li>Delivery Fee <span id="delivery">₹ <%= deliveryFee %></span>
+                                                        </li>
+                                                        <% } %>
+                                                            <li>Total <span id="total">₹ <%= total %></span></li>
+                                                </ul>
+                                </div>
+                                <div class="checkout__order__widget">
+                                    <p>Select the mode of Payment</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="pay" id="Cash on Delivery"
+                                            value="Cash on Delivery">
+                                        <label class="form-check-label" for="Cash on Delivery">Cash on Delivery</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="pay" id="upi" value="upi"
+                                            checked>
+                                        <label class="form-check-label" for="upi">UPI</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="pay" id="wallet"
+                                            value="wallet">
+                                        <label class="form-check-label" for="wallet">Wallet</label>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-            
-                    <div class="col-lg-12">
-                        <div class="checkout__order">
-                            <h5>Your order</h5>
-                            <div class="checkout__order__product">
-                                <ul>
-                                    <% if (cart && cart.length > 0) { %>
-                                        <% cart.forEach(item => { %>
-                                            <li>
-                                                <%= item.productId.name %> <span>₹ <%= item.productId.price %> x <%= item.quantity %></span>
-                                            </li>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <p>No orders found.</p>
-                                    <% } %>
-                                </ul>
-                            </div>
-                            <div class="checkout__order__total">
-                                <ul>
-                                    <li>Subtotal <span id="subtotal">₹ <%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %></span></li>
-                                    <li>Total <span id="total">₹ <%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %></span></li>
-                                </ul>
-                            </div>
-                            <div class="checkout__order__widget">
-                                <p>Select the mode of Payment</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="pay" id="flexRadioDefault1" value="Cash on Delivery">
-                                    <label class="form-check-label" for="flexRadioDefault1">
-                                        Cash on Delivery
-                                    </label>
+                                <!-- Coupon Dropdown -->
+                                <div class="form-group">
+                                    <label for="coupon">Select Coupon:</label>
+                                    <select name="coupon" id="coupon" class="form-control">
+                                        <option value="">--Select Coupon--</option>
+                                        <% coupons.forEach(coupon=> { %>
+                                            <option value="<%= coupon.code %>">
+                                                <%= coupon.code %> - <%= coupon.discountAmount %>
+                                            </option>
+                                            <% }); %>
+                                    </select>
+                                    <button type="button" class="btn btn-danger mt-2" id="applyCouponBtn">Apply
+                                        Coupon</button>
+                                    <button type="button" class="btn btn-secondary mt-2" id="revokeCouponBtn">Revoke
+                                        Coupon</button>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="pay" id="flexRadioDefault2" checked value="razorpay">
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        Razorpay
-                                    </label>
-                                </div>
+                                <!-- Hidden inputs for amount and wallet -->
+                                <input type="hidden" name="amount" id="amount" value="<%= total %>">
+                                <input type="hidden" name="wallet" id="wallet" value="<%= user.wallet %>">
+                                <button type="button" class="site-btn" id="placeOrderBtn">Place order</button>
                             </div>
-                            <!-- Hidden inputs for amount and wallet -->
-                            <input type="hidden" name="amount" id="amount" value="<%= cart.reduce((acc, item) => acc + (item.productId.price * item.quantity), 0) %>">
-                            <input type="hidden" name="wallet" id="wallet" value="<%= user.wallet %>">
-            
-                            <button type="submit" class="site-btn">Place order</button>
                         </div>
                     </div>
                 </div>
             </form>
-            
         </div>
     </section>
+
     <!-- Checkout Section End -->
 
-    <%- include('../partials/userFooter')-%>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
-        // Select the default payment method on page load
-        document.querySelector('input[name="pay"][value="razorpay"]').checked = true;
-    
-        document.querySelectorAll('.select-address-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const addressId = this.getAttribute('data-address-id');
-                document.querySelectorAll('input[name="address"]').forEach(input => {
-                    input.checked = false;
+
+        function couponApply() {
+            var couponElement = document.getElementById("coupon");
+            if (!couponElement) {
+                console.error("Coupon element not found");
+                return;
+            }
+
+            var couponCode = couponElement.value;
+            var subtotalElement = document.getElementById("subt");
+            var totalElement = document.getElementById("total");
+            var amountElement = document.getElementById("amount");
+
+            fetch("/checkout/apply-coupon", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ code: couponCode, subtotal: parseFloat(amountElement.value) }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let newSubtotal = data.newSubtotal;
+                        let newTotal = data.newTotal;
+
+                        subtotalElement.textContent = `₹ ${newSubtotal}`;
+                        totalElement.textContent = `₹ ${newTotal}`;
+                        amountElement.value = newTotal;
+
+                        Swal.fire({
+                            text: "Coupon applied successfully",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        });
+                    } else {
+                        Swal.fire({
+                            text: "Failed to apply coupon",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
                 });
-                const newAddressInput = document.createElement('input');
-                newAddressInput.type = 'hidden';
-                newAddressInput.name = 'address';
-                newAddressInput.value = addressId;
-                document.querySelector('.checkout__form').appendChild(newAddressInput);
-            });
+        }
+
+        function couponRevoke() {
+            var couponElement = document.getElementById("coupon");
+            if (!couponElement) {
+                console.error("Coupon element not found");
+                return;
+            }
+
+            var subtotalElement = document.getElementById("subt");
+            var totalElement = document.getElementById("total");
+            var amountElement = document.getElementById("amount");
+
+            fetch("/checkout/revoke-coupon", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ subtotal: parseFloat(amountElement.value) }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let newSubtotal = data.newSubtotal;
+                        let newTotal = data.newTotal;
+
+                        subtotalElement.textContent = `₹ ${newSubtotal}`;
+                        totalElement.textContent = `₹ ${newTotal}`;
+                        amountElement.value = newTotal;
+
+                        Swal.fire({
+                            text: "Coupon revoked successfully",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        });
+                    } else {
+                        Swal.fire({
+                            text: "Failed to revoke coupon",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        }
+
+
+        document.getElementById("placeOrderBtn").addEventListener("click", function () {
+            var amount = document.getElementById("amount").value;
+            var wallet = document.getElementById("wallet").value;
+            var paymentMode = document.querySelector('input[name="pay"]:checked').value;
+
+            if (paymentMode === "Cash on Delivery") {
+                document.getElementById("checkoutForm").submit();
+            } else {
+                var options = {
+                    key: "<%= process.env.RAZORPAY_KEY_ID %>",
+                    amount: amount * 100,
+                    currency: "INR",
+                    name: "Your Company Name",
+                    description: "Test Transaction",
+                    handler: function (response) {
+                        alert(response.razorpay_payment_id);
+                        document.getElementById("checkoutForm").submit();
+                    },
+                    prefill: {
+                        name: "<%= user.firstName %>",
+                        email: "<%= user.email %>",
+                        contact: "<%= user.phone %>"
+                    },
+                    notes: {
+                        address: "Your address"
+                    },
+                    theme: {
+                        color: "#3399cc"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            }
         });
+
+        document.getElementById("applyCouponBtn").addEventListener("click", couponApply);
+        document.getElementById("revokeCouponBtn").addEventListener("click", couponRevoke);
+        document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
+
     </script>
-    
+    <%- include('../partials/userFooter') -%>
