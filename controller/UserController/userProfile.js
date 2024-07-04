@@ -6,6 +6,8 @@ const Order = require('../../model/orderModel');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 const asyncHandler = require('../../middleware/asyncHandler');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
 
 
 const LoadProfile = async (req, res) => {
@@ -343,11 +345,11 @@ const updatePassword = async (req, res) => {
 }
 
 
-const loadOrder = asyncHandler(async (req, res) => {
+const loadOrderList = asyncHandler(async (req, res) => {
 
     const userId = req.session.userId;
     const user = await User.findById(userId);
-    console.log(user);
+    //console.log(user);
     // Find orders for the specific user
 
     const order = await Order.find({ userId }).sort({ createdAt: -1 })
@@ -378,7 +380,7 @@ const loadOrder = asyncHandler(async (req, res) => {
     //     };
     // }));
 
-    console.log(order);
+    //console.log(order);
 
     // Render the orders page with the user's orders
     res.render("user/profile/orderList", { order, user });
@@ -397,7 +399,7 @@ const cancelOrder = asyncHandler(async (req, res) => {
         productId: item.productId,
         quantity: item.quantity,
     }))
-    console.log(items);
+    //console.log(items);
 
         for(const item of items){
             const product = await Product.findOne({_id:item.productId})
@@ -409,10 +411,139 @@ const cancelOrder = asyncHandler(async (req, res) => {
 })
 
 const cancelProduct = asyncHandler(async (req, res) => {
+    const orderId = req.params.orderId;
+    const productId = req.params.productId;
 
-})
+    // Find the order and the product within it
+    const order = await Order.findOne({ orderId: orderId });
+    if (!order) {
+        req.flash('error', 'Order not found');
+        return res.redirect('/profile/orders');
+    }
 
+    const productItem = order.items.find(item => item.productId.toString() === productId.toString());
+    if (!productItem) {
+        req.flash('error', 'Product not found in the order');
+        return res.redirect('/profile/orders');
+    }
 
+    // Update order status and remove the product item
+    order.status = 'Cancel requested';
+    order.updatedAt = new Date();
+
+    // Remove the product from order items and adjust stock
+    order.items = order.items.filter(item => item.productId.toString() !== productId.toString());
+
+    // Save updated order
+    await order.save();
+
+    // Increase the stock of the cancelled product
+    const product = await Product.findOne({ _id: productId });
+    if (product) {
+        product.stock += productItem.quantity;
+        await product.save();
+    }
+
+    res.redirect('/profile/orders');
+});
+
+const downloadInvoice = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        console.log("orderId for Invoice: ", orderId);
+        const order = await Order.findOne({ orderId: orderId }).populate({
+            path: 'items.productId',
+            select: 'name description',
+        });
+
+        // Generate the PDF document
+        const pdfBuffer = await generateInvoice(order);
+
+        // Set response headers and send the PDF buffer
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.orderId}.pdf`);
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.log(error);
+        res.render('user/servererror');
+    }
+}
+
+const generateInvoice = async (order) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const doc = new PDFDocument();
+            let buffers = [];
+
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => {
+                const pdfBuffer = Buffer.concat(buffers);
+                resolve(pdfBuffer);
+            });
+
+            // Document Title
+            doc.fontSize(25).text('Invoice', { align: 'center' });
+
+            // Invoice Details
+            doc.fontSize(12).text(`Invoice Number: INV-${order.orderId}`, { align: 'left' });
+            doc.fontSize(12).text(`Invoice Date: ${new Date().toLocaleDateString()}`, { align: 'left' });
+
+            // Sender Information
+            doc.moveDown().fontSize(12).text('Sender:', { bold: true });
+            doc.text(`Company: Mahabali`);
+            doc.text(`Address: HSR layout, Bengaluru, India`);
+            doc.text(`Zip: 560101`);
+            doc.text(`City: Bengaluru`);
+            doc.text(`Country: INDIA`);
+            doc.text(`Phone: 83103693966`);
+            doc.text(`Email: mahabalistore@gmail.com`);
+            doc.text(`Website: www.mahabali.com`);
+
+            // Items Table Header
+            doc.moveDown().fontSize(12).text('Items:', { bold: true });
+            doc.moveDown();
+            const tableTop = doc.y;
+            const tableLeft = doc.x;
+            const col1Width = 300;
+            const col2Width = 100;
+            const col3Width = 100;
+
+            doc.text('Description', tableLeft, tableTop, { bold: true });
+            doc.text('Quantity', tableLeft + col1Width, tableTop, { bold: true });
+            doc.text('Price', tableLeft + col1Width + col2Width, tableTop, { bold: true });
+
+            // Items Table Rows
+            order.items.forEach((item, index) => {
+                const rowTop = tableTop + 20 + (index * 20);
+                doc.text(item.productId.name, tableLeft, rowTop);
+                doc.text(item.quantity.toString(), tableLeft + col1Width, rowTop);
+                doc.text(`₹${item.price.toFixed(2)}`, tableLeft + col1Width + col2Width, rowTop);
+            });
+
+            // Move to the next line after the table
+            doc.moveDown();
+
+            // Reset the x position to the left margin
+            doc.x = 72; // Default left margin in PDFKit
+
+            // Total Amount
+            doc.fontSize(12).text(`Total: ₹${order.amount.toFixed(2)}`, {
+                bold: true,
+                align: 'left',
+            });
+
+            // Closing
+            doc.moveDown().fontSize(12).text('Thank you for shopping at Mahabali!', {
+                align: 'left',
+            });
+
+            // Finalize the PDF and end the stream
+            doc.end();
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
 
 module.exports = {
     setDefaultAddress,
@@ -426,6 +557,9 @@ module.exports = {
     deleteAddress,
     LoadResetPassword,
     updatePassword,
-    loadOrder,
+    loadOrderList,
     cancelOrder,
+    cancelProduct,
+    downloadInvoice,
+    
 }
