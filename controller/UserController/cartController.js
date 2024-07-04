@@ -38,6 +38,7 @@ const addtocart = asyncHandler(async (req, res) => {
     }
 
     cart.items[productIndex].quantity = newQuantity;
+    cart.items[productIndex].total = product.price * newQuantity; // Calculate total
   } else {
     // Otherwise, add the product to the cart
     if (product.stock < 1) {
@@ -45,7 +46,12 @@ const addtocart = asyncHandler(async (req, res) => {
       return res.redirect('/cart');
     }
 
-    cart.items.push({ productId, quantity: 1 });
+    cart.items.push({ 
+      productId: product._id,
+      quantity: 1,
+      price: product.price, // Set price
+      total: product.price * 1 // Calculate total
+    });
   }
 
   await cart.save();
@@ -53,6 +59,7 @@ const addtocart = asyncHandler(async (req, res) => {
   // Redirect to the cart page after successfully adding the product
   return res.redirect('/cart');
 });
+
 
 
 // Handler to load the cart
@@ -116,7 +123,7 @@ const updateCart = asyncHandler(async (req, res) => {
     const currentQuantity = cart.items[itemIndex].quantity;
     const product = await Product.findById(cart.items[itemIndex].productId);
     const stockLimit = product.stock.find(stock => stock.size == size).quantity;
-    console.log(stockLimit)
+
     let updatedQuantity;
 
     if (action == "1") {
@@ -128,13 +135,13 @@ const updateCart = asyncHandler(async (req, res) => {
     }
 
     if (updatedQuantity > stockLimit && action == "1") {
-      return re.status(400).json({ success: false, error: "Quantity exceeds stock limits" });
+      return res.status(400).json({ success: false, error: "Quantity exceeds stock limits" });
     } else if (updatedQuantity == 0) {
       return res.status(400).json({ success: false, error: "Quantity cannot be zero" });
     }
 
     cart.items[itemIndex].quantity = updatedQuantity;
-    cart.items[itemIndex].total = product.price * updatedQuantity;
+    cart.items[itemIndex].total = product.price * updatedQuantity; // Update total
     await cart.save();
 
     const total = cart.items.reduce((acc, item) => acc + item.total, 0);
@@ -152,6 +159,7 @@ const updateCart = asyncHandler(async (req, res) => {
     res.render("user/servererror");
   }
 });
+
 
 
 const updateQuantity = asyncHandler(async (req, res) => {
