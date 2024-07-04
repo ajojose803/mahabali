@@ -71,8 +71,9 @@ userRouter.route('/checkout/place-order').post(auth.userAuth,checkout.order);
 userRouter.route('/checkout/order-status/:id').get(auth.userAuth,checkout.getOrderStatus);
 userRouter.route('/checkout/apply-coupon').post(auth.userAuth,checkout.applyCoupon);
 userRouter.route('/checkout/revoke-coupon').post(auth.userAuth,checkout.revokeCoupon);
-userRouter.route('/checkout/verify-payment').post(auth.userAuth,checkout.verifyPayment);
+//userRouter.route('/checkout/verify-payment').post(auth.userAuth,checkout.verifyPayment);
 userRouter.route('/checkout/create/orderId').post(auth.userAuth,checkout.createRazorpayOrder);
+userRouter.route('/checkout/pay-with-wallet').post(auth.userAuth,checkout.payWithWallet);
 
 
 //profile.route()
@@ -96,7 +97,9 @@ userRouter.route('/profile/change-password').get(auth.userAuth,userProfile.LoadR
 userRouter.route('/profile/password-update').post(auth.userAuth,userProfile.updatePassword)
 
 //orders
-userRouter.route('/profile/orders').get(auth.userAuth,userProfile.loadOrder);
+userRouter.route('/profile/orders').get(auth.userAuth,userProfile.loadOrderList);
 userRouter.route('/order/:id/cancel').get(auth.userAuth,userProfile.cancelOrder);
+userRouter.route('/order/:orderId/cancel-product/:productId').get(auth.userAuth,userProfile.cancelProduct);
+userRouter.route('/order/invoice/:orderId').get(auth.userAuth,userProfile.downloadInvoice);
 
 module.exports = userRouter;

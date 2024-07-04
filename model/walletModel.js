@@ -1,55 +1,33 @@
-const mongoose = require("mongoose");
-
-const walletSchema = new mongoose.Schema({
-  balance: {
-    type: Number,
-    default: 0,
-  },
-  transactions: [
-    {
-      type: {
-        type: String,
-        enum: ["credit", "debit"],
-        required: true,
-      },
-      amount: {
-        type: Number,
-        required: true,
-      },
-      description: {
-        type: String,
-        required: true,
-      },
-      date: {
-        type: Date,
-        default: Date.now,
-      },
+const mongoose = require('mongoose')
+const schema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
     },
-  ],
+
+    history: [{
+
+        transaction: {
+            type: String,
+            required: true,
+        },
+        amount: {
+            type: Number,
+            required: true,
+        },
+        date: {
+            type: Date,
+            required: true,
+        },
+        reason: {
+            type: String
+        }
+    },
+    ],
+
 });
 
-// Method to credit the balance and add a transaction
-walletSchema.methods.creditBalance = async function (amount, description) {
-  this.balance += amount;
-  this.transactions.push({
-    type: "credit",
-    amount: amount,
-    description: description,
-  });
-  await this.save();
-};
 
-// Method to debit the balance and add a transaction
-walletSchema.methods.debitBalance = async function (amount, description) {
-  this.balance -= amount;
-  this.transactions.push({
-    type: "debit",
-    amount: amount,
-    description: description,
-  });
-  await this.save();
-};
+const walletCollection = new mongoose.model("wallet", schema)
 
-const Wallet = mongoose.model("Wallet", walletSchema);
-
-module.exports = Wallet;
+module.exports = walletCollection;

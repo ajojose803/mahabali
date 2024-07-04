@@ -15,18 +15,18 @@ const getAllProducts = asyncHandler(async (req, res) => {
         const selectedCategory = req.query.category;
         const search = req.query.search || ''; // Capture the search query
 
-        console.log("req.query.category : " + req.query.category);
+        //console.log("req.query.category : " + req.query.category);
 
         let query = { status: true };
 
         if (selectedCategory) {
             const category = await Category.findOne({ _id: selectedCategory });
-            console.log("category: ", category);
+            //console.log("category: ", category);
             const categoryId = category._id;
-            console.log(categoryId);
+            //console.log(categoryId);
 
             query.category = categoryId;
-            console.log("query.category: ", query.category);
+            //console.log("query.category: ", query.category);
         }
 
         if (search) {

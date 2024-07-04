@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema({
   items: [{
     productId: {
       type: Schema.Types.ObjectId,
-      ref: 'Product',
+      ref: 'product',
       required: true,
     },
     quantity: {
@@ -33,6 +33,11 @@ const orderSchema = new mongoose.Schema({
       required: true,
       min: [0, 'Price must be positive'],
     },
+    orderId: {
+      type: String,
+      default: shortid.generate,
+      unique: true,
+    },
   }],
   wallet: {
     type: Number,
@@ -40,17 +45,17 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: "pending",
+    default: "Pending",
     enum: [
-      "pending",
-      "processing",
-      "shipped",
-      "delivered",
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
       "Cancel requested",
-      "cancelled",
-      "returned",
-      "returnrequest",
-      "paymentpending",
+      "Cancelled",
+      "Returned",
+      "Return requested",
+      "Payment pending",
     ],
   },
   address: {
@@ -65,8 +70,7 @@ const orderSchema = new mongoose.Schema({
   payment: {
     type: String,
     required: true,
-    enum: ["Credit Card", "Debit Card", "Cash on Delivery", "Wallet","Razorpay", "UPI"],
-  },
+    },
   return: [{
     reason: {
       type: String,

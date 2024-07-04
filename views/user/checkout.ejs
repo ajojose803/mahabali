@@ -276,6 +276,38 @@
 
             if (paymentMode === "Cash on Delivery") {
                 document.getElementById("checkoutForm").submit();
+            } else if (paymentMode === "wallet") {
+                if (wallet >= amount) {
+                    // Update wallet balance in backend
+                    fetch("/checkout/pay-with-wallet", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ amount: amount })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById("checkoutForm").submit();
+                            } else {
+                                Swal.fire({
+                                    text: "Payment failed",
+                                    icon: "error",
+                                    confirmButtonText: "OK"
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
+                } else {
+                    Swal.fire({
+                        text: "Insufficient wallet balance",
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    });
+                }
             } else {
                 var options = {
                     key: "<%= process.env.RAZORPAY_KEY_ID %>",

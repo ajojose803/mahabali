@@ -184,7 +184,7 @@
                                 <%= item.productId.name %><br>
                                 <strong>Price:</strong> ₹ <%= item.price %><br>
                                 <strong>Quantity:</strong> <%= item.quantity %><br>
-                                <button class="cancel-product-button" data-order-id="<%= data.orderId %>" data-product-id="<%= item.productId._id %>">Cancel Product</button>
+                                <button a href="/order/:orderId/cancel-product/:productId" class="cancel-product-button" data-order-id="<%= data.orderId %>" data-product-id="<%= item.productId._id %>">Cancel Product</button>
                             </div>
                             <br>
                             <% }); %>
@@ -218,7 +218,7 @@
 
     // Function to generate invoice
     function generateInvoice(orderId) {
-        window.location.href = '/order/' + orderId + '/invoice';
+        window.location.href = '/order/invoice/' + orderId;
     }
 
     // Function to cancel order with SweetAlert confirmation

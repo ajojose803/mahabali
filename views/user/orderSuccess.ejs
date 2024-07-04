@@ -48,19 +48,21 @@
                 <h3>Your Order Details</h3>
                 <p><strong>Order ID:</strong> <%= orderId %></p>
                 <p><strong>Status:</strong>
-                    <% if (orderStatus === 'pending') { %>
+                    <% if (orderStatus === 'Pending') { %>
                         Pending
-                    <% } else if (orderStatus === 'delivered') { %>
+                    <% } else if (orderStatus === 'Delivered') { %>
                         Delivered
-                    <% } else if (orderStatus === 'shipped') { %>
+                    <% } else if (orderStatus === 'Shipped') { %>
                         Shipped
-                    <% } else if (orderStatus === 'cancelled') { %>
+                    <% } else if (orderStatus === 'Cancelled') { %>
                         Cancelled
-                    <% } else if (orderStatus === 'returned') { %>
+                    <% } else if (orderStatus === 'Cancel requested') { %>
+                        Cancel requested
+                    <% } else if (orderStatus === 'Returned') { %>
                         Returned
-                    <% } else if (orderStatus === 'returnrequest') { %>
+                    <% } else if (orderStatus === 'Return requested') { %>
                         Return Requested
-                    <% } else if (orderStatus === 'paymentpending') { %>
+                    <% } else if (orderStatus === 'Payment pending') { %>
                         Payment Pending
                     <% } else { %>
                         Unknown
