@@ -1,0 +1,289 @@
+<%- include('../../partials/userHeader')-%>
+    <!-- Breadcrumb Begin -->
+    <style>
+        .border-success {
+            border-color: #049827 !important;
+        }
+
+        .border-danger {
+            border-color: #db0116 !important;
+        }
+
+        .shop__sidebar {
+            padding: 20px;
+        }
+
+        .contact__content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .contact__content ul a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .contact__content ul a.active {
+            background-color: #c91414;
+            color: white;
+        }
+
+        .contact__content ul a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group input[readonly] {
+            background-color: #f9f9f9;
+        }
+
+        .checkout__form__input input:focus {
+            border-color: #c91414;
+            outline: none;
+        }
+
+        .site-btn-container {
+            text-align: center;
+        }
+
+        .site-btn {
+            padding: 12px 25px;
+            background-color: #c91414;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .site-btn:hover {
+            background-color: #811111;
+        }
+    </style>
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="/"><i class="fa fa-home"></i> Home</a>
+                        <a href="/profile">My Account</a>
+                        <span>Profile</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Contact Section Begin -->
+    <section class="spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <div class="shop__sidebar">
+                        <!-- Filter Sidebar -->
+                        <div class="contact__content">
+                            <h5 class=>My Account</h5>
+                            <br>
+                            <ul>
+                                <a href="/profile/">
+                                    <span class="fa fa-info-circle" style="margin-right: 10px;"></span> Personal
+                                    Information
+                                </a>
+                                <a href="/profile/address">
+                                    <span class="fa fa-address-card" style="margin-right: 10px;"></span> Address
+                                </a>
+                                <a href="/profile/orders">
+                                    <span class="fa fa-shopping-bag" style="margin-right: 10px;"></span> Orders
+                                </a>
+                                <a href="/profile/wallet" class="active">
+                                    <span class="fa fa-credit-card" style="margin-right: 10px;"></span> Wallet
+                                </a>
+                                <a href="/profile/change-password">
+                                    <span class="fa fa-key" style="margin-right: 10px;"></span> Change Password
+                                </a>
+                            </ul>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-9">
+                    <div class="form-container">
+                        <h2>Wallet History</h2>
+                        <h4 class="mb-4 text-center">Balance: ₹<%= user.wallet %></h4>
+                        <form id="Form" class="mb-4 mx-auto">
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="input-group w-50">
+                                    <input type="number" id="Amount" style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"
+                                        name="Amount" class="form-control" placeholder="Enter Amount" min="0">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-danger my-auto"
+                                            style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"
+                                            onclick="RazorpayWallet(event)">Add To Wallet</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <% if(wallet && wallet.length> 0) { %>
+                            <div class="row">
+                                <% wallet.forEach((entry, index)=> { %>
+                                    <div class="col-md-6 mb-4">
+                                        <div
+                                            class="card  <%= entry.history.transaction === 'Credited' ? 'border border-success' : 'border border-danger'; %>">
+                                            <div class="card-body">
+                                                <h5
+                                                    class="card-title font-weight-bold  <%= entry.history.transaction === 'Credited' ? 'text-success' : 'text-danger'; %>">
+                                                    <%= entry.history.transaction %>
+                                                </h5>
+
+
+                                                <p class="card-text text-black">Reason: <%= entry.history.reason %>
+                                                </p>
+                                                <p class="card-text text-black">Amount: ₹<%= entry.history.amount %>
+                                                </p>
+                                                <p class="card-text text-black">Date: <%= new
+                                                        Date(entry.history.date).toLocaleString() %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% if((index + 1) % 2===0 && (index + 1) !==wallet.length) { %>
+                            </div>
+                            <div class="row">
+                                <% } %>
+                                    <% }); %>
+                            </div>
+                            <% } else { %>
+                                <p class="text-center">No history available.</p>
+                                <% } %>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        async function RazorpayWallet() {
+            event.preventDefault()
+
+            let amountToPay = document.getElementById('Amount').value
+            console.log(amountToPay);
+            if (!amountToPay) {
+                Swal.fire({
+                    text: 'please enter an amount',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        title: 'text-danger',
+                        popup: 'swal2-popup-custom',
+                        confirmButton: 'btn btn-danger'
+                    },
+                    showCancelButton: false,
+                    showCloseButton: true,
+                    showLoaderOnConfirm: false,
+                    timer: 3000
+                });
+
+            }
+
+
+
+            else {
+                console.log("adding rzp cash");
+                var options = {
+                    key: 'rzp_test_3TxK9TdVgtd1BD',
+                    amount: amountToPay * 100,
+                    currency: "INR",
+                    name: "Mahabali",
+                    description: "Test Transaction",
+                    image: "https://i.ibb.co/Jxd5tjS/uklogo.jpg",
+                    order_id: orderId,
+                    handler: function (response) {
+                        // alert(response.razorpay_payment_id);
+                        document.getElementById("Form").method = "post";
+                        document.getElementById("Form").action = "/wallet-topup";
+                        document.getElementById("Form").submit();
+                    },
+
+                    theme: {
+                        color: "#afb5f9",
+                    },
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.on("payment.failed", function (response) {
+                    alert(response.error.code);
+                    alert(response.error.description);
+                    alert(response.error.source);
+                    alert(response.error.step);
+                    alert(response.error.reason);
+                    alert(response.error.metadata.payment_id);
+                });
+                rzp1.open();
+
+                event.preventDefault();
+
+                var orderId;
+                $(document).ready(function () {
+                    var settings = {
+                        url: "/walletcreate/orderId",
+                        method: "POST",
+                        timeout: 0,
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        data: JSON.stringify({
+                            amount: amountToPay * 100,
+                        }),
+                    };
+
+                    $.ajax(settings).done(function (response) {
+                        orderId = response.orderId;
+                        console.log(orderId);
+                        $("button").show();
+                    });
+                });
+            }
+        }
+
+    </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <%- include('../../partials/userFooter') -%>

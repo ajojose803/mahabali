@@ -273,6 +273,7 @@
             var amount = document.getElementById("amount").value;
             var wallet = document.getElementById("wallet").value;
             var paymentMode = document.querySelector('input[name="pay"]:checked').value;
+            var address = document.querySelector('input[name="address"]:checked').value;
 
             if (paymentMode === "Cash on Delivery") {
                 document.getElementById("checkoutForm").submit();
@@ -284,7 +285,7 @@
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ amount: amount })
+                        body: JSON.stringify({ amount: amount, address: address })
                     })
                         .then(response => response.json())
                         .then(data => {
@@ -313,7 +314,7 @@
                     key: "<%= process.env.RAZORPAY_KEY_ID %>",
                     amount: amount * 100,
                     currency: "INR",
-                    name: "Your Company Name",
+                    name: "Mahabali",
                     description: "Test Transaction",
                     handler: function (response) {
                         alert(response.razorpay_payment_id);

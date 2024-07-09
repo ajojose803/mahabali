@@ -75,6 +75,7 @@ const LoadCart = asyncHandler(async (req, res) => {
     path: 'items.productId',
     model: 'product'
   });
+  //services folder
 
   // Check if the cart exists and has items
   if (!cart || !cart.items || cart.items.length === 0) {

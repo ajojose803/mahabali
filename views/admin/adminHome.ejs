@@ -19,4 +19,485 @@
       </div>
     </div>
 
+    <style>
+         .excel {
+          margin-left: -120px;
+        }
+    
+        .flot-chart-wrapper {
+          margin-bottom: 30px;
+        }
+    
+        .timeline-widget .timeline-item {
+          margin-bottom: 20px;
+        }
+    
+        .timeline-time {
+          font-size: 14px;
+        }
+    
+        .timeline-desc {
+          font-size: 18px;
+        }
+    
+        .table-responsive {
+          overflow-x: auto;
+        }
+       .card {
+                height: 200px; 
+                margin: 10px; 
+                border-radius: 10px;
+                background-color: #ece2f9;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            }
+    </style>
+    
+          <main role="main" class="main-content">
+            <div class="container-fluid">
+            <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h3 class="" style="color: #3086d5;">Welcome!</h3>
+          </div>
+          <form action="/admin/downloadsales" method="post" class="mb-3">
+            <div class="row align-items-end">
+              <div class="col-md-3 mb-3">
+                <label for="startDate" class="form-label">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" class="form-control" placeholder="Start Date">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="endDate" class="form-label">End Date:</label>
+                <input type="date" id="endDate" name="endDate" class="form-control" placeholder="End Date">
+              </div>
+              <div class="col-md-3 mb-3">
+                <button type="submit" name="submitBtn" value="pdf" style="background-color: #3086d5;" class="btn btn-primary btn-block w-50">
+                  <i class="fa fa-download mr-1"></i> Pdf
+                </button>
+              </div>
+              <div class="col-md-3 mb-3">
+                <button type="submit" name="submitBtn" value="excel" style="background-color: #3086d5;" class="btn btn-primary btn-block excel w-50">
+                  <i class="fa fa-download mr-1"></i> Excel
+                </button>
+              </div>
+            </div>
+          </form>
+          <% if(errorMessages && errorMessages.length>0){ %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <button class="btn-close mt-2" style="float: inline-end;" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+              <strong>
+                <%= errorMessages %>
+              </strong>
+            </div>
+            <% } %>
+            </div>
+            <br><br>
+    
+    
+          <header class="header d-flex justify-content-between align-items-center mb-5">
+            <div class="card text-center" style="width: 25%;">
+                <div class="icon mt-2 mb-2">
+                    <svg width="50" height="50" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="content">
+                  <h5 class="card-title mb-9 fw-semibold"> Users </h5>
+                  <h4 class="count fw-semibold mb-3"><%= userCount %></h4>
+                    <span class="label">users</span>
+                </div>
+            </div>
+    
+            <div class="card text-center" style="width: 25%;">
+                <div class="icon mt-2 mb-2">
+                    <svg width="50" height="50" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                </div>
+                <div class="content">
+                  <h5 class="card-title mb-9 fw-semibold">  Total Orders  </h5>
+                  <h4 class="count fw-semibold mb-3">  <%= orders.length > 0 ? orders[0].totalOrders : 'No orders' %></h4>
+    
+                    <span class="label">orders</span>
+                </div>
+            </div>
+    
+            <div class="card text-center" style="width: 25%;">
+                <div class="icon mt-2 mb-2">
+                    <svg width="50" height="50" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2-8h.01M15 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2zm-6-2V6m4 12V6m-4 4h4"></path>
+                    </svg>
+                </div>
+                <div class="content">
+                  <h5 class="card-title mb-9 fw-semibold"> Total Discounts </h5>
+                  <h4 class="count fw-semibold mb-3">₹<%= totalDiscountSum %></h4>
+                    <span class="label">discount</span>
+                </div>
+            </div>
+    
+            <div class="card text-center" style="width: 25%;">
+                <div class="icon mt-2 mb-2">
+                    <svg width="50" height="50" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                </div>
+                <div class="content">
+                  <h5 class="card-title mb-9 fw-semibold"> Total Earnings </h5>
+                  <h4 class="count fw-semibold mb-3">₹<%= orders.length > 0 ? orders[0].totalAmount : '0' %></h4>
+    
+                    <span class="label">revenue</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container-fluid">
+          <div class="container mb-2" style="background-color: rgb(255, 255, 255);">
+          <div class="row">
+        <div class="col-lg-12">
+          
+        
+              <h5 class="card-title fw-bold mb-4 mt-2 text-center">Order Details</h5>
+              <div class="table-responsive text-center">
+                <table class="table table-bordered table-striped mb-0">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Image</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Product Name</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Total Sold</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Total Price</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Total Discount</h6>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% products.forEach(product=> { %>
+                      <tr>
+                        <td class="border-bottom-0">
+                          <img src="/<%= product.productImage[0] %>" width="55" class="img-thumbnail" alt="image">
+                        </td>
+                        <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-1">
+                            <%= product.productName %>
+                          </h6>
+                        </td>
+                        <td class="border-bottom-0">
+                          <p class="mb-0 fw-normal">
+                            <%= product.totalSold %>
+                          </p>
+                        </td>
+                        <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0 fs-4">₹<%= product.totalPrice %>
+                          </h6>
+                        </td>
+                        <td class="border-bottom-0">
+                          <h6 class="fw-semibold mb-0 fs-4">₹<%= product.totalDiscount %>
+                          </h6>
+                        </td>
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+    
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-3">
+                  <% if (currentPage> 1) { %>
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                      <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                    <% } %>
+                      <% for (let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>">
+                            <%= i %>
+                          </a>
+                        </li>
+                        <% } %>
+                          <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                </ul>
+              </nav>
+          
+         
+        </div>
+        </div>
+      </div>
+        </div>
+    
+        <div class="container-fluid">
+          <div class="row my-3">
+            <div class="col-sm-12">
+              <div class="flot-chart-wrapper text-dark mt-2">
+                <label for="selectType" class="form-label">Select the Chart Type:</label>
+                <select id="selectType" onchange="updateChart(this)" class="form-select mb-3">
+                  <option value="" disabled selected>Select</option>
+                  <option value="month">Monthly</option>
+                  <option value="year">Yearly</option>
+                </select>
+                <div class="flot-chart" id="flotChart">
+                  <canvas id="chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row my-3">
+            <div class="col-sm-12">
+              <div class="flot-chart-wrapper">
+                <div class="flot-chart" id="flotChart2">
+                  <canvas id="chart2"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+     
+    <div class="container-fluid">
+          <div class="row">
+          <div class="col-7 mt-5" > 
+            
+            <p  class="btn btn-secondary mb-5" id="bestProducts"  value="product">Best selling product</p>
+            <p class="btn btn-secondary mb-5" id="bestCategory" value="category">Best selling Category</p>
+            <div id="chart3"></div>
+          </div>
+        </div>
+      </div>
+      
+        </main>
+      </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    
+      document.getElementById('startDate').setAttribute('placeholder', 'Start Date');
+      document.getElementById('endDate').setAttribute('placeholder', 'End Date');
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      function getMonthName(month) {
+        const monthNames = [
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+        return monthNames[month - 1];
+      }
+    
+      async function updateChart(select) {
+        const selected = select.value;
+        console.log(selected);
+        try {
+          const response = await fetch('/admin/chartData', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              selected: selected
+            })
+          });
+          if (response.ok) {
+            const data = await response.json();
+            chart(data, selected);
+          } else {
+            console.error('Error fetching chart data:', response.status);
+          }
+        } catch (error) {
+          console.error('Error fetching chart data:', error);
+        }
+      }
+    
+      function chart(data, selected) {
+        console.log("hghhgh", data);
+        data.sales.sort((a, b) => a._id.month - b._id.month || a._id.year - b._id.year);
+        data.order.sort((a, b) => a._id.month - b._id.month || a._id.year - b._id.year);
+    
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
+        if (window.stackedBar2) {
+          window.stackedBar2.destroy();
+        }
+    
+        const months = [
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+    
+        const labelsSales = [];
+        const dataSales = [];
+        const labelsOrders = [];
+        const dataOrders = [];
+    
+        if (selected === 'month') {
+          for (let i = 0; i < 12; i++) {
+            const monthDataSales = data.sales.find(entry => entry._id.month === i + 1);
+            labelsSales.push(months[i]);
+            dataSales.push(monthDataSales ? monthDataSales.totalAmount : 0);
+    
+            const monthDataOrders = data.order.find(entry => entry._id.month === i + 1);
+            labelsOrders.push(months[i]);
+            dataOrders.push(monthDataOrders ? monthDataOrders.count : 0);
+          }
+        } else if (selected === 'year') {
+          const years = Array.from(new Set([...data.sales.map(entry => entry._id.year), ...data.order.map(entry => entry._id.year)]));
+          years.sort((a, b) => a - b);
+          for (const year of years) {
+            const yearDataSales = data.sales.find(entry => entry._id.year === year);
+            labelsSales.push(year.toString());
+            dataSales.push(yearDataSales ? yearDataSales.totalAmount : 0);
+    
+            const yearDataOrders = data.order.find(entry => entry._id.year === year);
+            labelsOrders.push(year.toString());
+            dataOrders.push(yearDataOrders ? yearDataOrders.count : 0);
+          }
+        }
+    
+        const ctx = document.getElementById('chart').getContext('2d');
+        window.myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labelsSales,
+            datasets: [{
+              label: 'Total Sales',
+              data: dataSales,
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+    
+        const ctl2 = document.getElementById('chart2').getContext('2d');
+        window.stackedBar2 = new Chart(ctl2, {
+          type: 'bar',
+          data: {
+            labels: labelsOrders,
+            datasets: [{
+              label: 'Number of Orders',
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 20)',
+              borderWidth: 1,
+              data: dataOrders
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      }
+    
+    
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    let chart3;
+    
+    const updateChart = (url, itemDescription) => {
+      axios.get(url)
+        .then((res) => {
+          const data = res.data.bestSellingProducts;
+          const categoryData=res.data.bestSellingCategories
+        
+          let labels = [];
+          let totalSales =[]
+          if (itemDescription === 'Products') {
+            labels = data.map(product => product.productId);
+            totalSales = data.map(product => product.totalSales);
+          }else{
+            labels = categoryData.map(product => product.categoryName);
+            totalSales = categoryData.map(product => product.totalSales);
+    
+          }
+    
+        
+          const item = res.data.item;
+    
+          const options = {
+            series: [{
+              name: `Total Sales`,
+              data: totalSales
+            }],
+            chart: {
+              height: 350,
+              type: 'bar'
+            },
+            title: {
+              text: `Best selling ${itemDescription || item}`
+            },
+            xaxis: {
+              categories: labels
+            }
+          };
+    
+          if (chart3) {
+            chart3.destroy();
+          }
+    
+          chart3 = new ApexCharts(document.querySelector("#chart3"), options);
+          chart3.render();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    
+    const bestProduct = document.getElementById('bestProducts');
+    bestProduct.addEventListener('click', function(e) {
+      e.preventDefault();
+      updateChart('/admin/bestSellingProduct', 'Products');
+    });
+    
+    const brandBtn = document.getElementById('bestBrand');
+    brandBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+    
+      updateChart('/admin/bestSellingBrand', 'Brands');
+    });
+    
+    const categoryBtn=document.getElementById('bestCategory')
+    bestCategory.addEventListener('click',function(e){
+      e.preventDefault()
+      updateChart('/admin/bestSellingCategory', 'Category');
+    
+    })
+    
+    });
+    
+    </script>
     <%- include('../partials/adminFooter') -%>

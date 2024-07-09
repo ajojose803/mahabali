@@ -19,6 +19,13 @@ adminRouter.route('/logout').get(adminController.adminLogout);
 adminRouter.route('/verifyLogin').post(adminController.adminLogin);
 adminRouter.route('/dashboard').get(auth.isAdAuth, adminController.adminDashboard);
 
+//adminRouter.get("/dashboard",auth.isAdAuth , adminController.LoadDashboard)
+adminRouter.post('/chartData',adminController.chartData)
+adminRouter.post('/downloadsales',auth.isAdAuth,adminController.downloadsales)
+
+adminRouter.get('/bestSellingProduct',auth.isAdAuth,adminController.bestSellingProduct)
+adminRouter.get('/bestSellingCategory',auth.isAdAuth,adminController.bestSellingCategories)
+
 // User Management System
 adminRouter.route('/users').get(auth.isAdAuth, userManagement.getUser);
 adminRouter.route('/users/change-status').get(userManagement.blockUser);

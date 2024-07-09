@@ -52,7 +52,7 @@ const addtoWishlist = asyncHandler(async (req, res) => {
     await wishlist.save();
 
     // Redirect to the wishlist page after successfully adding the product
-    return res.redirect('/wishlist');
+    return res.redirect('/products');
 });
 
 

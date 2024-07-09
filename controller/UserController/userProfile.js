@@ -2,6 +2,7 @@ const Address = require('../../model/addressModel');
 const Category = require('../../model/categoryModel')
 const Product = require('../../model/productModel')
 const User = require('../../model/userModel')
+const Wallet = require('../../model/walletModel')
 const Order = require('../../model/orderModel');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
@@ -545,6 +546,52 @@ const generateInvoice = async (order) => {
     });
 };
 
+const loadWallet = async (req, res) => {
+    try {
+        const currentPage = 'profile';
+        const userId = req.session.userId;
+        const categories = await Category.find()
+        const user = await User.findOne({ _id: userId })
+        const wallet = await Wallet.aggregate([
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+            { $unwind: "$history" },
+            { $sort: { "history.date": -1 } }
+        ]);
+      const itemCount = req.session.cartCount;
+        res.render('user/profile/wallet', { wallet: wallet, user: user,itemCount, categories,title:"Mahabali - Wallet",currentPage })
+    } catch (error) {
+        console.log(error)
+        res.render('user/servererror')
+    }
+}
+
+const walletTopup = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const user = await User.findOne({ _id: userId })
+        const Amount = parseFloat(req.body.Amount)
+        let wallet = await Wallet.findOne({ userId: userId });
+       
+        if (!wallet) {
+            wallet = new Wallet({ userId: userId, history: [] });
+        }
+
+        user.wallet += Amount;
+        wallet.history.push({
+            transaction: "Credited",
+            amount: Amount,
+            date: new Date(),
+            reason: "Wallet TopUp"
+        });
+
+        await wallet.save();
+        await user.save();
+        res.redirect("/profile/wallet")
+    } catch (error) {
+        console.error('Error handling Razorpay callback:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 module.exports = {
     setDefaultAddress,
     LoadProfile,
@@ -561,5 +608,6 @@ module.exports = {
     cancelOrder,
     cancelProduct,
     downloadInvoice,
-    
+    loadWallet,
+    walletTopup,
 }

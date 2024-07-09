@@ -140,8 +140,7 @@ const order = asyncHandler(async (req, res) => {
 
     // Redirect to payment gateway or order status page
     if (pay === 'Razorpay') {
-      // Implement Razorpay integration similar to your existing logic
-      // Redirect or render Razorpay checkout page
+     
     } else {
       res.redirect(`/profile/orders`);
     }
@@ -422,22 +421,24 @@ const createRazorpayOrder = async (req, res) => {
 const payWithWallet = asyncHandler(async (req, res) => {
   const userId = req.session.user._id;
   const { amount } = req.body;
+  console.log("Reaching paywithwallet......")
 
   try {
       // Fetch the user's wallet
       const wallet = await Wallet.findOne({ userId });
+      const user = await User.findById(userId);
 
       if (!wallet) {
           return res.status(400).json({ success: false, message: "Wallet not found" });
       }
 
       // Check if the wallet has enough balance
-      if (wallet.balance < amount) {
+      if (user.wallet < amount) {
           return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
       }
 
       // Deduct the amount from the wallet balance
-      wallet.balance -= amount;
+      user.wallet -= amount;
       wallet.history.push({
           transaction: "debit",
           amount: amount,
@@ -445,6 +446,7 @@ const payWithWallet = asyncHandler(async (req, res) => {
           reason: "Purchase",
       });
       await wallet.save();
+      await user.save();
 
       // Place the order
       const cart = await Cart.findOne({ userId }).populate('items.productId');

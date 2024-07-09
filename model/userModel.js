@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
         default: false,
         required:true,
 
+    },
+    wallet:{
+        type:Number,
+        default:0
     }, 
     usedCoupons:[{
         type:String,

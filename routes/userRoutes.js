@@ -91,6 +91,10 @@ userRouter.route('/profile/address/:id/edit')
 userRouter.route('/profile/address/:id/delete').get(auth.userAuth,userProfile.deleteAddress)
 userRouter.route('/profile/address/:id/default').get(auth.userAuth, userProfile.setDefaultAddress);
 
+//wallet
+userRouter.route('/profile/wallet').get(auth.userAuth,userProfile.loadWallet)
+userRouter.route('/wallet-topup').post(auth.userAuth,userProfile.walletTopup)
+
 
 //Password
 userRouter.route('/profile/change-password').get(auth.userAuth,userProfile.LoadResetPassword)
