@@ -357,6 +357,7 @@ const loadOrderList = asyncHandler(async (req, res) => {
         .populate({
             path: 'items.productId'
         });
+    //console.log("OrderlistController all Orders:  ",order)
 
     // const orderItems = await Promise.all(order.items.map(async (item) => {
     //     const product = item.productId;

@@ -35,8 +35,6 @@ const orderSchema = new mongoose.Schema({
     },
     orderId: {
       type: String,
-      default: shortid.generate,
-      unique: true,
     },
   }],
   wallet: {
@@ -70,7 +68,7 @@ const orderSchema = new mongoose.Schema({
   payment: {
     type: String,
     required: true,
-    },
+  },
   return: [{
     reason: {
       type: String,

@@ -7,6 +7,7 @@ const { getObjectSignedUrl } = require('../../utils/s3');
 
 
 const addtoWishlist = asyncHandler(async (req, res) => {
+    console.log("Reaching addtoWishlist function")
     const productId = req.params.productId;
     const userId = req.session.user._id;
 

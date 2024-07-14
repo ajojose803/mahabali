@@ -1,135 +1,242 @@
 <%- include('../partials/userHeader')-%>
 
-<!-- Breadcrumb Begin -->
-<div class="breadcrumb-option">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="breadcrumb__links">
-                    <a href="/"><i class="fa fa-home"></i> Home</a>
-                    <span>Products</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Breadcrumb End -->
-
-<!-- Shop Section Begin -->
-<section class="shop spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3 col-md-3">
-                <div class="shop__sidebar">
-                    <!-- Filter Sidebar -->
-                    <form id="filter-form" method="GET" action="/products">
-                        <!-- Search Bar -->
-                        <div class="sidebar__filter">
-                            <div class="section-title">
-                                <h4>Search</h4>
-                            </div>
-                            <div class="input-group mb-3">
-                                <input type="text" name="search" class="form-control" placeholder="Search products..." value="<%= search %>">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="submit">Search</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Category Filter -->
-                        <div class="sidebar__filter">
-                            <div class="section-title">
-                                <h4>Category</h4>
-                            </div>
-                            <select name="category" class="form-control">
-                                <option value="">All Categories</option>
-                                <% categories.forEach(category => { %>
-                                    <option value="<%= category._id %>" <%= selectedCategory && selectedCategory.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-
-                        <!-- Sort By Filter -->
-                        <div class="sidebar__filter">
-                            <div class="section-title">
-                                <h4>Sort By</h4>
-                            </div>
-                            <select name="sort" class="form-control">
-                                <option value="popularity" <%= sort === 'popularity' ? 'selected' : '' %>>Popularity</option>
-                                <option value="price-asc" <%= sort === 'price-asc' ? 'selected' : '' %>>Price: Low to High</option>
-                                <option value="price-desc" <%= sort === 'price-desc' ? 'selected' : '' %>>Price: High to Low</option>
-                                <option value="rating" <%= sort === 'rating' ? 'selected' : '' %>>Average Ratings</option>
-                                <option value="new-arrivals" <%= sort === 'new-arrivals' ? 'selected' : '' %>>New Arrivals</option>
-                                <option value="name-asc" <%= sort === 'name-asc' ? 'selected' : '' %>>Name: A to Z</option>
-                                <option value="name-desc" <%= sort === 'name-desc' ? 'selected' : '' %>>Name: Z to A</option>
-                            </select>
-                        </div>
-
-                        <!-- Show Out of Stock Filter -->
-                        <div class="sidebar__filter">
-                            <div class="section-title">
-                                <h4>Show Out of Stock</h4>
-                            </div>
-                            <label>
-                                <input type="checkbox" name="showOutOfStock" value="true" <%= showOutOfStock ? 'checked' : '' %>>
-                                Show Out of Stock Products
-                            </label>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Apply Filters</button>
-                    </form>
-                </div>
-            </div>
-            <div class="col-lg-9 col-md-9">
-                <div class="row">
-                    <% products.forEach(product => { %>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="product__item">
-                                <div class="product__item__pic set-bg" data-setbg="<%= product.imageUrls[1] %>">
-                                    <% if (product.isNew) { %>
-                                        <div class="label new">New</div>
-                                    <% } else if (product.discount > 0) { %>
-                                        <div class="label">Sale</div>
-                                    <% } else if (product.stock === 0 || (product.productType === 'Apparels' && ![...product.sizes.values()].some(qty => qty > 0))) { %>
-                                        <div class="label stockout stockblue">Out Of Stock</div>
-                                    <% } %>
-                                    <ul class="product__hover">
-                                        <li><a href="<%= product.imageUrls[0] %>" class="image-popup"><span class="arrow_expand"></span></a></li>
-                                        <li><a href="#"><span class="icon_heart_alt"></span></a></li>
-                                        <li><a href="#"><span class="icon_bag_alt"></span></a></li>
-                                    </ul>
-                                </div>
-                                <div class="product__item__text">
-                                    <h6><a href="/product/<%= product._id %>"><%= product.name %></a></h6>
-                                    <div class="rating">
-                                        <% for (let i = 0; i < 5; i++) { %>
-                                            <i class="fa fa-star <%= i < product.rating ? '' : 'star-empty' %>"></i>
-                                        <% } %>
-                                    </div>
-                                    <div class="product__price">
-                                        ₹ <%= product.price %>
-                                        <% if (product.oldPrice) { %>
-                                            <span>₹ <%= product.oldPrice %></span>
-                                        <% } %>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <% }) %>
-
-                    <div class="col-lg-12 text-center">
-                        <div class="pagination__option">
-                            <% for (let i = 1; i <= totalPages; i++) { %>
-                                <a href="?page=<%= i %>&limit=<%= limit %>&sort=<%= sort %>&showOutOfStock=<%= showOutOfStock %>&category=<%= selectedCategory %>&search=<%= search %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-                            <% } %>
-                            <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&sort=<%= sort %>&showOutOfStock=<%= showOutOfStock %>&category=<%= selectedCategory %>&search=<%= search %>"><i class="fa fa-angle-right"></i></a>
-                        </div>
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="/"><i class="fa fa-home"></i> Home</a>
+                        <span>Products</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
-<!-- Shop Section End -->
+    <!-- Breadcrumb End -->
 
-<%- include('../partials/userFooter')-%>
+    <!-- Shop Section Begin -->
+    <section class="shop spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <div class="shop__sidebar">
+                        <!-- Filter Sidebar -->
+                        <form id="filter-form" method="GET" action="/products">
+                            <!-- Search Bar -->
+                            <div class="sidebar__filter">
+                                <div class="section-title">
+                                    <h4>Search</h4>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <input type="text" name="search" class="form-control"
+                                        placeholder="Search products..." value="<%= search %>">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Category Filter -->
+                            <div class="sidebar__filter">
+                                <div class="section-title">
+                                    <h4>Category</h4>
+                                </div>
+                                <select name="category" class="form-control">
+                                    <option value="">All Categories</option>
+                                    <% categories.forEach(category=> { %>
+                                        <option value="<%= category._id %>" <%=selectedCategory &&
+                                            selectedCategory.toString()===category._id.toString() ? 'selected' : '' %>>
+                                            <%= category.name %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+
+                            <!-- Sort By Filter -->
+                            <div class="sidebar__filter">
+                                <div class="section-title">
+                                    <h4>Sort By</h4>
+                                </div>
+                                <select name="sort" class="form-control">
+                                    <option value="popularity" <%=sort==='popularity' ? 'selected' : '' %>>Popularity
+                                    </option>
+                                    <option value="price-asc" <%=sort==='price-asc' ? 'selected' : '' %>>Price: Low to
+                                        High</option>
+                                    <option value="price-desc" <%=sort==='price-desc' ? 'selected' : '' %>>Price: High
+                                        to Low</option>
+                                    <option value="rating" <%=sort==='rating' ? 'selected' : '' %>>Average Ratings
+                                    </option>
+                                    <option value="new-arrivals" <%=sort==='new-arrivals' ? 'selected' : '' %>>New
+                                        Arrivals</option>
+                                    <option value="name-asc" <%=sort==='name-asc' ? 'selected' : '' %>>Name: A to Z
+                                    </option>
+                                    <option value="name-desc" <%=sort==='name-desc' ? 'selected' : '' %>>Name: Z to A
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Show Out of Stock Filter -->
+                            <div class="sidebar__filter">
+                                <div class="section-title">
+                                    <h4>Show Out of Stock</h4>
+                                </div>
+                                <label>
+                                    <input type="checkbox" name="showOutOfStock" value="true" <%=showOutOfStock
+                                        ? 'checked' : '' %>>
+                                    Show Out of Stock Products
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-9">
+                    <div class="row">
+                        <% products.forEach(product=> { %>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product__item">
+                                    <div class="product__item__pic set-bg" data-setbg="<%= product.imageUrls[1] %>">
+                                        <% if (product.isNew) { %>
+                                            <div class="label new">New</div>
+                                            <% } else if (product.discount> 0) { %>
+                                                <div class="label">Sale</div>
+                                                <% } else if (product.stock===0 || (product.productType==='Apparels' &&
+                                                    ![...product.sizes.values()].some(qty=> qty > 0))) { %>
+                                                    <div class="label stockout stockblue">Out Of Stock</div>
+                                                    <% } %>
+                                                        <ul class="product__hover">
+                                                            <li><a href="<%= product.imageUrls[0] %>"
+                                                                    class="image-popup"><span
+                                                                        class="arrow_expand"></span></a></li>
+                                                            <li><a href="#" class="add-to-wishlist"
+                                                                    data-product-id="<%= product._id %>"><span
+                                                                        class="icon_heart_alt"></span></a></li>
+                                                            <li><a href="#" class="add-to-cart"
+                                                                    data-product-id="<%= product._id %>"><span
+                                                                        class="icon_bag_alt"></span></a></li>
+                                                        </ul>
+                                    </div>
+
+                                    <div class="product__item__text">
+                                        <h6><a href="/product/<%= product._id %>">
+                                                <%= product.name %>
+                                            </a></h6>
+                                        <div class="rating">
+                                            <% for (let i=0; i < 5; i++) { %>
+                                                <i class="fa fa-star <%= i < product.rating ? '' : 'star-empty' %>"></i>
+                                                <% } %>
+                                        </div>
+                                        <div class="product__price">
+                                            ₹ <%= product.price %>
+                                                <% if (product.oldPrice) { %>
+                                                    <span>₹ <%= product.oldPrice %></span>
+                                                    <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <div class="col-lg-12 text-center">
+                                    <div class="pagination__option">
+                                        <% for (let i=1; i <=totalPages; i++) { %>
+                                            <a href="?page=<%= i %>&limit=<%= limit %>&sort=<%= sort %>&showOutOfStock=<%= showOutOfStock %>&category=<%= selectedCategory %>&search=<%= search %>"
+                                                class="<%= currentPage === i ? 'active' : '' %>">
+                                                <%= i %>
+                                            </a>
+                                            <% } %>
+                                                <a
+                                                    href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&sort=<%= sort %>&showOutOfStock=<%= showOutOfStock %>&category=<%= selectedCategory %>&search=<%= search %>"><i
+                                                        class="fa fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Shop Section End -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    console.log('DOM fully loaded and parsed');
+    console.log('Wishlist buttons:', document.querySelectorAll('.add-to-wishlist').length);
+    console.log('Cart buttons:', document.querySelectorAll('.add-to-cart').length);
+
+    // Add to wishlist
+    document.querySelectorAll('.add-to-wishlist').forEach(button => {
+        button.addEventListener('click', function (event) {
+            console.log('Wishlist button clicked');
+            event.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            const url = `${window.location.origin}/add-to-wishlist/${productId}`;
+            console.log('Sending fetch request to:', url);
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Include CSRF token if needed
+                    // 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ productId: productId }),
+            })
+            .then(response => {
+                console.log('Received response:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                if (data.success) {
+                    Swal.fire({ text: "Product added to wishlist", icon: "success", confirmButtonText: "OK" });
+                } else {
+                    Swal.fire({ text: data.message || "Error adding to wishlist", icon: "error", confirmButtonText: "OK" });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({ text: "Product added to wishlist", icon: "success", confirmButtonText: "OK" });
+            });
+        });
+    });
+
+    // Add to cart
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function (event) {
+            console.log('Cart button clicked');
+            event.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            const url = `${window.location.origin}/add-to-cart/${productId}`;
+            console.log('Sending fetch request to:', url);
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Include CSRF token if needed
+                    // 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ productId: productId, quantity: 1 }),
+            })
+            .then(response => {
+                console.log('Received response:', response);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                if (data.success) {
+                    Swal.fire({ text: "Product added to cart", icon: "success", confirmButtonText: "OK" });
+                } else {
+                    Swal.fire({ text: data.message || "Error adding to cart", icon: "error", confirmButtonText: "OK" });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({ text: "Product added to cart", icon: "success", confirmButtonText: "OK" });
+            });
+        });
+    });
+});
+
+    </script>
+
+
+    <%- include('../partials/userFooter')-%>

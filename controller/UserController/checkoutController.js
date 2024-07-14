@@ -8,6 +8,8 @@ const Order = require("../../model/orderModel");
 const Coupon = require("../../model/couponModel");
 const Wallet = require("../../model/walletModel")
 const Razorpay = require('razorpay');
+const shortid = require('shortid');
+const mongoose = require('mongoose')
 require('dotenv').config();
 
 var instance = new Razorpay({
@@ -83,6 +85,7 @@ const loadCheckout = asyncHandler(async (req, res) => {
 
 const order = asyncHandler(async (req, res) => {
   try {
+    console.log("Reaching order function")
     const { address, pay } = req.body;
     const userId = req.session.user._id;
     const cart = await Cart.findOne({ userId }).populate('items.productId');
@@ -130,7 +133,7 @@ const order = asyncHandler(async (req, res) => {
 
     const order = new Order(orderData);
     const savedOrder = await order.save();
-    console.log("Order.status",orderData.status)
+    console.log("Order.status", orderData.status)
 
     req.session.orderId = savedOrder.orderId;
 
@@ -420,80 +423,102 @@ const createRazorpayOrder = async (req, res) => {
 
 const payWithWallet = asyncHandler(async (req, res) => {
   const userId = req.session.user._id;
-  const { amount } = req.body;
-  console.log("Reaching paywithwallet......")
+  const { amount, address } = req.body;
+  console.log("Reaching payWithWallet...");
+  console.log("Req.body at payWithWallet", req.body);
 
   try {
-      // Fetch the user's wallet
-      const wallet = await Wallet.findOne({ userId });
-      const user = await User.findById(userId);
+    const user = await User.findById(userId);
+    console.log("User found:", user ? "Yes" : "No");
 
-      if (!wallet) {
-          return res.status(400).json({ success: false, message: "Wallet not found" });
-      }
+    const wallet = await Wallet.findOne({ userId });
+    console.log("Wallet found:", wallet ? "Yes" : "No");
 
-      // Check if the wallet has enough balance
-      if (user.wallet < amount) {
-          return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
-      }
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount)) {
+      return res.status(400).json({ success: false, message: "Invalid amount" });
+    }
 
-      // Deduct the amount from the wallet balance
-      user.wallet -= amount;
-      wallet.history.push({
-          transaction: "debit",
-          amount: amount,
-          date: new Date(),
-          reason: "Purchase",
-      });
-      await wallet.save();
-      await user.save();
+    if (!wallet || user.wallet < parsedAmount) {
+      console.log("Insufficient balance. User wallet:", user.wallet, "Required amount:", parsedAmount);
+      return res.status(400).json({ success: false, message: "Insufficient wallet balance" });
+    }
 
-      // Place the order
-      const cart = await Cart.findOne({ userId }).populate('items.productId');
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
+    console.log("Cart found:", cart ? "Yes" : "No");
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ success: false, message: "Cart is empty" });
+    }
 
-      if (!cart) {
-          return res.status(400).json({ success: false, message: "Cart not found" });
-      }
+    const userAddress = await Address.findOne({ userId });
+    console.log("User address found:", userAddress ? "Yes" : "No");
+    const selectedAddress = userAddress.address.find(addr => addr._id.toString() === address);
+    console.log("Selected address:", JSON.stringify(selectedAddress));
 
-      const userAddress = await Address.findOne({ userId });
-      const selectedAddress = userAddress.address.find(addr => addr._id.toString() === req.body.address.toString());
+    if (!selectedAddress) {
+      return res.status(400).json({ success: false, message: "Invalid address selected" });
+    }
 
-      const subtotal = cart.items.reduce((acc, item) => acc + item.productId.price * item.quantity, 0);
-      const deliveryFee = subtotal < 1000 ? 99 : 0;
-      const total = subtotal + deliveryFee;
+    // Calculate subtotal and delivery fee
+    const subtotal = cart.items.reduce((acc, item) => acc + item.productId.price * item.quantity, 0);
+    const deliveryFee = subtotal < 1000 ? 99 : 0;
+    const total = subtotal + deliveryFee;
 
-      const orderData = {
-          userId,
-          items: cart.items.map(item => ({
-              productId: item.productId._id,
-              quantity: item.quantity,
-              price: item.productId.price,
-          })),
-          subtotal,
-          deliveryFee,
-          amount: total,
-          payment: "wallet",
-          address: selectedAddress,
-          createdAt: new Date(),
-          updated: new Date(),
-          status: "Pending",
-      };
+    console.log("Calculated total:", total, "Requested amount:", parsedAmount);
 
-      const order = new Order(orderData);
-      const savedOrder = await order.save();
+    // Ensure the total matches the amount from the request
+    if (Math.abs(total - parsedAmount) > 0.01) { // Allow for small floating point discrepancies
+      return res.status(400).json({ success: false, message: "Order amount mismatch" });
+    }
 
-      // Clear the user's cart after placing the order
-      cart.items = [];
-      await cart.save();
+    // Deduct from wallet
+    user.wallet -= total;
+    wallet.history.push({
+      transaction: "debit",
+      amount: total,
+      date: new Date(),
+      reason: "Purchase",
+    });
 
-      return res.status(200).json({ success: true, message: "Order placed successfully", order: savedOrder });
+    const orderData = {
+      userId,
+      items: cart.items.map(item => ({
+        productId: item.productId._id,
+        quantity: item.quantity,
+        price: item.productId.price,
+      })),
+      subtotal,
+      deliveryFee,
+      amount: total,
+      payment: "wallet",
+      address: selectedAddress,
+      status: "Pending",
+    };
+
+    // Save all changes
+    await user.save();
+    console.log("User wallet updated");
+
+    await wallet.save();
+    console.log("Wallet history updated");
+
+    const order = new Order(orderData);
+    const savedOrder = await order.save();
+    console.log("Order saved:", savedOrder._id.toString());
+
+    // Clear the cart
+    cart.items = [];
+    await cart.save();
+    console.log("Cart cleared");
+
+    console.log("Final order status:", savedOrder.status);
+
+    return res.status(200).json({ success: true, message: "Order placed successfully", order: savedOrder });
   } catch (error) {
-      console.error("Error processing wallet payment:", error);
-      return res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Error processing wallet payment:", error);
+    return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
   }
 });
-
-
 
 module.exports = {
   loadCheckout,

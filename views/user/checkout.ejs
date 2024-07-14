@@ -176,98 +176,54 @@
     <script>
 
         function couponApply() {
+            // Get elements and values
             var couponElement = document.getElementById("coupon");
-            if (!couponElement) {
-                console.error("Coupon element not found");
-                return;
-            }
-
-            var couponCode = couponElement.value;
-            var subtotalElement = document.getElementById("subt");
-            var totalElement = document.getElementById("total");
             var amountElement = document.getElementById("amount");
 
+            // Fetch and apply coupon
             fetch("/checkout/apply-coupon", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ code: couponCode, subtotal: parseFloat(amountElement.value) }),
+                body: JSON.stringify({ code: couponElement.value, subtotal: parseFloat(amountElement.value) }),
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        let newSubtotal = data.newSubtotal;
-                        let newTotal = data.newTotal;
-
-                        subtotalElement.textContent = `₹ ${newSubtotal}`;
-                        totalElement.textContent = `₹ ${newTotal}`;
-                        amountElement.value = newTotal;
-
-                        Swal.fire({
-                            text: "Coupon applied successfully",
-                            icon: "success",
-                            confirmButtonText: "OK"
-                        });
+                        updateAmounts(data.newSubtotal, data.newTotal);
+                        Swal.fire({ text: "Coupon applied successfully", icon: "success", confirmButtonText: "OK" });
                     } else {
-                        Swal.fire({
-                            text: "Failed to apply coupon",
-                            icon: "error",
-                            confirmButtonText: "OK"
-                        });
+                        Swal.fire({ text: data.message, icon: "error", confirmButtonText: "OK" });
                     }
                 })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
+                .catch(error => console.error("Error:", error));
         }
 
         function couponRevoke() {
+            // Get elements and values
             var couponElement = document.getElementById("coupon");
-            if (!couponElement) {
-                console.error("Coupon element not found");
-                return;
-            }
-
-            var subtotalElement = document.getElementById("subt");
-            var totalElement = document.getElementById("total");
             var amountElement = document.getElementById("amount");
 
+            // Fetch and revoke coupon
             fetch("/checkout/revoke-coupon", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ subtotal: parseFloat(amountElement.value) }),
+                body: JSON.stringify({ couponCode: couponElement.value, subtotal: parseFloat(amountElement.value) }),
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        let newSubtotal = data.newSubtotal;
-                        let newTotal = data.newTotal;
-
-                        subtotalElement.textContent = `₹ ${newSubtotal}`;
-                        totalElement.textContent = `₹ ${newTotal}`;
-                        amountElement.value = newTotal;
-
-                        Swal.fire({
-                            text: "Coupon revoked successfully",
-                            icon: "success",
-                            confirmButtonText: "OK"
-                        });
+                        updateAmounts(data.originalSubtotal, data.originalTotal);
+                        Swal.fire({ text: "Coupon revoked successfully", icon: "success", confirmButtonText: "OK" });
                     } else {
-                        Swal.fire({
-                            text: "Failed to revoke coupon",
-                            icon: "error",
-                            confirmButtonText: "OK"
-                        });
+                        Swal.fire({ text: data.message, icon: "error", confirmButtonText: "OK" });
                     }
                 })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
+                .catch(error => console.error("Error:", error));
         }
-
 
         document.getElementById("placeOrderBtn").addEventListener("click", function () {
             var amount = document.getElementById("amount").value;
@@ -279,7 +235,6 @@
                 document.getElementById("checkoutForm").submit();
             } else if (paymentMode === "wallet") {
                 if (wallet >= amount) {
-                    // Update wallet balance in backend
                     fetch("/checkout/pay-with-wallet", {
                         method: "POST",
                         headers: {
@@ -289,11 +244,13 @@
                     })
                         .then(response => response.json())
                         .then(data => {
+                            console.log("Server response:", data);
                             if (data.success) {
-                                document.getElementById("checkoutForm").submit();
+                                // Redirect to order confirmation or show a success message instead of form submission
+                                window.location.href = "/profile/orders";
                             } else {
                                 Swal.fire({
-                                    text: "Payment failed",
+                                    text: data.message || "Payment failed",
                                     icon: "error",
                                     confirmButtonText: "OK"
                                 });
@@ -337,9 +294,10 @@
             }
         });
 
+
         document.getElementById("applyCouponBtn").addEventListener("click", couponApply);
         document.getElementById("revokeCouponBtn").addEventListener("click", couponRevoke);
-        document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
+        //document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
 
     </script>
     <%- include('../partials/userFooter') -%>
