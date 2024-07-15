@@ -388,29 +388,84 @@ const loadOrderList = asyncHandler(async (req, res) => {
     res.render("user/profile/orderList", { order, user });
 });
 
-const cancelOrder = asyncHandler(async (req, res) => {
-    const id = req.params.id;
-    const update = await Order.updateOne({ orderId: id}, { status: "cancelled", updated: new Date() })
-    if(!update){
-        req.flash(error, "Order not found")
+// const cancelOrder = asyncHandler(async (req, res) => {
+//     const id = req.params.id;
+//     const update = await Order.updateOne({ orderId: id}, { status: "cancelled", updated: new Date() })
+//     if(!update){
+//         req.flash(error, "Order not found")
 
-    }
+//     }
 
-    const order = await Order.findOne({orderId:id})
-    const items = order.items.map(item => ({
-        productId: item.productId,
-        quantity: item.quantity,
-    }))
-    //console.log(items);
+//     const order = await Order.findOne({orderId:id})
+//     const items = order.items.map(item => ({
+//         productId: item.productId,
+//         quantity: item.quantity,
+//     }))
+//     //console.log(items);
 
-        for(const item of items){
-            const product = await Product.findOne({_id:item.productId})
-            console.log("product : " + product)
+//         for(const item of items){
+//             const product = await Product.findOne({_id:item.productId})
+//             console.log("product : " + product)
+//             product.stock += item.quantity
+//             await product.save()
+//         }
+//         res.redirect('/profile/orders')
+// })
+const cancelOrder = async (req, res) => {
+    try {
+        const id = req.params.id
+        const update = await Order.updateOne({orderId: id }, { status: "Cancelled", updated: new Date() })
+        const result = await Order.findOne({ orderId: id })
+
+        if (result.payment == 'upi' || result.payment == 'wallet') {
+            const userId = req.session.userId
+            const user = await User.findOne({ _id: userId })
+            user.wallet += parseInt(result.amount)
+            await user.save()
+
+            const wallet = await Wallet.findOne({ userId: userId })
+            if (!wallet) {
+                const newWallet = new Wallet({
+                    userId: userId,
+                    history: [
+                        {
+                            transaction: "Credited",
+                            amount: result.amount,
+                            date: new Date(),
+                            reason: "Order Cancelled"
+                        }
+                    ]
+                })
+                await newWallet.save();
+            } else {
+                wallet.history.push({
+                    transaction: "Credited",
+                    amount: result.amount,
+                    date: new Date(),
+                    reason: "Order Cancelled"
+                })
+                await wallet.save();
+            }
+        }
+
+        const items = result.items.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            size: item.size,
+
+        }))
+
+        for (const item of items) {
+            const product = await Product.findOne({ _id: item.productId })
             product.stock += item.quantity
             await product.save()
         }
-        res.redirect('/profile/orders')
-})
+        res.redirect("/profile")
+    } catch (error) {
+        console.log(error)
+        res.render('user/servererror')
+    }
+}
 
 const cancelProduct = asyncHandler(async (req, res) => {
     const orderId = req.params.orderId;
@@ -448,6 +503,31 @@ const cancelProduct = asyncHandler(async (req, res) => {
 
     res.redirect('/profile/orders');
 });
+
+const returnReason = async (req, res) => {
+    try {
+        const itemId = req.body.itemId;
+        const reason = req.body.reason;
+        const update = await Order.updateOne(
+            { _id: itemId },
+            { 
+                $push: { 
+                    return: { 
+                        reason: reason, 
+                        status: "Pending" 
+                    } 
+                }, 
+                $set: { 
+                    updated: new Date() 
+                } 
+            }
+        );
+        res.status(200).json({ message: 'Order return request processed successfully' });
+    } catch (error) {
+        console.log(error)
+        res.render('user/servererror')
+    }
+}
 
 const downloadInvoice = async (req, res) => {
     try {
