@@ -6,7 +6,11 @@ const Product = require('../../model/productModel');
 const Category = require('../../model/categoryModel');
 const Order = require('../../model/orderModel');
 const puppeteer =  require('puppeteer')
-const excceljs = require('exceljs');
+const { getObjectSignedUrl } = require('../../utils/s3');
+const exceljs = require('exceljs');
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
 
 
 const adminPage = asyncHandler((req, res) => {
@@ -85,8 +89,21 @@ const adminDashboard = asyncHandler(async (req, res) => {
             $sort: { totalSold: -1 },
         },
     ]);
-    let totalDiscountSum = 0;
 
+    // Generate signed URLs for images
+    for (const product of products) {
+        if (product.productImage && Array.isArray(product.productImage)) {
+            product.imageUrls = await Promise.all(product.productImage.map(async (image) => {
+                const url = await getObjectSignedUrl(image);
+                //console.log(`Generated URL for ${image}: ${url}`);
+                return url;
+            }));
+        } else {
+            product.imageUrls = [];
+        }
+    }
+
+    let totalDiscountSum = 0;
     products.forEach(product => {
         totalDiscountSum += product.totalDiscount;
     });
@@ -107,13 +124,24 @@ const adminDashboard = asyncHandler(async (req, res) => {
             },
         },
     ]);
+
     const totalPages = Math.ceil(products.length / perPage);
     const startIndex = (page - 1) * perPage;
     const endIndex = page * perPage;
     const productsPaginated = products.slice(startIndex, endIndex);
-    const errorMessages = req.flash('error')
-    res.render('admin/adminHome', { errorMessages, userCount, products: productsPaginated, currentPage: page, totalPages, orders, totalDiscountSum })
+    const errorMessages = req.flash('error');
+    
+    res.render('admin/adminHome', { 
+        errorMessages, 
+        userCount, 
+        products: productsPaginated, 
+        currentPage: page, 
+        totalPages, 
+        orders, 
+        totalDiscountSum 
+    });
 });
+
 
 const adminLogout = asyncHandler(async (req, res) => {
     req.session.isAdAuth = false;
@@ -230,24 +258,25 @@ const chartData = async (req, res) => {
   
   const downloadsales = async (req, res) => {
     try {
+        console.log("Reaching Download Sales")
         
         const { startDate, endDate, submitBtn } = req.body;
+        console.log("req.body: ", req.body);
   
-        let sdate=isFutureDate(startDate)
-        let edate=isFutureDate(endDate)
+        let sdate = isFutureDate(startDate);
+        let edate = isFutureDate(endDate);
   
-        if(!startDate||!endDate){
-          req.flash('error', 'Choose a date')
-          return res.redirect('/admin/dashboard')
-      }
-        if(sdate){
-          req.flash('error','invalid date')
-          return res.redirect('/admin/dashboard')
+        if (!startDate || !endDate) {
+            req.flash('error', 'Choose a date');
+            return res.redirect('/admin/dashboard');
         }
-        if(edate){
-          req.flash('error','invalid date')
-          return res.redirect('/admin/dashboard')
-  
+        if (sdate) {
+            req.flash('error', 'Invalid date');
+            return res.redirect('/admin/dashboard');
+        }
+        if (edate) {
+            req.flash('error', 'Invalid date');
+            return res.redirect('/admin/dashboard');
         }
   
         const salesData = await Order.aggregate([
@@ -258,8 +287,8 @@ const chartData = async (req, res) => {
                         $lt: new Date(endDate),
                     },
                     status: {
-                      $nin: ["Cancelled", "returned"]
-                  }
+                        $nin: ["Cancelled", "returned"]
+                    }
                 },
             },
             {
@@ -271,53 +300,50 @@ const chartData = async (req, res) => {
             },
         ]);
   
-  
-        
-  
         const products = await Order.aggregate([
-          {
-              $match: {
-                createdAt: {
-                    $gte: new Date(startDate),
-                    $lt: new Date(endDate),
+            {
+                $match: {
+                    createdAt: {
+                        $gte: new Date(startDate),
+                        $lt: new Date(endDate),
+                    },
+                    status: {
+                        $nin: ["Cancelled", "returned"]
+                    }
                 },
-                status: {
-                  $nin: ["Cancelled", "returned"]
-              }
             },
-          },
-          {
-              $unwind: '$items',
-          },
-          {
-              $group: {
-                  _id: '$items.productId',
-                  totalSold: { $sum: '$items.quantity' },
-              },
-          },
-          {
-              $lookup: {
-                  from: 'products',
-                  localField: '_id',
-                  foreignField: '_id',
-                  as: 'productDetails',
-              },
-          },
-          {
-              $unwind: '$productDetails',
-          },
-          {
-              $project: {
-                  _id: 1,
-                  totalSold: 1,
-                  productName: '$productDetails.description',
-              },
-          },
-          {
-              $sort: { totalSold: -1 },
-          },
-      ]);
-     
+            {
+                $unwind: '$items',
+            },
+            {
+                $group: {
+                    _id: '$items.productId',
+                    totalSold: { $sum: '$items.quantity' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productDetails',
+                },
+            },
+            {
+                $unwind: '$productDetails',
+            },
+            {
+                $project: {
+                    _id: 1,
+                    totalSold: 1,
+                    productName: '$productDetails.description',
+                },
+            },
+            {
+                $sort: { totalSold: -1 },
+            },
+        ]);
+
         const htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
@@ -371,69 +397,55 @@ const chartData = async (req, res) => {
         </body>
         </html>
     `;
-  
+
     if (submitBtn == 'pdf') {
-      const browser = await puppeteer.launch();
-          const page = await browser.newPage();
-          await page.setContent(htmlContent);
-  
-          // Generate PDF
-          const pdfBuffer = await page.pdf();
-  
-          await browser.close();
-  
-          const downloadsPath = path.join(os.homedir(), 'Downloads');
-          const pdfFilePath = path.join(downloadsPath, 'sales.pdf');
-  
-          // Save the PDF file locally
-          fs.writeFileSync(pdfFilePath, pdfBuffer);
-  
-          // Send the PDF as a response
-          res.setHeader('Content-Length', pdfBuffer.length);
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', 'attachment; filename=sales.pdf');
-          res.status(200).end(pdfBuffer);
+        const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            timeout: 60000 // Increase timeout to 60 seconds
+        });
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        const pdfBuffer = await page.pdf();
+        await browser.close();
+
+        const downloadsPath = path.join(os.homedir(), 'Downloads');
+        const pdfFilePath = path.join(downloadsPath, 'sales.pdf');
+
+        fs.writeFileSync(pdfFilePath, pdfBuffer);
+
+        res.setHeader('Content-Length', pdfBuffer.length);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=sales.pdf');
+        res.status(200).end(pdfBuffer);
     } else {
-      const totalAmount = salesData[0]?.totalAmount || 0;
-      const workbook = new exceljs.Workbook();
-      const sheet = workbook.addWorksheet("Sales Report");
-      sheet.columns = [
-          { header: "Sl No", key: "slNo", width: 10 },
-          { header: "Product Name", key: "productName", width: 25 },
-          { header: "Quantity Sold", key: "productQuantity", width: 15 },
-          // { header: "Total Price", key: "productTotal", width: 15 },
-          // { header: "Discount(%)", key: "totalDiscountPercent", width: 15 },
-          // { header: "Total Discount Amount", key: "totalDiscount", width: 20 }
-      ];
-      products.forEach((item, index) => {
-          sheet.addRow({
-              slNo: index + 1,
-              productName: item.productName,
-              productQuantity: item.totalSold,
-              // productTotal: item.totalPrice,
-              // totalDiscountPercent: `${item.totalDiscountPercent}%`,
-              // totalDiscount: item.totalDiscount
-          });
-      });
-      sheet.addRow({});
-      sheet.addRow({ productName: 'Total No of Orders', productQuantity: salesData[0]?.totalOrders || 0 });
-      sheet.addRow({ productName: 'Total Revenue', productQuantity: totalAmount });
-      res.setHeader(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      );
-      res.setHeader(
-          "Content-Disposition",
-          "attachment;filename=report.xlsx"
-      );
-      await workbook.xlsx.write(res);
-  }
+        const totalAmount = salesData[0]?.totalAmount || 0;
+        const workbook = new exceljs.Workbook();
+        const sheet = workbook.addWorksheet("Sales Report");
+        sheet.columns = [
+            { header: "Sl No", key: "slNo", width: 10 },
+            { header: "Product Name", key: "productName", width: 25 },
+            { header: "Quantity Sold", key: "productQuantity", width: 15 },
+        ];
+        products.forEach((item, index) => {
+            sheet.addRow({
+                slNo: index + 1,
+                productName: item.productName,
+                productQuantity: item.totalSold,
+            });
+        });
+        sheet.addRow({});
+        sheet.addRow({ productName: 'Total No of Orders', productQuantity: salesData[0]?.totalOrders || 0 });
+        sheet.addRow({ productName: 'Total Revenue', productQuantity: totalAmount });
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", "attachment;filename=report.xlsx");
+        await workbook.xlsx.write(res);
+    }
     } catch (err) {
         console.error(err);
         res.render("user/servererror");
-      }
-  };
-  
+    }
+};
+
   const bestSellingProduct = async (req, res) => {
     try {
   
@@ -493,57 +505,6 @@ const chartData = async (req, res) => {
   
     }
   }
-  
-//   const bestSellingBrands = async (req, res) => {
-//     try {
-  
-//       const bestSellingBrands = await Order.aggregate([
-//         {
-//             $unwind: "$items"
-//         },
-//         {
-//             $lookup: {
-//                 from: 'products',
-//                 localField: 'items.productId',
-//                 foreignField: '_id',
-//                 as: 'productDetails'
-//             }
-//         },
-//         {
-//             $unwind: "$productDetails"
-//         },
-//         {
-//             $group: {
-//                 _id: {
-//                     brand: "$productDetails.name" // Assuming product name as brand name
-//                 },
-//                 totalSales: { $sum: { $cond: [{ $ifNull: ["$items.totalProductAmount", 0] }, "$items.totalProductAmount", 0] } }
-//             }
-//         },
-//         {
-//             $sort: { totalSales: -1 }
-//         },
-//         {
-//             $limit: 10
-//         },
-//         {
-//             $project: {
-//                 _id: 0,
-//                 brand: "$_id.brand",
-//                 totalSales: 1
-//             }
-//         }
-//     ]);
-    
-//         res.status(200).json({bestSellingBrands,item:'Brand'})
-      
-  
-//     } catch (error) {
-  
-//         console.log("error in best selling brand",error);
-  
-//     }
-//   }
   
   const bestSellingCategories=async(req,res)=>{
     try {
