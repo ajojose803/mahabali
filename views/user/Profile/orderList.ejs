@@ -148,7 +148,11 @@
                                 <div class="order-actions">
                                     <button data-bs-toggle="modal" data-bs-target="#orderModal<%= data.orderId %>">View Order Details</button>
                                     <button onclick="generateInvoice('<%= data.orderId %>')">Invoice</button>
-                                    <button onclick="cancelOrder('<%= data.orderId %>')">Cancel Order</button>
+                                    <% if(data.status !== 'delivered') { %>
+                                        <button onclick="cancelOrder('<%= data.orderId %>')">Cancel Order</button>
+                                    <% } else { %>
+                                        <button data-bs-toggle="modal" data-bs-target="#returnModal<%= data.orderId %>">Return</button>
+                                    <% } %>
                                 </div>
                             </div>
 
@@ -176,6 +180,27 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Return Modal -->
+                            <div class="modal fade" id="returnModal<%= data.orderId %>" tabindex="-1" aria-labelledby="returnModalLabel<%= data.orderId %>" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="returnModalLabel<%= data.orderId %>">Return Order (Order ID: <%= data.orderId %>)</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="returnForm<%= data.orderId %>">
+                                                <div class="mb-3">
+                                                    <label for="returnReason" class="form-label">Reason for Return:</label>
+                                                    <textarea class="form-control" id="returnReason<%= data.orderId %>" rows="3" required></textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-primary" onclick="submitReturnRequest('<%= data.orderId %>')">Submit</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -244,4 +269,55 @@
             });
         });
     });
+
+    // Function to submit return request
+    function submitReturnRequest(orderId) {
+        const returnReason = document.getElementById('returnReason' + orderId).value;
+        if (returnReason.trim() === '') {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Return reason cannot be empty!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        fetch('/order/' + orderId + '/return', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ reason: returnReason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: data.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to process return request.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while processing your request.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
 </script>

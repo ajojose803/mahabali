@@ -506,15 +506,16 @@ const cancelProduct = asyncHandler(async (req, res) => {
 
 const returnReason = async (req, res) => {
     try {
-        const itemId = req.body.itemId;
+        const itemId =  req.params.orderId;
         const reason = req.body.reason;
+        console.log("Body of the return", req.body)
         const update = await Order.updateOne(
-            { _id: itemId },
+            { orderId: itemId },
             { 
                 $push: { 
                     return: { 
                         reason: reason, 
-                        status: "Pending" 
+                        status: "Return requested" 
                     } 
                 }, 
                 $set: { 
@@ -523,6 +524,7 @@ const returnReason = async (req, res) => {
             }
         );
         res.status(200).json({ message: 'Order return request processed successfully' });
+        console.log("Return Update: ",update)
     } catch (error) {
         console.log(error)
         res.render('user/servererror')
@@ -691,4 +693,5 @@ module.exports = {
     downloadInvoice,
     loadWallet,
     walletTopup,
+    returnReason,
 }

@@ -1,132 +1,122 @@
 <%- include('../partials/adminHeader')-%>
 
-  <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
-  <ul class="list-unstyled">
-    <li> <a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
-    <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
-    <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
-    <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
-    <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
-    <li class="active"><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
-    <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
-  </ul>
-  </nav>
+<!-- Sidebar Navigation Menus -->
+<span class="heading">Main</span>
+<ul class="list-unstyled">
+  <li> <a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
+  <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
+  <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
+  <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+  <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
+  <li class="active"><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
+  <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
+</ul>
+</nav>
 
-  <!-- Sidebar Navigation end-->
-  <div class="page-content">
-    <div class="page-header">
-      <div class="container-fluid">
-        <h2 class="h5 no-margin-bottom">Orders</h2>
-      </div>
+<!-- Sidebar Navigation end -->
+<div class="page-content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <h2 class="h5 no-margin-bottom">Orders</h2>
     </div>
-    <div class="table-responsive" style="padding: 5%;">
-      <table class="table " style="box-shadow: 0 0 5px rgba(19, 2, 59, 0.1);" id="myTable">
-        <thead class="thead-dark text-center">
-          <tr>
-            <th>Order ID</th>
-            <th>User ID</th>
-            <th>Products</th>
-            <th>Delivery Address</th>
-            <th>Payment</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Order Date</th>
-          </tr>
-        </thead>
-        <tbody class="text-center" style="background-color: rgba(9, 5, 46, 0.1); font-size: small;">
-          <% if(order && order.length> 0) { %>
-            <% order.forEach(function(data) { %>
-              <tr>
-                <td>
-                  <%= data.orderId %>
-                </td>
-                <td>
-                  <%= data.userId %>
-                </td>
-                <td>
-                  <% data.items.forEach(function(items){ %>
-                    <%= items.description %><br>
-                      <%= items.quantity %>
-                        <br>
-                        <% }); %>
-                </td>
-                <td>
-                  <%= data.address.addressline1 %>,
-                    <%= data.address.city %>,
-                      <br>
-                      <%= data.address.state %>,
-                        <%= data.address.pincode %>
-                </td>
-                <td>
-                  <%= data.payment %>
-                </td>
-                <td>
-                  <%= data.amount %>
-                </td>
-                <td>
-                  <form action="/admin/order/update-status" method="post" id="orderStatusForm_<%= data._id %>">
-                    <input type="hidden" name="orderId" value="<%= data._id %>">
-                    <label for="status"></label>
-
-                    <% if(data.status==='paymentPending' ) {%>
-                      <span class="text-danger">Payment Pending</span>
-                      <% }else if(data.status==='Cancelled' ) {%>
-                        <span>Cancelled</span>
-                        <% }else if(data.status=='returned' ){ %>
-                          <span>Returned</span>
-                          <% }else{ %>
-                            <select name="status" id="status" onchange="submitForm('<%= data._id %>')">
-                              <% const statuses=['pending', 'processing' , 'shipped' , 'delivered'
-                                ,'cancelled','returned']; %>
-                                <% for (const status of statuses) { %>
-                                  <option value="<%= status %>" <%=data.status===status ? 'selected' : '' %>>
-                                    <%= status.charAt(0).toUpperCase() + status.slice(1) %>
-                                  </option>
-
-                                  <% } %>
-                            </select>
-                            <% } %>
-                  </form>
-                </td>
-                <td>
-                  <%= data.createdAt.toLocaleString('en-US', { year: 'numeric' , month: 'short' , day: 'numeric' ,
-                    hour: 'numeric' , minute: 'numeric' , second: 'numeric' , hour12: false }) %>
-                </td>
-              </tr>
-              <% }); %>
-                <% } else { %>
-                  <tr>
-                    <td colspan="8">No results found.</td>
-                  </tr>
-                  <% } %>
-        </tbody>
-      </table>
-
-    </div>
-
-    <script>
-      function submitForm(orderId) {
-        document.getElementById(`orderStatusForm_${orderId}`).submit();
-      }
-
-      function cancelOrder(orderId) {
-        // Implement cancel order functionality, e.g., through AJAX
-        if (confirm('Are you sure you want to cancel this order?')) {
-          fetch(`/admin/cancel-order/${orderId}`, {
-            method: 'POST',
-          }).then(response => {
-            // Handle response as needed
-            console.log('Order canceled successfully');
-            // Optionally, update UI to reflect cancellation
-          }).catch(error => {
-            console.error('Error canceling order:', error);
-          });
-        }
-      }
-    </script>
-
   </div>
 
+  <!-- Add the Return Requests button here -->
+  <div class="d-flex justify-content-between align-items-center" style="padding: 5%;">
+    <a href="/admin/orderReturn" class="btn btn-primary mt-2 mb-3" style="background-color: #3086d5;" id="block">
+      View Return Requests
+    </a>
+  </div>
 
+  <div class="table-responsive" style="padding: 5%;">
+    <table class="table" style="box-shadow: 0 0 5px rgba(19, 2, 59, 0.1);" id="myTable">
+      <thead class="thead-dark text-center">
+        <tr>
+          <th>Order ID</th>
+          <th>User ID</th>
+          <th>Products</th>
+          <th>Delivery Address</th>
+          <th>Payment</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Order Date</th>
+        </tr>
+      </thead>
+      <tbody class="text-center" style="background-color: rgba(9, 5, 46, 0.1); font-size: small;">
+        <% if(order && order.length> 0) { %>
+          <% order.forEach(function(data) { %>
+            <tr>
+              <td><%= data.orderId %></td>
+              <td><%= data.userId %></td>
+              <td>
+                <% data.items.forEach(function(items){ %>
+                  <%= items.description %><br>
+                  <%= items.quantity %><br>
+                <% }); %>
+              </td>
+              <td>
+                <%= data.address.addressline1 %>, <%= data.address.city %>, <br>
+                <%= data.address.state %>, <%= data.address.pincode %>
+              </td>
+              <td><%= data.payment %></td>
+              <td><%= data.amount %></td>
+              <td>
+                <form action="/admin/order/update-status" method="post" id="orderStatusForm_<%= data._id %>">
+                  <input type="hidden" name="orderId" value="<%= data._id %>">
+                  <label for="status"></label>
 
-  <%- include('../partials/adminFooter') -%>
+                  <% if(data.status === 'paymentPending') { %>
+                    <span class="text-danger">Payment Pending</span>
+                  <% } else if(data.status === 'Cancelled') { %>
+                    <span>Cancelled</span>
+                  <% } else if(data.status === 'returned') { %>
+                    <span>Returned</span>
+                  <% } else { %>
+                    <select name="status" id="status" onchange="submitForm('<%= data._id %>')">
+                      <% const statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned']; %>
+                      <% for (const status of statuses) { %>
+                        <option value="<%= status %>" <%= data.status === status ? 'selected' : '' %>>
+                          <%= status.charAt(0).toUpperCase() + status.slice(1) %>
+                        </option>
+                      <% } %>
+                    </select>
+                  <% } %>
+                </form>
+              </td>
+              <td>
+                <%= data.createdAt.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }) %>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="8">No results found.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function submitForm(orderId) {
+      document.getElementById(`orderStatusForm_${orderId}`).submit();
+    }
+
+    function cancelOrder(orderId) {
+      // Implement cancel order functionality, e.g., through AJAX
+      if (confirm('Are you sure you want to cancel this order?')) {
+        fetch(`/admin/cancel-order/${orderId}`, {
+          method: 'POST',
+        }).then(response => {
+          // Handle response as needed
+          console.log('Order canceled successfully');
+          // Optionally, update UI to reflect cancellation
+        }).catch(error => {
+          console.error('Error canceling order:', error);
+        });
+      }
+    }
+  </script>
+</div>
+
+<%- include('../partials/adminFooter') -%>

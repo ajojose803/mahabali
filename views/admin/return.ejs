@@ -1,0 +1,108 @@
+<%- include('../partials/adminHeader')-%>
+
+    <style>
+        .table th {
+            background-color: #343a40;
+            color: #fff;
+            font-weight: bold;
+        }
+
+
+        .table tbody tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        .table-striped tbody tr:nth-child(odd) {
+            background-color: #f6f8fa;
+        }
+
+        .table-striped tbody tr:nth-child(even) {
+            background-color: #e9ecef;
+        }
+    </style>
+
+    <!-- Sidebar Navigation Menus -->
+    <span class="heading">Main</span>
+    <ul class="list-unstyled">
+        <li> <a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
+        <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
+        <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
+        <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+        <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
+        <li class="active"><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
+        <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
+    </ul>
+    </nav>
+
+    <main role="main" class="main-content">
+        <div class="container">
+            <div class="row my-4">
+                <div class="col-lg-12">
+                    <h2 class="text-center mb-4" style="color: #3086d5;">Return Management</h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center">
+                            <thead>
+                                <tr class="table-primary">
+                                    <th>Order ID</th>
+                                    <th>User ID</th>
+                                    <th>Products</th>
+                                    <th>Return Reason</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if(order && order.length> 0) { %>
+                                    <% order.forEach(function(data) { %>
+                                        <tr>
+                                            <td>
+                                                <%= data.orderId %>
+                                            </td>
+                                            <td>
+                                                <%= data.userId %>
+                                            </td>
+                                            <td>
+                                                <% data.items.forEach(function(items){ %>
+                                                    <%= items.productId.name %>&nbsp;&nbsp;
+                                                        <%= items.quantity %>
+                                                            <br>
+                                                            <% }); %>
+                                            </td>
+                                            <td>
+                                                <%= data.return[0].reason %>
+
+                                            </td>
+                                            <td>
+                                                <% if(data.return[0].status=='Return requested' ){ %>
+                                                    <div class="equal-btns">
+                                                        <a href="/admin/returnApprove/<%= data._id %>"
+                                                            class="btn btn-outline-success ">Approve</a>
+                                                        <a href="/admin/returnReject/<%= data._id %>"
+                                                            class="btn btn-outline-danger"> Reject </a>
+                                                    </div>
+                                                    <% }else if(data.return[0].status=='Accepted' ){ %>
+                                                        <span class="text-success">
+                                                            <%= data.return[0].status %>
+                                                        </span>
+                                                        <% }else{ %>
+                                                            <span class="text-danger">
+                                                                <%= data.return[0].status %>
+                                                            </span>
+                                                            <% } %>
+                                            </td>
+
+                                        </tr>
+
+                                        <% }); %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="8">No results found.</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+    </main>
+    </div>
+    <%- include('../partials/adminFooter') -%>
