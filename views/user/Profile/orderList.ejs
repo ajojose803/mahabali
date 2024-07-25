@@ -98,7 +98,8 @@
                         <br>
                         <ul>
                             <a href="/profile/">
-                                <span class="fa fa-info-circle" style="margin-right: 10px;"></span> Personal Information
+                                <span class="fa fa-info-circle" style="margin-right: 10px;"></span> Personal
+                                Information
                             </a>
                             <a href="/profile/address">
                                 <span class="fa fa-address-card" style="margin-right: 10px;"></span> Address
@@ -125,7 +126,7 @@
                                 <div class="order-info">
                                     <div>
                                         <strong>Order Date:</strong>
-                                        <%= new Date(data.createdAt).toLocaleString('en-US', { year: 'numeric' , month: 'short' , day: 'numeric' , hour: 'numeric' , minute: 'numeric' , second: 'numeric' , hour12: false }) %>
+                                        <%= new Date(data.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }) %>
                                     </div>
                                     <div>
                                         <strong>Amount:</strong> ₹ <%= data.amount %>
@@ -147,10 +148,12 @@
                                 </div>
                                 <div class="order-actions">
                                     <button data-bs-toggle="modal" data-bs-target="#orderModal<%= data.orderId %>">View Order Details</button>
+                                     <% if(data.status == 'delivered'){ %>
                                     <button onclick="generateInvoice('<%= data.orderId %>')">Invoice</button>
-                                    <% if(data.status !== 'delivered') { %>
+                                    <% } %>
+                                    <% if(data.status !== 'delivered' && data.status !== 'Cancelled' && data.status !== 'returned') { %>
                                         <button onclick="cancelOrder('<%= data.orderId %>')">Cancel Order</button>
-                                    <% } else { %>
+                                    <% } else if(data.status === 'delivered') { %>
                                         <button data-bs-toggle="modal" data-bs-target="#returnModal<%= data.orderId %>">Return</button>
                                     <% } %>
                                 </div>
@@ -179,6 +182,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
+                                            <a href="/checkout/order-status/<%= data.orderId %>" class="btn btn-primary">Check Order Status</a>
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         </div>
                                     </div>
@@ -250,7 +254,7 @@
 
     // Function to cancel product with SweetAlert confirmation
     document.querySelectorAll('.cancel-product-button').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             let orderId = this.getAttribute('data-order-id');
             let productId = this.getAttribute('data-product-id');
             Swal.fire({

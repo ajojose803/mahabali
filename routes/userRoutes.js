@@ -69,6 +69,7 @@ userRouter.route('/wishlist/delete/:productId').get(auth.userAuth,wishlistContro
 userRouter.route('/checkout').get(auth.userAuth,checkout.loadCheckout);
 userRouter.route('/checkout/place-order').post(auth.userAuth,checkout.order);
 userRouter.route('/checkout/order-status/:id').get(auth.userAuth,checkout.getOrderStatus);
+
 userRouter.route('/checkout/apply-coupon').post(auth.userAuth,checkout.applyCoupon);
 userRouter.route('/checkout/revoke-coupon').post(auth.userAuth,checkout.revokeCoupon);
 //userRouter.route('/checkout/verify-payment').post(auth.userAuth,checkout.verifyPayment);
@@ -106,5 +107,6 @@ userRouter.route('/order/:id/cancel').get(auth.userAuth,userProfile.cancelOrder)
 userRouter.route('/order/:orderId/cancel-product/:productId').get(auth.userAuth,userProfile.cancelProduct);
 userRouter.route('/order/invoice/:orderId').get(auth.userAuth,userProfile.downloadInvoice);
 userRouter.route('/order/:orderId/return').post(auth.userAuth,userProfile.returnReason);
+userRouter.route('/re-order/:id').post(auth.userAuth,userProfile.reOrder);
 
 module.exports = userRouter;

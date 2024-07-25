@@ -158,6 +158,8 @@
                                 <!-- Hidden inputs for amount and wallet -->
                                 <input type="hidden" name="amount" id="amount" value="<%= total %>">
                                 <input type="hidden" name="wallet" id="wallet" value="<%= user.wallet %>">
+                                <input type="hidden" id="couponDiscount" name="couponDiscount" value="0">
+                                <!-- <input type="hidden" id="pay" name="pay" value="0" /> -->
                                 <button type="button" class="site-btn" id="placeOrderBtn">Place order</button>
                             </div>
                         </div>
@@ -175,10 +177,34 @@
 
     <script>
 
+        function updateAmounts(newSubtotal, newTotal) {
+            document.getElementById("subt").innerText = `₹ ${newSubtotal}`;
+            document.getElementById("total").innerText = `₹ ${newTotal}`;
+            document.getElementById("amount").value = newTotal;
+            disableCODIfNeeded(newTotal);
+        }
+
+
+        function disableCODIfNeeded(total) {
+            var codOption = document.getElementById("Cash on Delivery");
+            var codLabel = document.querySelector('label[for="Cash on Delivery"]');
+            if (total > 1000) {
+                codOption.disabled = true;
+                codLabel.style.color = 'grey';
+                codLabel.innerHTML = "Cash on Delivery (Not available for orders above ₹1000)";
+            } else {
+                codOption.disabled = false;
+                codLabel.style.color = 'black';
+                codLabel.innerHTML = "Cash on Delivery";
+            }
+        }
+        document.getElementById("applyCouponBtn").addEventListener("click", couponApply);
+
         function couponApply() {
             // Get elements and values
             var couponElement = document.getElementById("coupon");
             var amountElement = document.getElementById("amount");
+            var total = parseFloat(amountElement.value);
 
             // Fetch and apply coupon
             fetch("/checkout/apply-coupon", {
@@ -186,11 +212,13 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ code: couponElement.value, subtotal: parseFloat(amountElement.value) }),
+                body: JSON.stringify({ code: couponElement.value, subtotal: total }),
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Coupon apply response:', data);  // Add this line to check the response
                     if (data.success) {
+                        document.getElementById("couponDiscount").value = data.discount; // Add hidden input to store discount
                         updateAmounts(data.newSubtotal, data.newTotal);
                         Swal.fire({ text: "Coupon applied successfully", icon: "success", confirmButtonText: "OK" });
                     } else {
@@ -200,10 +228,14 @@
                 .catch(error => console.error("Error:", error));
         }
 
+
+        document.getElementById("revokeCouponBtn").addEventListener("click", couponRevoke);
+
         function couponRevoke() {
             // Get elements and values
             var couponElement = document.getElementById("coupon");
             var amountElement = document.getElementById("amount");
+            var total = parseFloat(amountElement.value);
 
             // Fetch and revoke coupon
             fetch("/checkout/revoke-coupon", {
@@ -211,7 +243,7 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ couponCode: couponElement.value, subtotal: parseFloat(amountElement.value) }),
+                body: JSON.stringify({ couponCode: couponElement.value, subtotal: total }),
             })
                 .then(response => response.json())
                 .then(data => {
@@ -225,13 +257,22 @@
                 .catch(error => console.error("Error:", error));
         }
 
+       
+
         document.getElementById("placeOrderBtn").addEventListener("click", function () {
             var amount = document.getElementById("amount").value;
             var wallet = document.getElementById("wallet").value;
+            var couponElement = document.getElementById("coupon");
             var paymentMode = document.querySelector('input[name="pay"]:checked').value;
             var address = document.querySelector('input[name="address"]:checked').value;
 
-            if (paymentMode === "Cash on Delivery") {
+            if (paymentMode === "Cash on Delivery" && amount > 1000) {
+                Swal.fire({
+                    text: "Cash on Delivery is not available for orders above ₹1000. Please choose Wallet or UPI.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            } else if (paymentMode === "Cash on Delivery") {
                 document.getElementById("checkoutForm").submit();
             } else if (paymentMode === "wallet") {
                 if (wallet >= amount) {
@@ -240,7 +281,7 @@
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ amount: amount, address: address })
+                        body: JSON.stringify({ amount: amount, address: address, couponDiscount: couponElement.value })
                     })
                         .then(response => response.json())
                         .then(data => {
@@ -290,14 +331,26 @@
                     }
                 };
                 var rzp1 = new Razorpay(options);
+                rzp1.on("payment.failed", function (response) {
+                    Swal.fire({
+                        title: 'Payment Failed',
+                        text: 'There was an issue processing your payment.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Ensure it's a string
+                            document.querySelector('input[name="pay"]:checked').value = "Payment pending";
+                            document.getElementById("checkoutForm").submit();
+                        }
+                    });
+                });
                 rzp1.open();
             }
         });
 
 
-        document.getElementById("applyCouponBtn").addEventListener("click", couponApply);
-        document.getElementById("revokeCouponBtn").addEventListener("click", couponRevoke);
-        //document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
-
+        // Initialize COD availability on page load
+        disableCODIfNeeded(<%= total %>);
     </script>
     <%- include('../partials/userFooter') -%>

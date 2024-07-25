@@ -7,7 +7,7 @@
     <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
     <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
     <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
-    <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
+    <!-- <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li> -->
   </ul>
   </nav>
 
@@ -133,7 +133,7 @@
           </div>
         </div>
 
-        <div class="card text-center" style="width: 25%;">
+        <!-- <div class="card text-center" style="width: 25%;">
           <div class="icon mt-2 mb-2">
             <svg width="50" height="50" fill="none" viewBox="0 0 24 24" stroke="currentColor"
               class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out">
@@ -148,7 +148,7 @@
             </h4>
             <span class="label">discount</span>
           </div>
-        </div>
+        </div> -->
 
         <div class="card text-center" style="width: 25%;">
           <div class="icon mt-2 mb-2">
@@ -431,82 +431,71 @@
 
 
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      let chart3;
-
-      const updateChart = (url, itemDescription) => {
-        axios.get(url)
-          .then((res) => {
-            const data = res.data.bestSellingProducts;
-            const categoryData = res.data.bestSellingCategories
-
-            let labels = [];
-            let totalSales = []
-            if (itemDescription === 'Products') {
-              labels = data.map(product => product.productId);
-              totalSales = data.map(product => product.totalSales);
-            } else {
-              labels = categoryData.map(product => product.categoryName);
-              totalSales = categoryData.map(product => product.totalSales);
-
-            }
-
-
-            const item = res.data.item;
-
-            const options = {
-              series: [{
-                name: `Total Sales`,
-                data: totalSales
-              }],
-              chart: {
-                height: 350,
-                type: 'bar'
-              },
-              title: {
-                text: `Best selling ${itemDescription || item}`
-              },
-              xaxis: {
-                categories: labels
-              }
-            };
-
-            if (chart3) {
-              chart3.destroy();
-            }
-
-            chart3 = new ApexCharts(document.querySelector("#chart3"), options);
-            chart3.render();
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      };
-
-      const bestProduct = document.getElementById('bestProducts');
-      bestProduct.addEventListener('click', function (e) {
-        e.preventDefault();
-        updateChart('/admin/bestSellingProduct', 'Products');
-      });
-
-      const brandBtn = document.getElementById('bestBrand');
-      brandBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        updateChart('/admin/bestSellingBrand', 'Brands');
-      });
-
-      const categoryBtn = document.getElementById('bestCategory')
-      bestCategory.addEventListener('click', function (e) {
-        e.preventDefault()
-        updateChart('/admin/bestSellingCategory', 'Category');
-
-      })
-
-    });
+ <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+ <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script>
+   document.addEventListener('DOMContentLoaded', function () {
+     let chart3;
+ 
+     const updateChart = (url, itemDescription) => {
+       axios.get(url)
+         .then((res) => {
+           const data = res.data.bestSellingProducts;
+           const categoryData = res.data.bestSellingCategories;
+           let labels = [];
+           let totalSales = [];
+           if (itemDescription === 'Products') {
+             labels = data.map(product => product.productId);
+             totalSales = data.map(product => product.totalSales);
+           } else {
+             labels = categoryData.map(product => product.categoryName);
+             totalSales = categoryData.map(product => product.totalSales);
+           }
+ 
+           const options = {
+             series: [{
+               name: `Total Sales`,
+               data: totalSales
+             }],
+             chart: {
+               height: 350,
+               type: 'bar'
+             },
+             title: {
+               text: `Best selling ${itemDescription || 'item'}`
+             },
+             xaxis: {
+               categories: labels
+             }
+           };
+ 
+           if (chart3) {
+             chart3.destroy();
+           }
+ 
+           chart3 = new ApexCharts(document.querySelector("#chart3"), options);
+           chart3.render();
+         })
+         .catch((err) => {
+           console.log(err);
+         });
+     };
+ 
+     const bestProduct = document.getElementById('bestProducts');
+     bestProduct.addEventListener('click', function (e) {
+       e.preventDefault();
+       updateChart('/admin/bestSellingProduct', 'Products');
+     });
+ 
+     const categoryBtn = document.getElementById('bestCategory');
+     categoryBtn.addEventListener('click', function (e) {
+       e.preventDefault();
+       updateChart('/admin/bestSellingCategory', 'Category');
+     });
+   });
+ </script>
+ 
 
   </script>
   <%- include('../partials/adminFooter') -%>

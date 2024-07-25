@@ -13,11 +13,10 @@ const loadCoupon = asyncHandler(async (req, res) => {
 
     const coupons = await Coupon.find()
         .skip(skipAmount)
-        .limit(ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
 
     const prev = page > 1 ? page - 1 : null;
     const next = page < totalPages ? page + 1 : null;
-    //   const categories = await Category.find({});
     const msg = req.query.msg || "";
     const couponExists = req.flash('couponExists');
     const couponAdded = req.flash('couponAdded');
@@ -28,10 +27,9 @@ const loadCoupon = asyncHandler(async (req, res) => {
         next,
         totalPages,
         currentPage: page,
-        //CatData: categories,
         msg,
-        couponExists,
-        couponAdded
+        couponExists: couponExists.length > 0 ? couponExists[0] : null,
+        couponAdded: couponAdded.length > 0 ? couponAdded[0] : null
     });
 });
 
@@ -56,23 +54,24 @@ const addNewCoupon = asyncHandler(async (req, res) => {
         oncePerUser,
     } = req.body;
 
-    console.log("Coupon: "+ code,
+    console.log("Coupon: " + code,
         discountType,
         discountAmount,
         minPurchaseAmount,
         maxRedeem,
         validFrom,
         validTo,
-        oncePerUser,)
+        oncePerUser);
 
     const couponExists = await Coupon.findOne({ code: code });
     if (couponExists) {
         req.flash('couponExists', "Coupon already exists");
-        res.redirect('/admin/add-coupon')
+        return res.redirect('/admin/add-coupon'); // Ensure no further code runs after the redirect
     }
 
-    if (!code || !discountType || !discountAmount ||!minPurchaseAmount || !maxRedeem || !validFrom || !validTo) {
-        return res.status(400).send('All fields are required.');
+    if (!code || !discountType || !discountAmount || !minPurchaseAmount || !maxRedeem || !validFrom || !validTo) {
+        req.flash('fieldsMissing', "All fields are required.");
+        return res.redirect('/admin/coupons'); // Ensure no further code runs after the redirect
     }
 
     const coupon = new Coupon({
@@ -90,9 +89,10 @@ const addNewCoupon = asyncHandler(async (req, res) => {
     await coupon.save();
 
     // Redirect to the coupons list
-    req.flash('couponAdded', "Coupon added!")
+    req.flash('couponAdded', "Coupon added!");
     res.redirect('/admin/coupons');
 });
+
 
 const editCoupon = asyncHandler(async (req, res) => {
     const couponId = req.params.id;

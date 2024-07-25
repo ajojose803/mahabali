@@ -284,7 +284,7 @@ const chartData = async (req, res) => {
                 $match: {
                     createdAt: {
                         $gte: new Date(startDate),
-                        $lt: new Date(endDate),
+                        $lt: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
                     },
                     status: {
                         $nin: ["Cancelled", "returned"]
@@ -448,12 +448,13 @@ const chartData = async (req, res) => {
 
   const bestSellingProduct = async (req, res) => {
     try {
+        console.log("Reaching Best seelling ProD")
   
       const bestSellingProducts = await Order.aggregate([
         {
           $match: {
             status: {
-              $nin: ["Cancelled", "returned"]
+              $nin: ["Cancelled", "Returned"]
             }
           }
         },
@@ -494,8 +495,9 @@ const chartData = async (req, res) => {
         }
       ]);
       
+    //   console.log("Best Selling Product: ",bestSellingProducts)
   
-        res.status(200).json({bestSellingProducts,item:'Product'})
+        res.status(200).json({bestSellingProducts, item:'Product'})
       
   
     } catch (error) {
@@ -508,6 +510,7 @@ const chartData = async (req, res) => {
   
   const bestSellingCategories=async(req,res)=>{
     try {
+        console.log("Reaching Best seelling Categ")
         
       const bestSellingCategories = await Order.aggregate([
         {

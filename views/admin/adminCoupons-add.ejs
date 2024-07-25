@@ -1,128 +1,250 @@
-<%- include('../partials/adminHeader') -%>
-  <script defer src="https://cdn.crop.guide/loader/l.js?c=ZQFGVQ"></script>
-  <ul class="list-unstyled">
-    <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
-    <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
-    <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
-    <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
-    <li class="active"><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
-    <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
-    <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
-  </ul>
-  </nav>
-  <!-- Sidebar Navigation end-->
-  <div class="page-content">
-    <div class="page-header">
-      <div class="container-fluid">
-        <h2 class="h5 no-margin-bottom">Add Coupon</h2>
-      </div>
-    </div>
 
-    <div class="col-lg-12">
-      <div class="block">
-        <div class="title"><strong>Add Coupon</strong></div>
-        <div class="block-body">
-          <form class="form-horizontal" action="/admin/add-coupon" method="post">
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Code</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="code" required>
-              </div>
+<%- include('../partials/adminHeader') -%>
+<script defer src="https://cdn.crop.guide/loader/l.js?c=ZQFGVQ"></script>
+<style>
+  .invalid-feedback {
+    display: none;
+    color: red;
+    font-size: 0.875em;
+  }
+  .is-invalid {
+    border-color: red;
+  }
+  .is-invalid + .invalid-feedback {
+    display: block;
+  }
+</style>
+<ul class="list-unstyled">
+  <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
+  <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
+  <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
+  <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+  <li class="active"><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
+  <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
+  <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li>
+</ul>
+</nav>
+<!-- Sidebar Navigation end-->
+<div class="page-content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <h2 class="h5 no-margin-bottom">Add Coupon</h2>
+    </div>
+  </div>
+
+  <div class="col-lg-12">
+    <div class="block">
+      <div class="title"><strong>Add Coupon</strong></div>
+      <div class="block-body">
+        <form class="form-horizontal" id="add-coupon-form" action="/admin/add-coupon" method="post">
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Code</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="code" name="code" required>
+              <div class="invalid-feedback"></div>
             </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Discount Type</label>
-              <div class="col-sm-9">
-                <select name="discountType" id="discount-type-select" required>
-                  <option value="flatDiscount">Flat Discount</option>
-                  <option value="percentageDiscount">Percentage Discount</option>
-                </select>
-              </div>
+          </div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Discount Type</label>
+            <div class="col-sm-9">
+              <select name="discountType" id="discount-type-select" required>
+                <option value="flatDiscount">Flat Discount</option>
+                <option value="percentageDiscount">Percentage Discount</option>
+              </select>
+              <div class="invalid-feedback"></div>
             </div>
-            <div class="line"></div>
-            <div id="additional-fields"></div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Discount Amount</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="discountAmount" min="1" required>
-              </div>
+          </div>
+          <div class="line"></div>
+          <div id="additional-fields"></div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Discount Amount</label>
+            <div class="col-sm-9">
+              <input type="number" class="form-control" name="discountAmount" min="1" required>
+              <div class="invalid-feedback"></div>
             </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Minimum Purchase Amount</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="minPurchaseAmount" min="0" required>
-              </div>
+          </div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Minimum Purchase Amount</label>
+            <div class="col-sm-9">
+              <input type="number" class="form-control" name="minPurchaseAmount" min="0" required>
+              <div class="invalid-feedback"></div>
             </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Max Redeemable Amount</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="maxRedeem" min="0" required>
-              </div>
+          </div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Max Redeemable Amount</label>
+            <div class="col-sm-9">
+              <input type="number" class="form-control" name="maxRedeem" min="0" required>
+              <div class="invalid-feedback"></div>
             </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Valid From</label>
-              <div class="col-sm-9">
-                <input type="date" class="form-control" name="validFrom" required>
-              </div>
+          </div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Valid From</label>
+            <div class="col-sm-9">
+              <input type="date" class="form-control" name="validFrom" required>
+              <div class="invalid-feedback"></div>
             </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Valid To</label>
-              <div class="col-sm-9">
-                <input type="date" class="form-control" name="validTo" required>
-              </div>
+          </div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Valid To</label>
+            <div class="col-sm-9">
+              <input type="date" class="form-control" name="validTo" required>
+              <div class="invalid-feedback"></div>
             </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Once Per User</label>
-              <div class="col-sm-9">
-                <input type="checkbox" name="oncePerUser">
-              </div>
+          </div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <label class="col-sm-3 form-control-label">Once Per User</label>
+            <div class="col-sm-9">
+              <input type="checkbox" name="oncePerUser">
             </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <div class="col-sm-9 ml-auto">
-                <a class="btn btn-secondary" href="/admin/coupons">Cancel</a>
-                <button type="submit" class="btn btn-primary">Add Coupon</button>
-              </div>
+          </div>
+          <div class="line"></div>
+          <div class="form-group row">
+            <div class="col-sm-9 ml-auto">
+              <a class="btn btn-secondary" href="/admin/coupons">Cancel</a>
+              <button type="submit" class="btn btn-primary">Add Coupon</button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-  </section>
+</div>
+</section>
 
-  <script>
-    //validation
-    document.addEventListener('DOMContentLoaded', function() {
-      const discountAmountInput = document.querySelector('input[name="discountAmount"]');
-      const minPurchaseAmountInput = document.querySelector('input[name="minPurchaseAmount"]');
-      const form = document.querySelector('form');
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('add-coupon-form');
+    const inputs = form.querySelectorAll('input, select');
+    const discountTypeSelect = document.getElementById('discount-type-select');
+    const discountAmountInput = form.querySelector('input[name="discountAmount"]');
+    const validFromInput = form.querySelector('input[name="validFrom"]');
+    const validToInput = form.querySelector('input[name="validTo"]');
+    const codeInput = form.querySelector('input[name="code"]');
 
-      discountAmountInput.addEventListener('input', function() {
-        if (parseFloat(this.value) < 0) {
-          this.value = 1; // Set a default value or handle as per your application logic
+    const showError = (input, message) => {
+      input.classList.add('is-invalid');
+      let errorDiv = input.parentNode.querySelector('.error-message');
+      if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.style.color = 'red';
+        errorDiv.style.fontSize = '0.875em';
+        errorDiv.style.marginTop = '0.25rem';
+        input.parentNode.appendChild(errorDiv);
+      }
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    };
+
+    const clearError = (input) => {
+      input.classList.remove('is-invalid');
+      const errorDiv = input.parentNode.querySelector('.error-message');
+      if (errorDiv) {
+        errorDiv.style.display = 'none';
+      }
+    };
+
+    const validateInput = (input) => {
+      const value = input.value.trim();
+      if (!value) {
+        showError(input, 'This field is required');
+        return false;
+      }
+      clearError(input);
+      return true;
+    };
+
+    const validateDiscountAmount = () => {
+      const discountType = discountTypeSelect.value;
+      const discountAmount = parseFloat(discountAmountInput.value);
+      
+      if (discountType === 'percentageDiscount') {
+        if (isNaN(discountAmount) || discountAmount <= 0 || discountAmount > 99) {
+          showError(discountAmountInput, 'Percentage discount must be between 0 and 99');
+          return false;
+        }
+      } else {
+        if (isNaN(discountAmount) || discountAmount <= 0) {
+          showError(discountAmountInput, 'Discount amount must be greater than 0');
+          return false;
+        }
+      }
+      clearError(discountAmountInput);
+      return true;
+    };
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      let formIsValid = true;
+
+      inputs.forEach(input => {
+        if (!validateInput(input)) {
+          formIsValid = false;
         }
       });
 
-      minPurchaseAmountInput.addEventListener('input', function() {
-        if (parseInt(this.value) < 0) {
-          this.value = 0; // Set a default value or handle as per your application logic
+      if (!validateDiscountAmount()) {
+        formIsValid = false;
+      }
+
+      const validFromDate = new Date(validFromInput.value);
+      const validToDate = new Date(validToInput.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (validFromDate < today) {
+        showError(validFromInput, 'Valid From date cannot be in the past');
+        formIsValid = false;
+      }
+
+      if (validToDate < today) {
+        showError(validToInput, 'Valid To date cannot be in the past');
+        formIsValid = false;
+      }
+
+      if (validFromDate > validToDate) {
+        showError(validFromInput, 'Valid From date cannot be after Valid To date');
+        showError(validToInput, 'Valid To date cannot be before Valid From date');
+        formIsValid = false;
+      }
+
+      if (!codeInput.value.trim()) {
+        showError(codeInput, 'Coupon code cannot be blank or contain only spaces');
+        formIsValid = false;
+      }
+
+      if (formIsValid) {
+        form.submit();
+      } else {
+        alert('Please fix the errors in the form before submitting.');
+      }
+    });
+
+    inputs.forEach(input => {
+      input.addEventListener('input', function() {
+        validateInput(input);
+        if (input === discountAmountInput || input === discountTypeSelect) {
+          validateDiscountAmount();
         }
       });
 
-      form.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
+      input.addEventListener('focusout', function() {
+        validateInput(input);
+        if (input === discountAmountInput || input === discountTypeSelect) {
+          validateDiscountAmount();
         }
       });
     });
-  </script>
-  <%- include('../partials/adminFooter') -%>
 
- 
+    // Add event listener for discount type change
+    discountTypeSelect.addEventListener('change', validateDiscountAmount);
+  });
+</script>
+<%- include('../partials/adminFooter') -%>

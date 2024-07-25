@@ -1,4 +1,4 @@
-<%- include('../partials/userHeader')-%>
+<%- include('../partials/userHeader') %>
 
 <style>
     .pro-qty {
@@ -23,6 +23,11 @@
         margin: 0 8px;
         width: 50px;
     }
+
+    .payment-heading {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
 </style>
 
 <!-- Breadcrumb Begin -->
@@ -32,7 +37,7 @@
             <div class="col-lg-12">
                 <div class="breadcrumb__links">
                     <a href="/"><i class="fa fa-home"></i> Home</a>
-                    <span>Order Completed</span>
+                    <span>Order Details</span>
                 </div>
             </div>
         </div>
@@ -48,7 +53,7 @@
                 <h3>Your Order Details</h3>
                 <p><strong>Order ID:</strong> <%= orderId %></p>
                 <p><strong>Status:</strong>
-                    <% if (orderStatus === 'Pending') { %>
+                    <% if (orderStatus === 'Pending' || orderStatus === 'pending') { %>
                         Pending
                     <% } else if (orderStatus === 'Delivered') { %>
                         Delivered
@@ -68,9 +73,7 @@
                         Unknown
                     <% } %>
                 </p>
-                <p><strong>Payment Method:</strong>
-                    <%= paymentMethod %>
-                </p>
+                <p><strong>Payment Method:</strong> <%= paymentMethod %></p>
                 <!-- Display other order details as needed -->
             </div>
         </div>
@@ -90,12 +93,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% orderItems.forEach(function(item, index) { %>
+                            <% orderItems.forEach(function(item) { %>
                                 <tr>
                                     <td>
                                         <% if (item.imageUrls && item.imageUrls.length > 0) { %>
                                             <img src="<%= item.imageUrls[0] %>" alt="<%= item.product.name %>" style="width: 100px; height: 100px; object-fit: cover;">
-                                            <% } else { %>
+                                        <% } else { %>
                                             <img src="/path/to/default-image.jpg" alt="Unknown Product">
                                         <% } %>
                                         <%= item.product ? item.product.name : 'Unknown Product' %>
@@ -114,9 +117,9 @@
 
         <!-- Cart Total Section -->
         <div class="row">
-            <div class="col-lg-6 ">
+            <div class="col-lg-6">
                 <div class="cart__total__procced">
-                    <h6> Amount</h6>
+                    <h6>Amount</h6>
                     <ul>
                         <li>Total <span>₹ <%= totalAmount %></span></li>
                         <!-- Display other totals as needed -->
@@ -126,16 +129,141 @@
             <!-- Display address details here -->
             <div class="col-lg-6">
                 <div class="cart__total__procced">
-
                     <h6>Delivery Address:</h6>
-                    <p><%= address.addressline1%>, <%= address.city %>, <%= address.state %> - <%= address.pincode %><br>
+                    <p>
+                        <%= address.addressline1 %>, <%= address.city %>, <%= address.state %> - <%= address.pincode %><br>
                         <%= address.country %>
                     </p>
                 </div>
             </div>
         </div>
+
+        <!-- Conditional Sections -->
+        <% if (orderStatus === 'Delivered') { %>
+            <div class="text-center mt-4">
+                <a href="/order/invoice/<%= orderId %>" class="btn btn-outline-danger mb-5 font-weight-bold btn-lg">
+                    Download Invoice
+                </a>
+            </div>
+        <% } else if (orderStatus === 'Payment pending') { %>
+            <!-- Payment options -->
+            <div class="container mt-5 text-center">
+                <h2 class="payment-heading text-dark mb-3">Proceed with Payment</h2>
+
+                <!-- Payment form -->
+                <form id="checkoutForm" action="/re-order/<%= orderId %>" method="POST" class="checkout__form">
+                    <input type="hidden" id="wallet" name="wallet" value="<%= user.wallet %>">
+                    <input type="hidden" id="amount" name="amount" value="<%= totalAmount %>">
+
+                    <div class="checkout__order">
+                        <h5>Select the mode of Payment</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pay" id="Cash on Delivery" value="Cash on Delivery">
+                            <label class="form-check-label" for="Cash on Delivery">Cash on Delivery</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pay" id="upi" value="upi" checked>
+                            <label class="form-check-label" for="upi">UPI</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="pay" id="wallet" value="wallet">
+                            <label class="form-check-label" for="wallet">Wallet</label>
+                        </div>
+                    </div>
+
+                    <!-- Button to proceed payment -->
+                    <button id="placeOrderBtn" class="btn btn-outline-danger btn-lg py-3" type="submit">Proceed To Payment</button>
+                </form>
+                <hr>
+            </div>
+        <% } %>
     </div>
 </section>
 <!-- Order Details Section End -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<%- include('../partials/userFooter')-%>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize COD availability on page load
+        disableCODIfNeeded(<%= totalAmount %>);
+    
+        // Event listener for proceeding with payment
+        document.getElementById("placeOrderBtn").addEventListener("click", function(event) {
+            event.preventDefault();
+            var amount = parseFloat(document.getElementById("amount").value);
+            var wallet = parseFloat(document.getElementById("wallet").value);
+            var paymentMode = document.querySelector('input[name="pay"]:checked').value;
+    
+            if (paymentMode === "Cash on Delivery" && amount > 1000) {
+                Swal.fire({
+                    text: "Cash on Delivery is not available for orders above ₹1000. Please choose Wallet or UPI.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            } else if (paymentMode === "wallet") {
+                if (wallet >= amount) {
+                    document.getElementById("checkoutForm").submit(); // Directly submit the form for wallet payment
+                } else {
+                    Swal.fire({
+                        text: "Insufficient wallet balance",
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    });
+                }
+            } else {
+                var options = {
+                    key: "<%= process.env.RAZORPAY_KEY_ID %>",
+                    amount: amount * 100,
+                    currency: "INR",
+                    name: "Mahabali",
+                    description: "Test Transaction",
+                    handler: function(response) {
+                        document.getElementById("checkoutForm").submit(); // Submit the form after successful payment
+                    },
+                    prefill: {
+                        name: "<%= user.firstName %>",
+                        email: "<%= user.email %>",
+                        contact: "<%= user.phone %>"
+                    },
+                    notes: {
+                        address: "Your address"
+                    },
+                    theme: {
+                        color: "#3399cc"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.on("payment.failed", function(response) {
+                    Swal.fire({
+                        title: 'Payment Failed',
+                        text: 'There was an issue processing your payment.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById("checkoutForm").submit(); // Submit the form even if payment fails
+                        }
+                    });
+                });
+                rzp1.open();
+            }
+        });
+    
+        function disableCODIfNeeded(total) {
+            var codOption = document.getElementById("Cash on Delivery");
+            var codLabel = document.querySelector('label[for="Cash on Delivery"]');
+            if (total > 1000) {
+                codOption.disabled = true;
+                codLabel.style.color = 'grey';
+                codLabel.innerHTML = "Cash on Delivery (Not available for orders above ₹1000)";
+            } else {
+                codOption.disabled = false;
+                codLabel.style.color = 'black';
+                codLabel.innerHTML = "Cash on Delivery";
+            }
+        }
+    });
+    </script>
+    
+<%- include('../partials/userFooter') %>

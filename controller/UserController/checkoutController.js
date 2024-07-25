@@ -87,6 +87,7 @@ const order = asyncHandler(async (req, res) => {
   try {
     console.log("Reaching order function")
     const { address, pay } = req.body;
+    console.log("Pay: ", pay);
     const userId = req.session.user._id;
     const cart = await Cart.findOne({ userId }).populate('items.productId');
 
@@ -128,7 +129,7 @@ const order = asyncHandler(async (req, res) => {
       address: selectedAddress,
       createdAt: new Date(),
       updated: new Date(),
-      status: pay === 'Razorpay' ? 'Payment pending' : 'Pending',
+      status: pay === 'Payment pending' ? 'Payment pending' : 'Pending',
     };
 
     const order = new Order(orderData);
@@ -140,13 +141,7 @@ const order = asyncHandler(async (req, res) => {
     // Clear user's cart after placing the order
     cart.items = [];
     await cart.save();
-
-    // Redirect to payment gateway or order status page
-    if (pay === 'Razorpay') {
-     
-    } else {
-      res.redirect(`/profile/orders`);
-    }
+    res.redirect(`/profile/orders`);
   } catch (error) {
     console.error('Error placing order:', error);
     res.status(500).render('user/servererror');
@@ -201,7 +196,7 @@ const getOrderStatus = asyncHandler(async (req, res) => {
 
     res.render('user/orderSuccess', {
       user,
-      orderId: order._id,
+      orderId: order.orderId,
       orderStatus: order.status,
       paymentMethod: order.payment,
       orderItems: validOrderItems,
@@ -423,7 +418,7 @@ const createRazorpayOrder = async (req, res) => {
 
 const payWithWallet = asyncHandler(async (req, res) => {
   const userId = req.session.user._id;
-  const { amount, address } = req.body;
+  const { amount, address, couponDiscount } = req.body;
   console.log("Reaching payWithWallet...");
   console.log("Req.body at payWithWallet", req.body);
 
@@ -462,7 +457,19 @@ const payWithWallet = asyncHandler(async (req, res) => {
     // Calculate subtotal and delivery fee
     const subtotal = cart.items.reduce((acc, item) => acc + item.productId.price * item.quantity, 0);
     const deliveryFee = subtotal < 1000 ? 99 : 0;
-    const total = subtotal + deliveryFee;
+
+    // Incorporate coupon discount
+    const coupon = await Coupon.findOne({ code: couponDiscount })
+    let discountedPrice;
+    if (coupon.discountType === "percentageDiscount") {
+      discountedPrice = (subtotal * coupon.discountAmount) / 100;
+      if (discountedPrice > coupon.maxRedeem) {
+        discountedPrice = coupon.maxRedeem;
+      }
+    } else if (coupon.discountType === "flatDiscount") {
+      discountedPrice = coupon.discountAmount;
+    }
+    const total = subtotal + deliveryFee - discountedPrice;
 
     console.log("Calculated total:", total, "Requested amount:", parsedAmount);
 
@@ -519,6 +526,7 @@ const payWithWallet = asyncHandler(async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal server error", error: error.message });
   }
 });
+
 
 module.exports = {
   loadCheckout,

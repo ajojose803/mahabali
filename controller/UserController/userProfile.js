@@ -675,6 +675,58 @@ const walletTopup = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
+const reOrder = async (req, res) => {
+
+    console.log("Reaching Re-order Function ");
+
+    try {
+        const orderIdParams = req.params.id;
+        console.log("orderIdParams",orderIdParams)
+        const orderId = orderIdParams.trim();
+        console.log("orderId",orderId)
+
+        const userId = req.session.userId;
+        const order = await Order.findOne({ orderId: orderId });
+        console.log("order",order)
+        const { pay, amount } = req.body;
+        console.log("Req.body", req.body)
+        const parsedWallet = parseInt(amount);
+        if (pay == 'Payment pending') {
+            res.redirect(`checkout/order-status/${order._id}`)
+        } else if (pay == 'wallet') {
+            const update = await Order.updateOne({ orderId: orderId }, {
+                wallet: parsedWallet,
+                payment: pay,
+                status: "Pending",
+                updated: new Date()
+            })
+            const userWallet = await Wallet.findOne({ userId: userId })
+            userWallet.history.push({
+                transaction: "Debited",
+                amount: parsedWallet,
+                date: new Date(),
+                reason: "Product Purchased"
+            })
+            await userWallet.save();
+            const user = await User.findOne({ _id: userId })
+            user.wallet -= parsedWallet;
+            await user.save();
+        } else {
+            const update = await Order.updateOne({ orderId: orderId }, {
+                payment: pay,
+                status: "pending",
+                updated: new Date()
+            })
+        }
+        req.flash('orderSuccess', 'Your Order is Successfull!')
+        res.redirect(`/profile/orders`)
+    } catch (error) {
+        console.log(error);
+        res.render('user/servererror');
+    }
+}
+
 module.exports = {
     setDefaultAddress,
     LoadProfile,
@@ -694,4 +746,5 @@ module.exports = {
     loadWallet,
     walletTopup,
     returnReason,
+    reOrder,
 }
