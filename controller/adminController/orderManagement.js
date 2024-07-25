@@ -6,19 +6,33 @@ const asyncHandler = require("../../middleware/asyncHandler");
 const Wallet = require("../../model/walletModel");
 
 
-
+const ITEMS_PER_PAGE = 10; // Adjust as necessary
 
 const loadOrder = asyncHandler(async (req, res) => {
-    const order = await Order.find({}).sort({ createdAt: -1 }).populate({
-        path: 'items.productId',
-        model: 'product',
-        select: 'name description'
-    })
-    console.log(order[0].items[0])
-    res.render("admin/adminOrders", { order })
+    const page = +req.query.page || 1;
+    const totalOrders = await Order.countDocuments();
+    const totalPages = Math.ceil(totalOrders / ITEMS_PER_PAGE);
 
-})
+    const orders = await Order.find({})
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE)
+        .populate({
+            path: 'items.productId',
+            model: 'product',
+            select: 'name description'
+        });
 
+    res.render("admin/adminOrders", {
+        orders,
+        currentPage: page,
+        totalPages,
+        hasPrevPage: page > 1,
+        hasNextPage: page < totalPages,
+        prevPage: page - 1,
+        nextPage: page + 1
+    });
+});
 
 const updateStatus = asyncHandler(async (req, res) => {
     const { orderId, status } = req.body

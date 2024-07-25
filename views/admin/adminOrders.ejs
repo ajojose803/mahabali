@@ -1,7 +1,7 @@
 <%- include('../partials/adminHeader')-%>
 
 <!-- Sidebar Navigation Menus -->
-<span class="heading">Main</span>
+
 <ul class="list-unstyled">
   <li> <a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
   <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
@@ -43,15 +43,15 @@
         </tr>
       </thead>
       <tbody class="text-center" style="background-color: rgba(9, 5, 46, 0.1); font-size: small;">
-        <% if(order && order.length> 0) { %>
-          <% order.forEach(function(data) { %>
+        <% if(orders && orders.length > 0) { %>
+          <% orders.forEach(function(data) { %>
             <tr>
               <td><%= data.orderId %></td>
               <td><%= data.userId %></td>
               <td>
-                <% data.items.forEach(function(items){ %>
-                  <%= items.description %><br>
-                  <%= items.quantity %><br>
+                <% data.items.forEach(function(item) { %>
+                  <%= item.productId.description %><br>
+                  <%= item.quantity %><br>
                 <% }); %>
               </td>
               <td>
@@ -64,7 +64,6 @@
                 <form action="/admin/order/update-status" method="post" id="orderStatusForm_<%= data._id %>">
                   <input type="hidden" name="orderId" value="<%= data._id %>">
                   <label for="status"></label>
-
                   <% if(data.status === 'paymentPending') { %>
                     <span class="text-danger">Payment Pending</span>
                   <% } else if(data.status === 'Cancelled') { %>
@@ -95,6 +94,31 @@
         <% } %>
       </tbody>
     </table>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <% if (hasPrevPage) { %>
+          <li class="page-item">
+            <a class="page-link" href="?page=<%= prevPage %>" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        <% } %>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+          </li>
+        <% } %>
+        <% if (hasNextPage) { %>
+          <li class="page-item">
+            <a class="page-link" href="?page=<%= nextPage %>" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
   </div>
 
   <script>
@@ -103,14 +127,11 @@
     }
 
     function cancelOrder(orderId) {
-      // Implement cancel order functionality, e.g., through AJAX
       if (confirm('Are you sure you want to cancel this order?')) {
         fetch(`/admin/cancel-order/${orderId}`, {
           method: 'POST',
         }).then(response => {
-          // Handle response as needed
           console.log('Order canceled successfully');
-          // Optionally, update UI to reflect cancellation
         }).catch(error => {
           console.error('Error canceling order:', error);
         });
