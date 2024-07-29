@@ -1,92 +1,102 @@
 <%- include('../../partials/userHeader')-%>
 
 <style>
-     .shop__sidebar {
-            padding: 20px;
-        }
+    .shop__sidebar {
+        padding: 20px;
+    }
 
-        .contact__content ul {
-            list-style-type: none;
-            padding: 0;
-        }
+    .contact__content ul {
+        list-style-type: none;
+        padding: 0;
+    }
 
-        .contact__content ul a {
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-            color: black;
-            border-bottom: 1px solid #ddd;
-        }
+    .contact__content ul a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: black;
+        border-bottom: 1px solid #ddd;
+    }
 
-        .contact__content ul a.active {
-            background-color: #c91414;
-            color: white;
-        }
+    .contact__content ul a.active {
+        background-color: #c91414;
+        color: white;
+    }
 
-        .contact__content ul a:hover {
-            background-color: #f0f0f0;
-        }
+    .contact__content ul a:hover {
+        background-color: #f0f0f0;
+    }
 
-        .form-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    .form-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        .form-container h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: #333;
-            text-align: center;
-        }
+    .form-container h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+        text-align: center;
+    }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+    .form-group {
+        margin-bottom: 15px;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
 
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
 
-        .form-group input[readonly] {
-            background-color: #f9f9f9;
-        }
+    .form-group input[readonly] {
+        background-color: #f9f9f9;
+    }
 
-        .checkout__form__input input:focus {
-            border-color: #c91414;
-            outline: none;
-        }
+    .checkout__form__input input:focus {
+        border-color: #c91414;
+        outline: none;
+    }
 
-        .site-btn-container {
-            text-align: center;
-        }
+    .site-btn-container {
+        text-align: center;
+    }
 
-        .site-btn {
-            padding: 12px 25px;
-            background-color: #c91414;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
+    .site-btn {
+        padding: 12px 25px;
+        background-color: #c91414;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
 
-        .site-btn:hover {
-            background-color: #811111;
-        }
+    .site-btn:hover {
+        background-color: #811111;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .error {
+        border-color: red; /* Adjust styling to indicate errors */
+    }
 </style>
 
 <!-- Breadcrumb Begin -->
@@ -138,46 +148,56 @@
             <div class="col-lg-9 col-md-9">
                 <div class="form-container">
                     <h2>Edit Address</h2>
-                    <form action="/profile/address/<%= address._id %>/edit" method="POST" class="checkout__form">
+                    <form id="addressForm" action="/profile/address/<%= address._id %>/edit" method="POST" class="checkout__form">
                         <div class="checkout__form__input">
                             <p>First Name <span>*</span></p>
                             <input type="text" id="firstName" name="firstName" placeholder="First Name" value="<%= address.firstName %>" required>
+                            <div id="firstNameError" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>Last Name <span>*</span></p>
                             <input type="text" id="lastName" name="lastName" placeholder="Last Name" value="<%= address.lastName %>" required>
+                            <div id="lastNameError" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>Phone <span>*</span></p>
                             <input type="number" id="phone" name="phone" placeholder="Phone Number" value="<%= address.phone %>" required>
+                            <div id="phoneError" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>Email <span>*</span></p>
                             <input type="email" id="email" name="email" placeholder="Email" value="<%= address.email %>" required>
+                            <div id="emailError" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>Address Line 1 <span>*</span></p>
                             <input type="text" id="addressline1" name="addressline1" placeholder="Address Line 1" value="<%= address.addressline1 %>" required>
+                            <div id="addressline1Error" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>Address Line 2</p>
                             <input type="text" id="addressline2" name="addressline2" placeholder="Address Line 2" value="<%= address.addressline2 %>">
+                            <div id="addressline2Error" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>City <span>*</span></p>
                             <input type="text" id="city" name="city" placeholder="City" value="<%= address.city %>" required>
+                            <div id="cityError" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>State <span>*</span></p>
                             <input type="text" id="state" name="state" placeholder="State" value="<%= address.state %>" required>
+                            <div id="stateError" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>Country <span>*</span></p>
                             <input type="text" id="country" name="country" placeholder="Country" value="<%= address.country %>" required>
+                            <div id="countryError" class="error-message"></div>
                         </div>
                         <div class="checkout__form__input">
                             <p>Pincode <span>*</span></p>
                             <input type="number" id="pincode" name="pincode" placeholder="Pincode" value="<%= address.pincode %>" required>
+                            <div id="pincodeError" class="error-message"></div>
                         </div>
                         <div class="site-btn-container">
                             <button type="submit" class="site-btn">Update Address</button>
@@ -189,5 +209,90 @@
     </div>
 </section>
 <!-- Contact Section End -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('addressForm');
+        const inputs = form.querySelectorAll('input, select, textarea');
+
+        // Regular expressions for validation
+        const nameRegex = /^[a-zA-Z\s]*$/; // Alphabets and spaces only
+        const phoneRegex = /^[0-9]{10}$/; // 10 digits only
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Proper email format
+        const pincodeRegex = /^[0-9]{6}$/; // 6 digits only
+
+        // Function to validate a single field
+        function validateField(field) {
+            const errorElement = document.getElementById(field.id + 'Error');
+            let isValid = true;
+
+            switch (field.id) {
+                case 'firstName':
+                case 'lastName':
+                    isValid = nameRegex.test(field.value.trim());
+                    break;
+                case 'phone':
+                    isValid = phoneRegex.test(field.value.trim());
+                    break;
+                case 'email':
+                    isValid = emailRegex.test(field.value.trim());
+                    break;
+                case 'pincode':
+                    isValid = pincodeRegex.test(field.value.trim());
+                    break;
+                default:
+                    isValid = field.value.trim() !== ''; // Basic non-empty validation
+            }
+
+            if (!isValid) {
+                switch (field.id) {
+                    case 'firstName':
+                    case 'lastName':
+                        errorElement.textContent = 'Please enter alphabets and spaces only.';
+                        break;
+                    case 'phone':
+                        errorElement.textContent = 'Please enter a valid 10-digit phone number.';
+                        break;
+                    case 'email':
+                        errorElement.textContent = 'Please enter a valid email address.';
+                        break;
+                    case 'pincode':
+                        errorElement.textContent = 'Please enter a valid 6-digit pincode.';
+                        break;
+                    default:
+                        errorElement.textContent = 'This field is required.';
+                }
+                field.classList.add('error');
+            } else {
+                errorElement.textContent = '';
+                field.classList.remove('error');
+            }
+
+            return isValid;
+        }
+
+        // Validate field on blur
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(input);
+            });
+        });
+
+        // Validate entire form on submit
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+            inputs.forEach(input => {
+                if (!validateField(input)) {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault(); // Prevent form submission if validation fails
+                event.stopPropagation();
+            }
+        });
+    });
+</script>
 
 <%- include('../../partials/userFooter')-%>

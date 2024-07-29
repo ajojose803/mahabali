@@ -27,5 +27,22 @@ const userAuth = async (req, res, next) => {
     }
 };
 
+const isloggedOut = (req, res, next) => {
+    try {
+        if (req.session.isAuth) {
+            res.redirect('/')
+        } else {
+            next();
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 
-module.exports = { isAdAuth,userAuth };
+
+module.exports = {
+    isAdAuth,
+    userAuth,
+    isloggedOut
+
+};

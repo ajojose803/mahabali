@@ -65,7 +65,7 @@
             <td><%= coupon.oncePerUser ? 'Yes' : 'No' %></td>
             <td><%= coupon.status ? 'Listed' : 'Unlisted' %></td>
             <td>
-              <a class="btn btn-primary" style="color: white; background-color: #02a15f;" onclick="confirmUnlistt('<%= coupon._id %>')">
+              <a class="btn btn-primary" style="color: white; background-color: #30ca09;" onclick="confirmUnlistt('<%= coupon._id %>')">
                 <%= coupon.status ? 'Unlist' : 'List' %>
               </a>
             </td>
@@ -178,7 +178,7 @@
     })
     .then((result) => {
       if (result.isConfirmed) {
-        window.location.href = "/admin/unlistCoupon/" + itemId;
+        window.location.href = "/admin/coupon/update-status/" + itemId;
       } else {
         console.log("User canceled");
       }

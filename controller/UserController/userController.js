@@ -112,39 +112,70 @@ const sendEmail = async (email, otp) => {
 const createUser = asyncHandler(async (req, res) => {
     const { username, email, phone, password } = req.body;
 
-    if (!username || !email || !password || !phone) {
+    // Validate all fields are filled
+    if (!username || !email || !phone || !password) {
         req.flash("error", "Please fill all the fields");
         return res.redirect('/register');
     }
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-        req.flash('error', 'Existing user');
+    // Input validation
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const phoneRegex = /^[6-9]\d{9}$/;
+    const passwordRegex = /^(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+
+    if (!usernameRegex.test(username)) {
+        req.flash("error", "Invalid username. Please use only letters, numbers, and underscores.");
+        return res.redirect('/register');
+    }
+    if (!emailRegex.test(email)) {
+        req.flash("error", "Invalid email format.");
+        return res.redirect('/register');
+    }
+    if (!phoneRegex.test(phone)) {
+        req.flash("error", "Invalid phone number. Please enter a valid 10-digit number.");
+        return res.redirect('/register');
+    }
+    if (!passwordRegex.test(password)) {
+        req.flash("error", "Password must be at least 8 characters long and include at least one special character.");
         return res.redirect('/register');
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    try {
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            req.flash('error', 'User already exists with this email.');
+            return res.redirect('/register');
+        }
 
-    req.session.tempUser = {
-        username,
-        email,
-        phone,
-        password: hashedPassword
-    };
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-    const otp = generateOtp();
-    const expiryTime = Date.now() + 2 * 60 * 1000; // 120 seconds from now
+        req.session.tempUser = {
+            username,
+            email,
+            phone,
+            password: hashedPassword
+        };
 
-    req.session.otp = {
-        value: otp,
-        expiry: expiryTime
-    };
+        const otp = generateOtp();
+        const expiryTime = Date.now() + 2 * 60 * 1000; // 120 seconds from now
 
-    await sendEmail(email, otp);
-    req.flash('success', 'OTP sent to your email');
-    res.redirect('/otp');
+        req.session.otp = {
+            value: otp,
+            expiry: expiryTime
+        };
+
+        await sendEmail(email, otp);
+        req.flash('success', 'OTP sent to your email.');
+        res.redirect('/otp');
+    } catch (error) {
+        console.error("Error creating user:", error);
+        req.flash('error', 'An error occurred during registration. Please try again.');
+        res.redirect('/register');
+    }
 });
+
 
 const showOtp = async (req, res) => {
     try {
@@ -270,8 +301,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
 const forgotPassword = asyncHandler(async(req,res) => {
-
-
     res.render('user/forgotPassword',{})
 })
 

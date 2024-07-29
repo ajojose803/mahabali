@@ -114,14 +114,23 @@ const order = asyncHandler(async (req, res) => {
     // Add delivery fee to total amount
     const total = subtotal + deliveryFee;
 
+    const items = cart.items.map(item => ({
+      productId: item.productId._id,
+      quantity: item.quantity,
+      price: item.productId.price,
+    }))
+
+    //Stock quantity update
+    for (const item of items) {
+      const product = await Product.findOne({ _id: item.productId });
+      product.stock -= item.quantity;
+      await product.save();
+    }
+
     // Create order instance
     const orderData = {
       userId,
-      items: cart.items.map(item => ({
-        productId: item.productId._id,
-        quantity: item.quantity,
-        price: item.productId.price,
-      })),
+      items: items,
       subtotal,
       deliveryFee,
       amount: total,
@@ -131,6 +140,8 @@ const order = asyncHandler(async (req, res) => {
       updated: new Date(),
       status: pay === 'Payment pending' ? 'Payment pending' : 'Pending',
     };
+
+    
 
     const order = new Order(orderData);
     const savedOrder = await order.save();
@@ -151,13 +162,13 @@ const order = asyncHandler(async (req, res) => {
 
 const getOrderStatus = asyncHandler(async (req, res) => {
   const orderId = req.session.orderId || req.params.id;
-  console.log("Order Id in getOrderStatus: ", orderId)
+  console.log("Order Id in getOrderStatus: ", orderId);
+
   if (!orderId) {
     return res.status(400).json({ success: false, error: 'Order ID not found' });
   }
 
   const userId = req.session.user._id;
-  const user = await User.findById(userId);
 
   try {
     const order = await Order.findOne({ orderId: orderId }).populate({
@@ -166,21 +177,25 @@ const getOrderStatus = asyncHandler(async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).json({ success: false, error: 'Order not found' });
+      return res.render('user/servererror');
+      //return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    // Check if the order belongs to the logged-in user
+    if (order.userId.toString() !== userId.toString()) {
+      return res.render('user/servererror');
+      //return res.status(403).json({ success: false, error: 'You do not have permission to view this order' });
     }
 
     const orderItems = await Promise.all(order.items.map(async (item) => {
       const product = item.productId;
       if (!product) {
-        //console.log('Product not found for item:', item);
         return null;
       }
 
       let imageUrls = [];
       if (Array.isArray(product.image) && product.image.length > 0) {
         imageUrls = await Promise.all(product.image.map(getObjectSignedUrl));
-      } else {
-        //console.log('Product image is not defined or empty for product:', product);
       }
 
       return {
@@ -192,10 +207,9 @@ const getOrderStatus = asyncHandler(async (req, res) => {
     }));
 
     const validOrderItems = orderItems.filter(item => item !== null);
-    console.log(order.amount);
 
     res.render('user/orderSuccess', {
-      user,
+      user: req.session.user,
       orderId: order.orderId,
       orderStatus: order.status,
       paymentMethod: order.payment,
@@ -315,9 +329,6 @@ const revokeCoupon = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error. Please try again later." });
   }
 };
-
-
-
 
 
 // const verifyPayment = asyncHandler(async (req, res) => {
@@ -458,17 +469,22 @@ const payWithWallet = asyncHandler(async (req, res) => {
     const subtotal = cart.items.reduce((acc, item) => acc + item.productId.price * item.quantity, 0);
     const deliveryFee = subtotal < 1000 ? 99 : 0;
 
-    // Incorporate coupon discount
-    const coupon = await Coupon.findOne({ code: couponDiscount })
-    let discountedPrice;
-    if (coupon.discountType === "percentageDiscount") {
-      discountedPrice = (subtotal * coupon.discountAmount) / 100;
-      if (discountedPrice > coupon.maxRedeem) {
-        discountedPrice = coupon.maxRedeem;
+    // Incorporate coupon discount if applicable
+    let discountedPrice = 0;
+    if (couponDiscount) {
+      const coupon = await Coupon.findOne({ code: couponDiscount });
+      if (coupon) {
+        if (coupon.discountType === "percentageDiscount") {
+          discountedPrice = (subtotal * coupon.discountAmount) / 100;
+          if (discountedPrice > coupon.maxRedeem) {
+            discountedPrice = coupon.maxRedeem;
+          }
+        } else if (coupon.discountType === "flatDiscount") {
+          discountedPrice = coupon.discountAmount;
+        }
       }
-    } else if (coupon.discountType === "flatDiscount") {
-      discountedPrice = coupon.discountAmount;
     }
+
     const total = subtotal + deliveryFee - discountedPrice;
 
     console.log("Calculated total:", total, "Requested amount:", parsedAmount);

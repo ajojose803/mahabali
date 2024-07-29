@@ -34,7 +34,7 @@ adminRouter.route('/users/change-status').get(userManagement.blockUser);
 adminRouter.route('/category').get(auth.isAdAuth, categoryController.loadCategory);
 adminRouter.route('/category/update-status').get(categoryController.listingStatusCategory);///use 
 adminRouter.route('/add-category').post(categoryController.addNewCategory);
-adminRouter.route('/update-category').post(categoryController.updateCategory);
+adminRouter.route('/update-category/:id').post(categoryController.updateCategory);
 
 // Products
 adminRouter.route('/products').get(auth.isAdAuth, productController.loadProduct);
@@ -58,7 +58,7 @@ adminRouter.route('/coupons').get(auth.isAdAuth, couponController.loadCoupon);
 adminRouter.route('/add-coupon').get(auth.isAdAuth, couponController.loadAddCoupon);
 adminRouter.route('/add-coupon').post(auth.isAdAuth,couponController.addNewCoupon);
 adminRouter.route('/edit-coupon/:id').post(auth.isAdAuth,couponController.editCoupon);
-adminRouter.route('/coupon/update-status').get(couponController.couponStatus); ///use
+adminRouter.route('/coupon/update-status/:id').get(couponController.couponStatus); ///use
 
 
 //banners

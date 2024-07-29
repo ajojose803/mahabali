@@ -29,7 +29,8 @@ const loadCoupon = asyncHandler(async (req, res) => {
         currentPage: page,
         msg,
         couponExists: couponExists.length > 0 ? couponExists[0] : null,
-        couponAdded: couponAdded.length > 0 ? couponAdded[0] : null
+        couponAdded: couponAdded.length > 0 ? couponAdded[0] : null,
+        //couponStatusChanged:couponStatusChanged.length > 0 ? couponStatusChanged[0] : null,
     });
 });
 
@@ -134,13 +135,13 @@ const editCoupon = asyncHandler(async (req, res) => {
 
 const couponStatus = asyncHandler(async (req, res) => {
 
-    const id = req.query.id;
-    //console.log("Received ID:", id);
-    const product = await Product.findById(id);
-    product.status = !product.status;
-    await product.save();
-    req.flash('success', "Product status updated successfully")
-    res.redirect('/admin/products',)
+    const id = req.params.id;
+    console.log("Received ID:", id);
+    const coupon = await Coupon.findById(id);
+    coupon.status = !coupon.status;
+    await coupon.save();
+    req.flash('couponStatusChanged', "Coupon status updated successfully")
+    res.redirect('/admin/coupons',)
 }
 )
 module.exports = {

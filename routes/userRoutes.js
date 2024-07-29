@@ -18,7 +18,7 @@ userRouter.route('/').get(userController.loadHome)
 
 
 userRouter.route('/register')
-.get(userController.register)
+.get(auth.isloggedOut, userController.register)
 .post(userController.createUser)
 //.patch(userController)
 
@@ -27,7 +27,7 @@ userRouter.route('/verify-otp').post(userController.otpVerification)
 userRouter.route('/resend-otp').post(userController.resendOtp)
 
 
-userRouter.route('/login').get(userController.loadLogIn)
+userRouter.route('/login').get(auth.isloggedOut,userController.loadLogIn)
 userRouter.route('/logout').get(userController.logout)
 
 

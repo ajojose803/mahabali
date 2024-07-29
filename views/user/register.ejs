@@ -2,20 +2,17 @@
 <html lang="en">
 
 <head>
-	<title>Sign Up</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Sign Up</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
-
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
-	<link rel="stylesheet" href="/css/register.css">
-
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/register.css">
 </head>
 
 <body>
-	<section class="ftco-section">
+    <section class="ftco-section">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
@@ -82,7 +79,6 @@
                                 </div>
                             </form>
 
-
                             <div class="social-wrap">
                                 <p class="or">
                                     <span>or</span>
@@ -110,98 +106,101 @@
         </div>
     </section>
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/popper.js"></script>
-	<script src="/js/bootstrap.min.js"></script>
-	<script src="/js/main_register.js"></script>
-	<script>
-		function validateUsername() {
-			console.log("Validating username...");
-			var username = document.getElementById('username').value;
-			var usernameError = document.getElementById('usernameError');
-			var usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/main_register.js"></script>
+    <script>
+        function validateUsername() {
+            console.log("Validating username...");
+            var username = document.getElementById('username').value;
+            var usernameError = document.getElementById('usernameError');
+            var usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
 
-			if (!usernameRegex.test(username)) {
-				usernameError.textContent = 'Please use only letters, numbers, and underscores';
-			} else {
-				usernameError.textContent = '';
-			}
-		}
+            if (!usernameRegex.test(username)) {
+                usernameError.textContent = 'Please use only letters, numbers, and underscores';
+                return false;
+            } else {
+                usernameError.textContent = '';
+                return true;
+            }
+        }
 
-		function validateEmail() {
-			console.log("Validating email...");
-			var email = document.getElementById('email').value;
-			var emailError = document.getElementById('emailError');
-			var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        function validateEmail() {
+            console.log("Validating email...");
+            var email = document.getElementById('email').value;
+            var emailError = document.getElementById('emailError');
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-			if (!emailRegex.test(email)) {
-				emailError.textContent = 'Invalid email format';
-			} else {
-				emailError.textContent = '';
-			}
-		}
+            if (!emailRegex.test(email)) {
+                emailError.textContent = 'Invalid email format';
+                return false;
+            } else {
+                emailError.textContent = '';
+                return true;
+            }
+        }
 
         function validatePhone() {
-      console.log("Validating phone number...");
-      var phone = document.getElementById('phone').value;
-      var phoneError = document.getElementById('phoneError');
-      
-      var phonePattern = /^[6-9]\d{9}$/;
+            console.log("Validating phone number...");
+            var phone = document.getElementById('phone').value;
+            var phoneError = document.getElementById('phoneError');
+            var phonePattern = /^[6-9]\d{9}$/;
 
-      if (phonePattern.test(phone)) {
-        phoneError.textContent = ""; 
-        return true;
-      } else {
-        phoneError.textContent = "Please enter a valid 10-digit number";
-        return false; 
-      }
-    }
-
-
-    function validatePassword() {
-      console.log("Validating password...");
-      var password = document.getElementById('password').value;
-      var passwordError = document.getElementById('passwordError');
-
-      var passwordPattern = /^(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
-
-      if (passwordPattern.test(password)) {
-        passwordError.textContent = ""; 
-        return true;
-      } else {
-        passwordError.textContent = "Please enter a password with a minimum of 8 characters including at least one special character.";
-        return false; // Prevent form submission
-      }
-    }
-
-		function validateConfirmPassword() {
-			console.log("Validating confirm password...");
-			var password = document.getElementById('password').value;
-			var confirmPassword = document.getElementById('confirm-password').value;
-			var confirmPasswordError = document.getElementById('confirmPasswordError');
-
-			if (password !== confirmPassword) {
-				confirmPasswordError.textContent = 'Passwords do not match!';
-                return false;
-			} else {
-				confirmPasswordError.textContent = '';
+            if (phonePattern.test(phone)) {
+                phoneError.textContent = "";
                 return true;
-			}
-		}
+            } else {
+                phoneError.textContent = "Please enter a valid 10-digit number";
+                return false;
+            }
+        }
 
-		function validateForm() {
-			console.log("Validating form...");
-			validateUsername();
-			validateEmail();
-			validatePhone();
-			validatePassword();
-			validateConfirmPassword();
-		}
+        function validatePassword() {
+            console.log("Validating password...");
+            var password = document.getElementById('password').value;
+            var passwordError = document.getElementById('passwordError');
+            var passwordPattern = /^(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
 
+            if (passwordPattern.test(password)) {
+                passwordError.textContent = "";
+                return true;
+            } else {
+                passwordError.textContent = "Please enter a password with a minimum of 8 characters including at least one special character.";
+                return false;
+            }
+        }
 
+        function validateConfirmPassword() {
+            console.log("Validating confirm password...");
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+            var confirmPasswordError = document.getElementById('confirmPasswordError');
 
-	</script>
+            if (password !== confirmPassword) {
+                confirmPasswordError.textContent = 'Passwords do not match!';
+                return false;
+            } else {
+                confirmPasswordError.textContent = '';
+                return true;
+            }
+        }
 
+        function validateForm() {
+            console.log("Validating form...");
+            var isUsernameValid = validateUsername();
+            var isEmailValid = validateEmail();
+            var isPhoneValid = validatePhone();
+            var isPasswordValid = validatePassword();
+            var isConfirmPasswordValid = validateConfirmPassword();
+
+            if (isUsernameValid && isEmailValid && isPhoneValid && isPasswordValid && isConfirmPasswordValid) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    </script>
 </body>
 
 </html>
