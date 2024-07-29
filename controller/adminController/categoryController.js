@@ -5,8 +5,8 @@ const Product = require('../../model/productModel');
 
 
 const loadCategory = asyncHandler(async (req, res) => {
-    const successMessage = req.flash('Success');
-    const errorMessages = req.flash('Error');
+    const successMessage = req.flash('success');
+    const errorMessages = req.flash('error');
     const category = await Category.find({});
     res.render('admin/adminCategory', { category, successMessage, errorMessages});
 
@@ -67,13 +67,27 @@ const addNewCategory = asyncHandler(async (req, res) => {
 
 const updateCategory = asyncHandler(async (req, res) => {
     const { name, description, discount } = req.body;
+    console.log("Reaching UpdateCategory")
     const id = req.params.id;
+    console.log("Id: ",id)
+
 
     try {
         const category = await Category.findById(id);
         if (!category) {
             req.flash('error', "Category does not exist");
             return res.redirect('/admin/category');
+        }
+
+        // Create the normalized category name
+        const normalizedCategoryName = name.trim().toLowerCase();
+        console.log("normalizedCategoryName: ",normalizedCategoryName)
+
+        // Check if a category with the same normalized name already exists
+        const existingCategory = await Category.findOne({ normalized_name: normalizedCategoryName });
+        if (existingCategory) {
+            req.flash("error", "Category name already exists");
+            return res.redirect("/admin/category");
         }
 
         // Initialize an empty object to hold the fields to update
@@ -96,7 +110,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     } catch (error) {
         console.error('Error updating category:', error);
         req.flash('error', 'Failed to update category');
-        res.redirect(`/admin/category/edit/${id}`);
+        res.redirect(`/admin/category/`);
     }
 });
 
