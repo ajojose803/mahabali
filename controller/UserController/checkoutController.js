@@ -502,14 +502,24 @@ const payWithWallet = asyncHandler(async (req, res) => {
       date: new Date(),
       reason: "Purchase",
     });
+    
+    const items = cart.items.map(item => ({
+      productId: item.productId._id,
+      quantity: item.quantity,
+      price: item.productId.price,
+    }))
+
+    //Stock quantity update
+    for (const item of items) {
+      const product = await Product.findOne({ _id: item.productId });
+      product.stock -= item.quantity;
+      await product.save();
+    }
+
 
     const orderData = {
       userId,
-      items: cart.items.map(item => ({
-        productId: item.productId._id,
-        quantity: item.quantity,
-        price: item.productId.price,
-      })),
+      items: items,
       subtotal,
       deliveryFee,
       amount: total,
