@@ -460,7 +460,7 @@ const cancelOrder = async (req, res) => {
             product.stock += item.quantity
             await product.save()
         }
-        res.redirect("/profile")
+        res.redirect("/profile/orders")
     } catch (error) {
         console.log(error)
         res.render('user/servererror')
