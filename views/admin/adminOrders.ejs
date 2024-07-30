@@ -40,6 +40,7 @@
           <th>Amount</th>
           <th>Status</th>
           <th>Order Date</th>
+          <th>Details</th> <!-- New column for Order Details -->
         </tr>
       </thead>
       <tbody class="text-center" style="background-color: rgba(9, 5, 46, 0.1); font-size: small;">
@@ -85,11 +86,14 @@
               <td>
                 <%= data.createdAt.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }) %>
               </td>
+              <td>
+                <a href="/admin/orderDetails/<%= data._id %>" class="btn btn-info btn-sm">View Details</a>
+              </td>
             </tr>
           <% }); %>
         <% } else { %>
           <tr>
-            <td colspan="8">No results found.</td>
+            <td colspan="9">No results found.</td> <!-- Adjust colspan to match the number of columns -->
           </tr>
         <% } %>
       </tbody>

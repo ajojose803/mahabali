@@ -42,7 +42,7 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    offerPrice: { 
+    discountPrice: { 
         type: Number,
          default: 0,
     },

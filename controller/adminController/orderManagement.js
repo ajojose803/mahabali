@@ -135,10 +135,45 @@ const returnReject = async (req, res) => {
     }
 }
 
+const getOrderDetails = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId).populate('items.productId').populate('userId');
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+        const orderItems = await Promise.all(order.items.map(async (item) => {
+            const product = item.productId;
+            if (!product) {
+              return null;
+            }
+      
+            let imageUrls = [];
+            if (Array.isArray(product.image) && product.image.length > 0) {
+              imageUrls = await Promise.all(product.image.map(getObjectSignedUrl));
+            }
+      
+            return {
+              ...item._doc,
+              product: product._doc,
+              imageUrls,
+              total: product.price * item.quantity
+            };
+          }));
+
+        res.render('admin/orderDetails', { order, orderItems, orderStatus:order.status, address:order.address }); // Adjust the path to your order details view
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+};
+
 module.exports = {
     loadOrder,
     updateStatus,
     loadOrderReturn,
     returnApprove,
     returnReject,
+    getOrderDetails,
 }

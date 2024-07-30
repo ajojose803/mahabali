@@ -6,7 +6,7 @@ const Accessory = require('../../model/productModels/accesoriesModel');
 const Poster = require('../../model/productModels/posterModel');
 const Apparels = require('../../model/productModels/apparelModel');
 const sharp = require('sharp');
-const { uploadFile, getObjectSignedUrl } = require('../../utils/s3');
+const { uploadFile, getObjectSignedUrl,deleteFile } = require('../../utils/s3');
 
 const ITEMS_PER_PAGE = 4;
 
@@ -67,8 +67,20 @@ const addNewProduct = asyncHandler(async (req, res) => {
   }));
 
   // Extract product data from request body
-  const { name, description,aboutProduct, price, category, discount, color, material, type, dimensions } = req.body;
+  const { name, description,aboutProduct, category, color, material, type, dimensions } = req.body;
+  const categories = await catgModel.findById(category);
+  const categoryDiscount = categories.discount;
+  const price = parseFloat(req.body.price);
+  let discount = parseFloat(req.body.discount);
 
+  if (categoryDiscount > discount) {
+      discount = categoryDiscount;
+  }
+
+  // Correctly calculate and round the discount price
+  const discountPrice = Math.round(price * (1 - discount / 100));
+
+  console.log('Discounted price:', discountPrice);
   // Find selected category
   const selectedCategory = await Category.findById(category);
 
@@ -110,6 +122,7 @@ const addNewProduct = asyncHandler(async (req, res) => {
         price, 
         category, 
         discount, 
+        discountPrice, 
         color, 
         stock: parsedStock, 
         image: uploadedImages, 
@@ -123,7 +136,8 @@ const addNewProduct = asyncHandler(async (req, res) => {
         aboutProduct,
         price, 
         category, 
-        discount, 
+        discount,
+        discountPrice, 
         color, 
         stock: parsedStock, 
         image: uploadedImages, 
@@ -137,7 +151,8 @@ const addNewProduct = asyncHandler(async (req, res) => {
         aboutProduct,
         price, 
         category, 
-        discount, 
+        discount,
+        discountPrice, 
         color, 
         stock: parsedStock, 
         image: uploadedImages, 
@@ -167,23 +182,32 @@ const addNewProduct = asyncHandler(async (req, res) => {
   res.redirect("/admin/products");
 });
 
+const extractFileName = (url) => {
+  return url.split('/').pop().split('?')[0];
+};
+
+
+
 const editProduct = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const files = req.files || [];
+  const { removeImages = [] } = req.body;
+  console.log("Reaching EditProduct: ", req.body);
+
   const uploadedImages = await Promise.all(files.map(async file => {
-    const resizedImageBuffer = await sharp(file.buffer)
-      .resize({ width: 500, height: 500, fit: "contain" })
-      .toBuffer();
-    const imageName = Date.now() + "-" + file.originalname;
-    await uploadFile(resizedImageBuffer, imageName, file.mimetype);
-    return imageName;
+      const resizedImageBuffer = await sharp(file.buffer)
+          .resize({ width: 500, height: 500, fit: "contain" })
+          .toBuffer();
+      const imageName = Date.now() + "-" + file.originalname;
+      await uploadFile(resizedImageBuffer, imageName, file.mimetype);
+      return imageName;
   }));
 
-  const { name, description, aboutProduct, price, category, discount, color, material, type, dimensions } = req.body;
+  const { name, description, aboutProduct, price, category, discount, color, material, type, dimensions, stock, sizes } = req.body;
 
   let product = await Product.findById(productId).populate('category');
   if (!product) {
-    return res.status(404).send("Product not found.");
+      return res.status(404).send("Product not found.");
   }
 
   product.name = name || product.name;
@@ -193,57 +217,68 @@ const editProduct = asyncHandler(async (req, res) => {
   product.category = category || product.category._id;
   product.discount = discount || product.discount;
   product.color = color || product.color;
+
   if (uploadedImages.length > 0) {
-    product.image = uploadedImages;
+      product.image = [...(product.image || []), ...uploadedImages];
+  }
+
+  // Remove images if specified
+  if (removeImages.length > 0) {
+      for (const imageUrl of removeImages) {
+          const imageName = extractFileName(imageUrl); // Ensure correct file name
+          await deleteFile(imageName); // Remove from S3
+          product.image = product.image.filter(img => extractFileName(img) !== imageName); // Remove from product record
+      }
   }
 
   const selectedCategory = await Category.findById(category);
-
   let parsedStock;
+
   switch (selectedCategory.name) {
-    case 'Coasters':
-    case 'Accessories':
-    case 'Posters':
-      parsedStock = parseInt(req.body.stock, 10);
-      if (isNaN(parsedStock)) {
-        return res.status(400).send("Invalid stock value.");
-      }
-      product.stock = parsedStock;
-      break;
-    case 'Apparels':
-      parsedStock = {};
-      for (const [size, quantity] of Object.entries(req.body.sizes)) {
-        parsedStock[size] = parseInt(quantity, 10);
-        if (isNaN(parsedStock[size])) {
-          return res.status(400).send("Invalid stock value.");
-        }
-      }
-      product.sizes = parsedStock;
-      break;
-    default:
-      return res.status(400).send("Invalid category type.");
+      case 'Coasters':
+      case 'Accessories':
+      case 'Posters':
+          parsedStock = parseInt(stock, 10);
+          if (isNaN(parsedStock)) {
+              return res.status(400).send("Invalid stock value.");
+          }
+          product.stock = parsedStock;
+          break;
+      case 'Apparels':
+          parsedStock = {};
+          for (const [size, quantity] of Object.entries(sizes)) {
+              parsedStock[size] = parseInt(quantity, 10);
+              if (isNaN(parsedStock[size])) {
+                  return res.status(400).send("Invalid stock value.");
+              }
+          }
+          product.sizes = parsedStock;
+          break;
+      default:
+          return res.status(400).send("Invalid category type.");
   }
 
   switch (selectedCategory.name) {
-    case 'Coasters':
-      product.material = material || product.material;
-      break;
-    case 'Accessories':
-      product.type = type || product.type;
-      break;
-    case 'Posters':
-      product.dimensions = dimensions || product.dimensions;
-      break;
-    case 'Apparels':
-      product.material = material || product.material;
-      break;
-    default:
-      return res.status(400).send("Invalid category type.");
+      case 'Coasters':
+          product.material = material || product.material;
+          break;
+      case 'Accessories':
+          product.type = type || product.type;
+          break;
+      case 'Posters':
+          product.dimensions = dimensions || product.dimensions;
+          break;
+      case 'Apparels':
+          product.material = material || product.material;
+          break;
+      default:
+          return res.status(400).send("Invalid category type.");
   }
 
   await product.save();
   res.redirect("/admin/products");
 });
+
 
 
 const listingStatusProduct = asyncHandler(async (req, res) => {

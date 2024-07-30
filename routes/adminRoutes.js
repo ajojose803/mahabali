@@ -46,6 +46,7 @@ adminRouter.route('/product/update-status').get(productController.listingStatusP
 //Orders
 adminRouter.route('/orders').get(auth.isAdAuth, orderManagement.loadOrder);
 adminRouter.route('/order/update-status').post(auth.isAdAuth, orderManagement.updateStatus);
+adminRouter.route('/orderDetails/:id').get(auth.isAdAuth, orderManagement.getOrderDetails);
 
 //return
 adminRouter.route('/orderReturn').get(auth.isAdAuth, orderManagement.loadOrderReturn);
