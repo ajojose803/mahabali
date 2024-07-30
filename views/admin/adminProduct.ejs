@@ -1,270 +1,298 @@
 <%- include('../partials/adminHeader') -%>
-<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/crop.guide/1.5.12/crop.guide.min.css" rel="stylesheet">
+  <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/crop.guide/1.5.12/crop.guide.min.css" rel="stylesheet">
 <script src="https://cdn.crop.guide/crop.guide.min.js"></script> -->
-<ul class="list-unstyled">
-  <!-- Sidebar links -->
-  <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
-  <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
-  <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
-  <li class="active"><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
-  <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
-  <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
-  <!-- <li><a href="/admin/banners"><i class="fa fa-map"></i>Banners</a></li> -->
-</ul>
-</nav>
-<!-- Sidebar Navigation end-->
-<div class="page-content">
-  <div class="page-header">
-    <div class="container-fluid">
-      <h2 class="h5 no-margin-bottom">Product Details</h2>
+  <ul class="list-unstyled">
+    <!-- Sidebar links -->
+    <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
+    <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
+    <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
+    <li class="active"><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+    <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
+    <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
+    <!-- <li><a href="/admin/banners"><i class="fa fa-map"></i>Banners</a></li> -->
+  </ul>
+  </nav>
+  <!-- Sidebar Navigation end-->
+  <div class="page-content">
+    <div class="page-header">
+      <div class="container-fluid">
+        <h2 class="h5 no-margin-bottom">Product Details</h2>
+      </div>
     </div>
-  </div>
-  <div class="title" style="margin-left: 80%;">
-    <button class="btn btn-danger"><a href="/admin/add-product" style="text-decoration: none;color: white;">Add New
-        Product</a></button>
-  </div>
-  <div class="table-responsive" style="padding: 5%;">
-    <!-- Add pagination section below the table -->
-    <ul class="pagination justify-content-center">
-      <% if (totalPages > 1) { %>
-        <% if (prev) { %>
-          <li class="page-item">
-            <a class="page-link" href="/admin/products?page=<%= prev %>" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-              <span class="sr-only">Previous</span>
-            </a>
-          </li>
-        <% } %>
-        <% 
-          let startPage = Math.max(1, currentPage - 2);
-          let endPage = Math.min(totalPages, currentPage + 2);
-          if (endPage - startPage < 4) {
-            if (currentPage <= 2) {
-              endPage = Math.min(5, totalPages);
-            } else if (currentPage >= totalPages - 1) {
-              startPage = Math.max(totalPages - 4, 1);
-            }
-          }
-        %>
-        <% for (let i = startPage; i <= endPage; i++) { %>
-          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-            <a class="page-link" href="/admin/products?page=<%= i %>">
-              <%= i %>
-            </a>
-          </li>
-        <% } %>
-        <% if (next) { %>
-          <li class="page-item">
-            <a class="page-link" href="/admin/products?page=<%= next %>" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-              <span class="sr-only">Next</span>
-            </a>
-          </li>
-        <% } %>
-      <% } %>
-    </ul>
-    
-    
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Image</th>
-          <th>Category</th>
-          <th>Price</th>
-          <th>Offer Price</th>
-          <th>Stock</th>
-          <th>Description</th>
-          <th>Edit</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for (let i = 0; i < data.length; i++) { %>
+    <div class="title" style="margin-left: 80%;">
+      <button class="btn btn-danger"><a href="/admin/add-product" style="text-decoration: none;color: white;">Add New
+          Product</a></button>
+    </div>
+    <div class="table-responsive" style="padding: 5%;">
+      <!-- Add pagination section below the table -->
+      <ul class="pagination justify-content-center">
+        <% if (totalPages> 1) { %>
+          <% if (prev) { %>
+            <li class="page-item">
+              <a class="page-link" href="/admin/products?page=<%= prev %>" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+              </a>
+            </li>
+            <% } %>
+              <% let startPage=Math.max(1, currentPage - 2); let endPage=Math.min(totalPages, currentPage + 2); if
+                (endPage - startPage < 4) { if (currentPage <=2) { endPage=Math.min(5, totalPages); } else if
+                (currentPage>= totalPages - 1) {
+                startPage = Math.max(totalPages - 4, 1);
+                }
+                }
+                %>
+                <% for (let i=startPage; i <=endPage; i++) { %>
+                  <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                    <a class="page-link" href="/admin/products?page=<%= i %>">
+                      <%= i %>
+                    </a>
+                  </li>
+                  <% } %>
+                    <% if (next) { %>
+                      <li class="page-item">
+                        <a class="page-link" href="/admin/products?page=<%= next %>" aria-label="Next">
+                          <span aria-hidden="true">&raquo;</span>
+                          <span class="sr-only">Next</span>
+                        </a>
+                      </li>
+                      <% } %>
+                        <% } %>
+      </ul>
+
+
+      <table class="table">
+        <thead>
           <tr>
-            <td><%= data[i].name %></td>
-            <td>
-              <% if (data[i].imageUrls && data[i].imageUrls.length > 0) { %>
-                <% data[i].imageUrls.forEach(imageUrl => { %>
-                  <img src="<%= imageUrl %>" alt="image" style="height: 75px; width: auto;">
-                <% }) %>
-              <% } else { %>
-                <span>No image available</span>
-              <% } %>
-            </td>
-            <td><%= data[i].category ? data[i].category.name : 'No Category' %></td>
-            <td><%= data[i].price %></td>
-            <td><%= data[i].discount %></td>
-            <td>
-              <% if (data[i].sizes) { %>
-                <% for (let [size, quantity] of Object.entries(data[i].sizes)) { %>
-                  <div><strong><%= size %>:</strong> <%= quantity %></div>
-                <% } %>
-              <% } else { %>
-                <%= data[i].stock %>
-              <% } %>
-            </td>
-            <td><%= data[i].description %></td>
-            <td>
-              <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal<%= i %>">
-                Edit
-              </button>
-              <!-- Modal -->
-              <div class="modal fade" id="exampleModal<%= i %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel<%= i %>" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel<%= i %>">Edit Product Details</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <th>Product Name</th>
+            <th>Image</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Offer Price</th>
+            <th>Stock</th>
+            <th>Description</th>
+            <th>Edit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (let i=0; i < data.length; i++) { %>
+            <tr>
+              <td>
+                <%= data[i].name %>
+              </td>
+              <td>
+                <% if (data[i].imageUrls && data[i].imageUrls.length> 0) { %>
+                  <% data[i].imageUrls.forEach(imageUrl=> { %>
+                    <img src="<%= imageUrl %>" alt="image" style="height: 75px; width: auto;">
+                    <% }) %>
+                      <% } else { %>
+                        <span>No image available</span>
+                        <% } %>
+              </td>
+              <td>
+                <%= data[i].category ? data[i].category.name : 'No Category' %>
+              </td>
+              <td>
+                <%= data[i].price %>
+              </td>
+              <td>
+                <%= data[i].discount %>
+              </td>
+              <td>
+                <% if (data[i].sizes) { %>
+                  <% for (let [size, quantity] of Object.entries(data[i].sizes)) { %>
+                    <div><strong>
+                        <%= size %>:
+                      </strong>
+                      <%= quantity %>
                     </div>
-                    <div class="modal-body">
-                      <form id="editProductForm<%= i %>" class="form-horizontal" action="/admin/edit-product/<%= data[i]._id %>" method="post" enctype="multipart/form-data" onsubmit="return validateForm(event, 'editProductForm<%= i %>')">
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Name</label>
-                          <div class="col-sm-9">
-                            <input type="text" id="productName<%= i %>" class="form-control" name="productName" value="<%= data[i].name %>" oninput="validateField('productName<%= i %>')">
+                    <% } %>
+                      <% } else { %>
+                        <%= data[i].stock %>
+                          <% } %>
+              </td>
+              <td>
+                <%= data[i].description %>
+              </td>
+              <td>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#exampleModal<%= i %>">
+                  Edit
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal<%= i %>" tabindex="-1" role="dialog"
+                  aria-labelledby="exampleModalLabel<%= i %>" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel<%= i %>">Edit Product Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form id="editProductForm<%= i %>" class="form-horizontal"
+                          action="/admin/edit-product/<%= data[i]._id %>" method="post" enctype="multipart/form-data"
+                          onsubmit="return validateForm(event, 'editProductForm<%= i %>')">
+                          <div class="form-group row">
+                            <label class="col-sm-3 form-control-label">Name</label>
+                            <div class="col-sm-9">
+                              <input type="text" id="productName<%= i %>" class="form-control" name="productName"
+                                value="<%= data[i].name %>" oninput="validateField('productName<%= i %>')">
+                            </div>
                           </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Category</label>
-                          <div class="col-sm-9">
-                            <select name="category" id="category<%= i %>" class="form-control" onchange="validateField('category<%= i %>')" required>
-                              <% CatData.forEach(function(cat) { %>
-                                <option value="<%= cat._id %>" <%= data[i].category && data[i].category._id.equals(cat._id) ? 'selected' : '' %>><%= cat.name %></option>
-                              <% }); %>
-                            </select>
+                          <div class="line"></div>
+                          <div class="form-group row">
+                            <label class="col-sm-3 form-control-label">Category</label>
+                            <div class="col-sm-9">
+                              <select name="category" id="category<%= i %>" class="form-control"
+                                onchange="validateField('category<%= i %>')" required>
+                                <% CatData.forEach(function(cat) { %>
+                                  <option value="<%= cat._id %>" <%=data[i].category &&
+                                    data[i].category._id.equals(cat._id) ? 'selected' : '' %>><%= cat.name %>
+                                  </option>
+                                  <% }); %>
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Description</label>
-                          <div class="col-sm-9">
-                            <textarea cols="30" rows="4" id="description<%= i %>" name="description" class="form-control" oninput="validateField('description<%= i %>')"><%= data[i].description %></textarea>
+                          <div class="line"></div>
+                          <div class="form-group row">
+                            <label class="col-sm-3 form-control-label">Description</label>
+                            <div class="col-sm-9">
+                              <textarea cols="30" rows="4" id="description<%= i %>" name="description"
+                                class="form-control"
+                                oninput="validateField('description<%= i %>')"><%= data[i].description %></textarea>
+                            </div>
                           </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Price</label>
-                          <div class="col-sm-9">
-                            <input type="number" id="price<%= i %>" class="form-control" name="price" min="1" oninput="validateField('price<%= i %>')" value="<%= data[i].price %>">
+                          <div class="line"></div>
+                          <div class="form-group row">
+                            <label class="col-sm-3 form-control-label">Price</label>
+                            <div class="col-sm-9">
+                              <input type="number" id="price<%= i %>" class="form-control" name="price" min="1"
+                                oninput="validateField('price<%= i %>')" value="<%= data[i].price %>">
+                            </div>
                           </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Stock</label>
-                          <div class="col-sm-9">
-                            <% if (data[i].sizes) { %>
-                              <% for (let [size, quantity] of Object.entries(data[i].sizes)) { %>
-                                <div class="form-group row">
-                                  <label class="col-sm-3 form-control-label"><%= size %> Size</label>
-                                  <div class="col-sm-9">
-                                    <input type="number" id="sizes<%= i %>-<%= size %>" class="form-control" name="sizes[<%= size %>]" min="0" value="<%= quantity %>" oninput="validateField('sizes<%= i %>-<%= size %>')">
+                          <div class="line"></div>
+                          <div class="form-group row">
+                            <label class="col-sm-3 form-control-label">Stock</label>
+                            <div class="col-sm-9">
+                              <% if (data[i].sizes) { %>
+                                <% for (let [size, quantity] of Object.entries(data[i].sizes)) { %>
+                                  <div class="form-group row">
+                                    <label class="col-sm-3 form-control-label">
+                                      <%= size %> Size
+                                    </label>
+                                    <div class="col-sm-9">
+                                      <input type="number" id="sizes<%= i %>-<%= size %>" class="form-control"
+                                        name="sizes[<%= size %>]" min="0" value="<%= quantity %>"
+                                        oninput="validateField('sizes<%= i %>-<%= size %>')">
+                                    </div>
                                   </div>
-                                </div>
-                              <% } %>
-                            <% } else { %>
-                              <input type="number" id="stock<%= i %>" class="form-control" name="stock" min="1" value="<%= data[i].stock %>" oninput="validateField('stock<%= i %>')">
-                            <% } %>
+                                  <% } %>
+                                    <% } else { %>
+                                      <input type="number" id="stock<%= i %>" class="form-control" name="stock" min="0"
+                                        value="<%= data[i].stock %>" oninput="validateField('stock<%= i %>')">
+                                      <% } %>
+                            </div>
                           </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Existing Images</label>
-                          <div class="col-sm-9">
-                            <% if (data[i].imageUrls && data[i].imageUrls.length > 0) { %>
-                              <% data[i].imageUrls.forEach((imageUrl, index) => { %>
-                                <div class="existing-image">
-                                  <img src="<%= imageUrl %>" alt="image" style="height: 75px; width: auto; margin: 5px;">
-                                  <div>
-                                    <input type="checkbox" name="removeImages[]" value="<%= imageUrl %>"> Remove
+                          <div class="line"></div>
+                          <div class="form-group row">
+                            <label class="col-sm-3 form-control-label">Existing Images</label>
+                            <div class="col-sm-9">
+                              <% if (data[i].imageUrls && data[i].imageUrls.length> 0) { %>
+                                <% data[i].imageUrls.forEach((imageUrl, index)=> { %>
+                                  <div class="existing-image">
+                                    <img src="<%= imageUrl %>" alt="image"
+                                      style="height: 75px; width: auto; margin: 5px;">
+                                    <div>
+                                      <input type="checkbox" name="removeImages[]" value="<%= imageUrl %>"> Remove
+                                    </div>
                                   </div>
-                                </div>
-                              <% }) %>
-                            <% } else { %>
-                              <span>No image available</span>
-                            <% } %>
+                                  <% }) %>
+                                    <% } else { %>
+                                      <span>No image available</span>
+                                      <% } %>
+                            </div>
                           </div>
-                        </div>
-                        
-                        <div class="form-group row">
-                          <label class="col-sm-3 form-control-label">Upload New Image</label>
-                          <div class="col-sm-9">
-                            <input type="file" id="image<%= i %>" class="form-control" name="image" multiple>
+
+
+                          <div class="form-group row">
+                            <label class="col-sm-3 form-control-label">Upload New Images</label>
+                            <div class="col-sm-9">
+                              <input type="file" id="image<%= i %>" class="form-control" name="image" multiple>
+                            </div>
                           </div>
-                        </div>
-                        <div class="line"></div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          <button type="submit" class="btn btn-primary">Save changes</button>
-                        </div>
-                      </form>
+                          <div class="line"></div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </td>
-            <td>
-              <% if(data[i].status) { %>
+              </td>
+              <td>
+                <% if(data[i].status) { %>
 
-                <a href="/admin/product/update-status?<%= data[i]._id %>" class="btn btn-danger"
-                  onclick="confirmAndRedirect('<%= data[i]._id %>',event)">Unlist</a>
-                <% } else { %>
-                  <a href="/admin/product/update-status?<%= data[i]._id %>" class="btn btn-success"
-                    onclick="confirmAndRedirect('<%= data[i]._id %>',event)">List</a>
-                  <% } %>
+                  <a href="/admin/product/update-status?<%= data[i]._id %>" class="btn btn-danger"
+                    onclick="confirmAndRedirect('<%= data[i]._id %>',event)">Unlist</a>
+                  <% } else { %>
+                    <a href="/admin/product/update-status?<%= data[i]._id %>" class="btn btn-success"
+                      onclick="confirmAndRedirect('<%= data[i]._id %>',event)">List</a>
+                    <% } %>
 
-            </td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+              </td>
+            </tr>
+            <% } %>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<script>
-  function validateField(fieldId) {
-    const field = document.getElementById(fieldId);
-    if (field.value.trim() === '') {
-      field.style.border = '1px solid red';
-    } else {
-      field.style.border = '1px solid #ccc';
-    }
-  }
-
-  function validateForm(event, formId) {
-    const form = document.getElementById(formId);
-    const inputs = form.querySelectorAll('input, select, textarea');
-    let isValid = true;
-    inputs.forEach(input => {
-      if (input.value.trim() === '' && input.hasAttribute('required')) {
-        input.style.border = '1px solid red';
-        isValid = false;
+  <script>
+    function validateField(fieldId) {
+      const field = document.getElementById(fieldId);
+      if (field.value.trim() === '') {
+        field.style.border = '1px solid red';
       } else {
-        input.style.border = '1px solid #ccc';
+        field.style.border = '1px solid #ccc';
       }
-    });
-    if (!isValid) {
-      event.preventDefault();
     }
-    return isValid;
-  }
-  function changeStatus(productId) {
-    fetch(`/admin/change-status/${productId}`, {
-      method: 'PUT'
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        location.reload();
-      } else {
-        alert('Failed to change status');
-      }
-    });
-  }
 
-  async function confirmAndRedirect(productId) {
+    function validateForm(event, formId) {
+      const form = document.getElementById(formId);
+      const inputs = form.querySelectorAll('input, select, textarea');
+      let isValid = true;
+      inputs.forEach(input => {
+        if (input.value.trim() === '' && input.hasAttribute('required')) {
+          input.style.border = '1px solid red';
+          isValid = false;
+        } else {
+          input.style.border = '1px solid #ccc';
+        }
+      });
+      if (!isValid) {
+        event.preventDefault();
+      }
+      return isValid;
+    }
+    function changeStatus(productId) {
+      fetch(`/admin/change-status/${productId}`, {
+        method: 'PUT'
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Failed to change status');
+          }
+        });
+    }
+
+    async function confirmAndRedirect(productId) {
       console.log("Product ID:", productId);
       event.preventDefault();
 
@@ -284,5 +312,5 @@
         window.location.href = "/admin/product/update-status?id=" + productId;
       }
     }
-</script>
-<%- include('../partials/adminFooter') -%>
+  </script>
+  <%- include('../partials/adminFooter') -%>

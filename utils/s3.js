@@ -50,14 +50,22 @@ const getObjectSignedUrl = async (key) => {
     return url;
   };
 
-const deleteFile = (fileName) => {
+  const deleteFile = async (fileName) => {
     const deleteParams = {
         Bucket: bucketName,
         Key: fileName,
-    }
+    };
 
-    return s3Client.send(new DeleteObjectCommand(deleteParams));
-}
+    console.log(`Deleting file: ${fileName} from bucket: ${bucketName}`);
+
+    try {
+        await s3Client.send(new DeleteObjectCommand(deleteParams));
+        console.log('File deleted successfully');
+    } catch (error) {
+        console.error('Error deleting file from S3:', error);
+        throw new Error('Error deleting file from S3');
+    }
+};
 
 module.exports = {
     deleteFile,

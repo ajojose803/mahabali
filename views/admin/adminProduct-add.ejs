@@ -34,7 +34,7 @@
 </head>
 <body>
   <%- include('../partials/adminHeader') -%>
-  <script defer src="https://cdn.crop.guide/loader/l.js?c=XKBNMC"></script>
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=VZTXRQ"></script>
   <ul class="list-unstyled">
     <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
     <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
@@ -194,105 +194,82 @@
               <div class="col-sm-9">
                 <input type="text" class="form-control" name="material" required>
               </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 form-control-label">Size</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" name="size" required>
+              </div>
             </div>`;
           stockContainer.innerHTML = `
-                       <label class="col-sm-3 form-control-label">Stock (in units per size)</label>
-            <div class="col-sm-9">
-              <div class="form-group row">
-                <div class="col-sm-2">S</div>
-                <div class="col-sm-10"><input type="number" class="form-control" name="sizes[S]" min="0" required></div>
+            <div class="form-group row">
+              <label class="col-sm-3 form-control-label">Small</label>
+              <div class="col-sm-9">
+                <input type="number" class="form-control" name="small" min="1" required>
               </div>
-              <div class="form-group row">
-                <div class="col-sm-2">M</div>
-                <div class="col-sm-10"><input type="number" class="form-control" name="sizes[M]" min="0" required></div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 form-control-label">Medium</label>
+              <div class="col-sm-9">
+                <input type="number" class="form-control" name="medium" min="1" required>
               </div>
-              <div class="form-group row">
-                <div class="col-sm-2">L</div>
-                <div class="col-sm-10"><input type="number" class="form-control" name="sizes[L]" min="0" required></div>
-              </div>
-              <div class="form-group row">
-                <div class="col-sm-2">XL</div>
-                <div class="col-sm-10"><input type="number" class="form-control" name="sizes[XL]" min="0" required></div>
-              </div>
-              <div class="form-group row">
-                <div class="col-sm-2">XXL</div>
-                <div class="col-sm-10"><input type="number" class="form-control" name="sizes[XXL]" min="0" required></div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-3 form-control-label">Large</label>
+              <div class="col-sm-9">
+                <input type="number" class="form-control" name="large" min="1" required>
               </div>
             </div>`;
           break;
         default:
-          stockContainer.innerHTML = ''; // Clear stock container for unknown categories
+          stockContainer.innerHTML = `
+            <input type="number" class="form-control" name="stock" min="1" required>`;
+          break;
       }
     });
 
-    // Image preview and delete functionality
     document.getElementById('image-upload').addEventListener('change', function(event) {
-      const previewContainer = document.getElementById('image-preview');
-      previewContainer.innerHTML = ''; // Clear previous previews
-
       const files = event.target.files;
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      const previewContainer = document.getElementById('image-preview');
+      previewContainer.innerHTML = '';  // Clear previous preview
+
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+      for (const file of files) {
+        if (!allowedTypes.includes(file.type)) {
+          alert('Only image files (jpeg, png, gif) are allowed!');
+          event.target.value = '';  // Clear the file input
+          return;
+        }
+
         const reader = new FileReader();
+        reader.onload = function(e) {
+          const thumbnail = document.createElement('div');
+          thumbnail.classList.add('thumbnail');
 
-        reader.onload = function(event) {
-          const imageUrl = event.target.result;
-          const thumbnail = `
-            <div class="thumbnail">
-              <img src="${imageUrl}" alt="Image">
-              <button type="button" class="delete-btn" data-index="${i}" onclick="deleteImage(event)">X</button>
-            </div>`;
-          previewContainer.innerHTML += thumbnail;
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = 'Product Image';
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.classList.add('delete-btn');
+          deleteBtn.innerText = 'X';
+          deleteBtn.onclick = function() {
+            thumbnail.remove();
+            const fileArray = Array.from(files);
+            const newFiles = fileArray.filter(f => f !== file);
+            const dataTransfer = new DataTransfer();
+            newFiles.forEach(f => dataTransfer.items.add(f));
+            event.target.files = dataTransfer.files;
+          };
+
+          thumbnail.appendChild(img);
+          thumbnail.appendChild(deleteBtn);
+          previewContainer.appendChild(thumbnail);
         };
-
         reader.readAsDataURL(file);
       }
     });
-
-    // Function to delete an image from preview
-    function deleteImage(event) {
-      const index = event.target.getAttribute('data-index');
-      const input = document.getElementById('image-upload');
-      const files = Array.from(input.files);
-
-      files.splice(index, 1); // Remove the file from the array of files
-      input.files = new FileList(files); // Update the input's files property
-      input.dispatchEvent(new Event('change')); // Trigger change event to refresh preview
-    }
-
-    //validation
-    document.addEventListener('DOMContentLoaded', function() {
-    const priceInput = document.querySelector('input[name="price"]');
-    const stockInput = document.querySelector('input[name="stock"]');
-    const discountInput = document.querySelector('input[name="discount"]');
-
-    priceInput.addEventListener('input', function() {
-      if (parseFloat(this.value) < 0) {
-        this.value = 1; // Set a default value or handle as per your application logic
-      }
-    });
-
-    stockInput.addEventListener('input', function() {
-      if (parseInt(this.value) < 0) {
-        this.value = 1; // Set a default value or handle as per your application logic
-      }
-    });
-    
-    discountInput.addEventListener('input', function() {
-      if (parseInt(this.value) < 0) {
-        this.value = 0; // Set a default value or handle as per your application logic
-      }
-    });
-
-
-    const form = document.querySelector('form');
-    form.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-      }
-    });
-  });
   </script>
 </body>
 </html>
-
