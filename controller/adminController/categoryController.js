@@ -5,12 +5,27 @@ const Product = require('../../model/productModel');
 
 
 const loadCategory = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalCategories = await Category.countDocuments({});
+    const categories = await Category.find({})
+        .skip(skip)
+        .limit(limit);
+
     const successMessage = req.flash('success');
     const errorMessages = req.flash('error');
-    const category = await Category.find({});
-    res.render('admin/adminCategory', { category, successMessage, errorMessages});
 
-})
+    res.render('admin/adminCategory', {
+        category: categories,
+        successMessage,
+        errorMessages,
+        currentPage: page,
+        totalPages: Math.ceil(totalCategories / limit)
+    });
+});
+
 
 // const loadAddCategory = asyncHandler(async (req, res) => {
 //     const successMessage = req.flash('Success');
@@ -69,7 +84,7 @@ const updateCategory = asyncHandler(async (req, res) => {
     const { name, description, discount } = req.body;
     console.log("Reaching UpdateCategory")
     const id = req.params.id;
-    console.log("Id: ",id)
+    console.log("Id: ", id)
 
 
     try {
@@ -81,7 +96,7 @@ const updateCategory = asyncHandler(async (req, res) => {
 
         // Create the normalized category name
         const normalizedCategoryName = name.trim().toLowerCase();
-        console.log("normalizedCategoryName: ",normalizedCategoryName)
+        console.log("normalizedCategoryName: ", normalizedCategoryName)
 
         // Check if a category with the same normalized name already exists
         const existingCategory = await Category.findOne({ normalized_name: normalizedCategoryName });
@@ -134,5 +149,5 @@ module.exports = {
     addNewCategory,
     updateCategory,
     listingStatusCategory,
-   
+
 }
