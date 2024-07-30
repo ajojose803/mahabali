@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Product</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/crop.guide/1.5.12/crop.guide.min.css" rel="stylesheet">
   <script src="https://cdn.crop.guide/crop.guide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .thumbnail {
       position: relative;
       display: inline-block;
       margin: 10px;
     }
+
     .thumbnail img {
       max-width: 150px;
       max-height: 150px;
     }
+
     .thumbnail .delete-btn {
       position: absolute;
       top: 5px;
@@ -32,244 +36,283 @@
     }
   </style>
 </head>
+
 <body>
   <%- include('../partials/adminHeader') -%>
-  <script defer src="https://cdn.crop.guide/loader/l.js?c=VZTXRQ"></script>
-  <ul class="list-unstyled">
-    <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
-    <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
-    <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
-    <li class="active"><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
-    <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
-    <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
-    <!-- <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li> -->
-  </ul>
-  </nav>
-  <!-- Sidebar Navigation end-->
-  <div class="page-content">
-    <div class="page-header">
-      <div class="container-fluid">
-        <h2 class="h5 no-margin-bottom">Add Product</h2>
+    <script defer src="https://cdn.crop.guide/loader/l.js?c=VZTXRQ"></script>
+    <ul class="list-unstyled">
+      <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
+      <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
+      <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
+      <li class="active"><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+      <li><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
+      <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
+      <!-- <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li> -->
+    </ul>
+    </nav>
+    <!-- Sidebar Navigation end-->
+    <div class="page-content">
+      <div class="page-header">
+        <div class="container-fluid">
+          <h2 class="h5 no-margin-bottom">Add Product</h2>
+        </div>
       </div>
-    </div>
 
-    <div class="col-lg-12">
-      <div class="block">
-        <div class="title"><strong>Add Product</strong></div>
-        <div class="block-body">
-          <form class="form-horizontal" action="/admin/add-product" method="post" enctype="multipart/form-data">
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Name</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="name" required>
+      <div class="col-lg-12">
+        <div class="block">
+          <div class="title"><strong>Add Product</strong></div>
+          <div class="block-body">
+            <form class="form-horizontal" action="/admin/add-product" method="post" enctype="multipart/form-data">
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Name</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="name" required>
+                  <small class="text-danger" id="name-error"></small>
+                </div>
               </div>
-            </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Category</label>
-              <div class="col-sm-9">
-                <select name="category" id="category-select" required>
-                  <option value="">Select...</option>
-                  <% for(let i=0; i<data.length; i++) { %>
-                    <option value="<%= data[i]._id %>">
-                      <%= data[i].name %>
-                    </option>
-                  <% } %>
-                </select>
+              <div class="line"></div>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Category</label>
+                <div class="col-sm-9">
+                  <select name="category" id="category-select" required>
+                    <option value="">Select...</option>
+                    <% for(let i=0; i<data.length; i++) { %>
+                      <option value="<%= data[i]._id %>">
+                        <%= data[i].name %>
+                      </option>
+                      <% } %>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div class="line"></div>
-            <div id="additional-fields"></div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Description</label>
-              <div class="col-sm-9">
-                <textarea cols="90" rows="4" name="description" required style="background-color: rgb(48, 48, 54); color: white;"></textarea>
+              <div class="line"></div>
+              <div id="additional-fields"></div>
+              <div class="line"></div>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Description</label>
+                <div class="col-sm-9">
+                  <textarea cols="90" rows="4" name="description" required
+                    style="background-color: rgb(48, 48, 54); color: white;"></textarea>
+                </div>
               </div>
-            </div>
-            <!-- <div class="line"></div>
+              <!-- <div class="line"></div>
             <div class="form-group row">
               <label class="col-sm-3 form-control-label">About Product</label>
               <div class="col-sm-9">
                 <textarea cols="90" rows="4" name="aboutProduct" required style="background-color: rgb(48, 48, 54); color: white;"></textarea>
               </div>
             </div> -->
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Price</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="price" min="1" required>
+              <div class="line"></div>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Price</label>
+                <div class="col-sm-9">
+                  <input type="number" class="form-control" name="price" min="1" required>
+                </div>
               </div>
-            </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Stock</label>
-              <div class="col-sm-9" id="stock-container">
-                <input type="number" class="form-control" name="stock" min="1" required>
+              <div class="line"></div>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Stock</label>
+                <div class="col-sm-9" id="stock-container">
+                  <input type="number" class="form-control" name="stock" min="1" required>
+                </div>
               </div>
-            </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Color</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="color" required>
+              <div class="line"></div>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Color</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="color" required>
+                </div>
               </div>
-            </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Discount</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="discount" min="0" max="100" required>
+              <div class="line"></div>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Discount</label>
+                <div class="col-sm-9">
+                  <input type="number" class="form-control" name="discount" min="0" max="100" required>
+                </div>
               </div>
-            </div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Image</label>
-              <div class="col-sm-9">
-                <input type="file" class="form-control" id="image-upload" name="image" accept="image/*" multiple required>
+              <div class="line"></div>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Image</label>
+                <div class="col-sm-9">
+                  <input type="file" class="form-control" id="image-upload" name="image" accept="image/*" multiple
+                    required>
+                  <small class="text-danger" id="image-error"></small>
+                </div>
               </div>
-            </div>
-            <div id="image-preview"></div>
-            <div class="line"></div>
-            <div class="form-group row">
-              <div class="col-sm-9 ml-auto">
-                <a class="btn btn-secondary" href="/admin/products">Cancel</a>
-                <button type="submit" class="btn btn-primary">Add Product</button>
+              <div id="image-preview"></div>
+              <div class="line"></div>
+              <div class="form-group row">
+                <div class="col-sm-9 ml-auto">
+                  <a class="btn btn-secondary" href="/admin/products">Cancel</a>
+                  <button type="submit" class="btn btn-primary">Add Product</button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  </section>
-  <%- include('../partials/adminFooter') -%>
+    </section>
+    <%- include('../partials/adminFooter') -%>
 
-  <script>
-    document.getElementById('category-select').addEventListener('change', function() {
-      const category = this.options[this.selectedIndex].text;
-      const additionalFieldsDiv = document.getElementById('additional-fields');
-      const stockContainer = document.getElementById('stock-container');
-      additionalFieldsDiv.innerHTML = '';  // Clear previous fields
-      stockContainer.innerHTML = '';  // Clear previous stock fields
-
-      switch (category) {
-        case 'Coasters':
-          additionalFieldsDiv.innerHTML = `
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Material</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="material" required>
+    <script>
+      // Handle category change
+      document.getElementById('category-select').addEventListener('change', function () {
+        const category = this.options[this.selectedIndex].text;
+        const additionalFieldsDiv = document.getElementById('additional-fields');
+        const stockContainer = document.getElementById('stock-container');
+        additionalFieldsDiv.innerHTML = '';  // Clear previous fields
+        stockContainer.innerHTML = '';  // Clear previous stock fields
+    
+        switch (category) {
+          case 'Coasters':
+            additionalFieldsDiv.innerHTML = `
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Material</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="material" required>
+                </div>
+              </div>`;
+            stockContainer.innerHTML = `
+              <input type="number" class="form-control" name="stock" min="1" required>`;
+            break;
+          case 'Accessories':
+            additionalFieldsDiv.innerHTML = `
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Type</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="type" required>
+                </div>
+              </div>`;
+            stockContainer.innerHTML = `
+              <input type="number" class="form-control" name="stock" min="1" required>`;
+            break;
+          case 'Posters':
+            additionalFieldsDiv.innerHTML = `
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Dimensions</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="dimensions" required>
+                </div>
+              </div>`;
+            stockContainer.innerHTML = `
+              <input type="number" class="form-control" name="stock" min="1" required>`;
+            break;
+          case 'Apparels':
+            additionalFieldsDiv.innerHTML = `
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Material</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="material" required>
+                </div>
               </div>
-            </div>`;
-          stockContainer.innerHTML = `
-            <input type="number" class="form-control" name="stock" min="1" required>`;
-          break;
-        case 'Accessories':
-          additionalFieldsDiv.innerHTML = `
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Type</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="type" required>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Size</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" name="size" required>
+                </div>
+              </div>`;
+            stockContainer.innerHTML = `
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Small</label>
+                <div class="col-sm-9">
+                  <input type="number" class="form-control" name="small" min="1" required>
+                </div>
               </div>
-            </div>`;
-          stockContainer.innerHTML = `
-            <input type="number" class="form-control" name="stock" min="1" required>`;
-          break;
-        case 'Posters':
-          additionalFieldsDiv.innerHTML = `
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Dimensions</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="dimensions" required>
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Medium</label>
+                <div class="col-sm-9">
+                  <input type="number" class="form-control" name="medium" min="1" required>
+                </div>
               </div>
-            </div>`;
-          stockContainer.innerHTML = `
-            <input type="number" class="form-control" name="stock" min="1" required>`;
-          break;
-        case 'Apparels':
-          additionalFieldsDiv.innerHTML = `
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Material</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="material" required>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Size</label>
-              <div class="col-sm-9">
-                <input type="text" class="form-control" name="size" required>
-              </div>
-            </div>`;
-          stockContainer.innerHTML = `
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Small</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="small" min="1" required>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Medium</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="medium" min="1" required>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-sm-3 form-control-label">Large</label>
-              <div class="col-sm-9">
-                <input type="number" class="form-control" name="large" min="1" required>
-              </div>
-            </div>`;
-          break;
-        default:
-          stockContainer.innerHTML = `
-            <input type="number" class="form-control" name="stock" min="1" required>`;
-          break;
-      }
-    });
-
-    document.getElementById('image-upload').addEventListener('change', function(event) {
-      const files = event.target.files;
-      const previewContainer = document.getElementById('image-preview');
-      previewContainer.innerHTML = '';  // Clear previous preview
-
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-
-      for (const file of files) {
-        if (!allowedTypes.includes(file.type)) {
-          alert('Only image files (jpeg, png, gif) are allowed!');
-          event.target.value = '';  // Clear the file input
-          return;
+              <div class="form-group row">
+                <label class="col-sm-3 form-control-label">Large</label>
+                <div class="col-sm-9">
+                  <input type="number" class="form-control" name="large" min="1" required>
+                </div>
+              </div>`;
+            break;
+          default:
+            stockContainer.innerHTML = `
+              <input type="number" class="form-control" name="stock" min="1" required>`;
+            break;
         }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const thumbnail = document.createElement('div');
-          thumbnail.classList.add('thumbnail');
-
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          img.alt = 'Product Image';
-
-          const deleteBtn = document.createElement('button');
-          deleteBtn.classList.add('delete-btn');
-          deleteBtn.innerText = 'X';
-          deleteBtn.onclick = function() {
-            thumbnail.remove();
-            const fileArray = Array.from(files);
-            const newFiles = fileArray.filter(f => f !== file);
-            const dataTransfer = new DataTransfer();
-            newFiles.forEach(f => dataTransfer.items.add(f));
-            event.target.files = dataTransfer.files;
+      });
+    
+      // Handle image upload and preview
+      document.getElementById('image-upload').addEventListener('change', function (event) {
+        const files = event.target.files;
+        const previewContainer = document.getElementById('image-preview');
+        const errorContainer = document.getElementById('image-error');
+        previewContainer.innerHTML = '';  // Clear previous preview
+        errorContainer.innerHTML = '';  // Clear previous errors
+    
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+        for (const file of files) {
+          if (!allowedTypes.includes(file.type)) {
+            errorContainer.innerHTML = 'Only image files (jpeg, png, gif) are allowed!';
+            event.target.value = '';  // Clear the file input
+            return;
+          }
+    
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const thumbnail = document.createElement('div');
+            thumbnail.classList.add('thumbnail');
+    
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = 'Product Image';
+    
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.innerText = 'X';
+            deleteBtn.onclick = function () {
+              thumbnail.remove();
+              const fileArray = Array.from(files);
+              const newFiles = fileArray.filter(f => f !== file);
+              const dataTransfer = new DataTransfer();
+              newFiles.forEach(f => dataTransfer.items.add(f));
+              event.target.files = dataTransfer.files;
+            };
+    
+            thumbnail.appendChild(img);
+            thumbnail.appendChild(deleteBtn);
+            previewContainer.appendChild(thumbnail);
           };
-
-          thumbnail.appendChild(img);
-          thumbnail.appendChild(deleteBtn);
-          previewContainer.appendChild(thumbnail);
-        };
-        reader.readAsDataURL(file);
+          reader.readAsDataURL(file);
+        }
+      });
+    
+      // Function to validate name input
+      function validateName() {
+        const nameInput = document.querySelector('input[name="name"]');
+        const name = nameInput.value.trim();
+        const errorContainer = document.getElementById('name-error');
+    
+        errorContainer.innerHTML = '';
+    
+        if (name === '') {
+          errorContainer.innerHTML = 'Name cannot be blank or just spaces!';
+          return false;
+        }
+        return true;
       }
-    });
-  </script>
+    
+      // Validate name on focusout
+      document.querySelector('input[name="name"]').addEventListener('focusout', validateName);
+    
+      // Validate name on input change
+      document.querySelector('input[name="name"]').addEventListener('input', validateName);
+    
+      // Handle form submission
+      document.querySelector('form').addEventListener('submit', function (event) {
+        if (!validateName()) {
+          event.preventDefault(); // Prevent form submission if validation fails
+        }
+      });
+    </script>
+    
 </body>
+
 </html>
