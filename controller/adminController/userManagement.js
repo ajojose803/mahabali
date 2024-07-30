@@ -3,10 +3,23 @@ const asyncHandler = require('../../middleware/asyncHandler')
 
 
 
-const getUser = asyncHandler(async(req,res) => {
-    const user = await User.find({isAdmin:false});
-    res.render('admin/adminUser',{data:user});
-})
+const getUser = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalUsers = await User.countDocuments({ isAdmin: false });
+    const users = await User.find({ isAdmin: false })
+                            .skip(skip)
+                            .limit(limit);
+
+    res.render('admin/adminUser', {
+        data: users,
+        currentPage: page,
+        totalPages: Math.ceil(totalUsers / limit)
+    });
+});
+
 
 const blockUser = asyncHandler(async (req,res)=>{
     const id = req.query.id;
