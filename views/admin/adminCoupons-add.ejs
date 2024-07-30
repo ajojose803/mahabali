@@ -1,4 +1,3 @@
-
 <%- include('../partials/adminHeader') -%>
 <script defer src="https://cdn.crop.guide/loader/l.js?c=ZQFGVQ"></script>
 <style>
@@ -18,7 +17,7 @@
   <li><a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
   <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
   <li><a href="/admin/category"> <i class="fa fa-building-o"></i>Category</a></li>
-  <li><a href="/admin/products"> <i class="icon-grid"></i>Products</a></li>
+  <li><a href="/admin/products"> < i class="icon-grid"></i>Products</a></li>
   <li class="active"><a href="/admin/coupons"> <i class="fa fa-percent"></i>Coupons</a></li>
   <li><a href="/admin/orders"> <i class="icon-padnote"></i>Orders</a></li>
   <!-- <li><a href="/admin/banners"> <i class="fa fa-map"></i>Banners</a></li> -->
@@ -180,70 +179,52 @@
       return true;
     };
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      let formIsValid = true;
-
-      inputs.forEach(input => {
-        if (!validateInput(input)) {
-          formIsValid = false;
-        }
-      });
-
-      if (!validateDiscountAmount()) {
-        formIsValid = false;
-      }
-
+    const validateDates = () => {
       const validFromDate = new Date(validFromInput.value);
       const validToDate = new Date(validToInput.value);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
+      let isValid = true;
+
       if (validFromDate < today) {
         showError(validFromInput, 'Valid From date cannot be in the past');
-        formIsValid = false;
+        isValid = false;
+      } else {
+        clearError(validFromInput);
       }
 
       if (validToDate < today) {
         showError(validToInput, 'Valid To date cannot be in the past');
-        formIsValid = false;
+        isValid = false;
+      } else {
+        clearError(validToInput);
       }
 
       if (validFromDate > validToDate) {
         showError(validFromInput, 'Valid From date cannot be after Valid To date');
         showError(validToInput, 'Valid To date cannot be before Valid From date');
-        formIsValid = false;
+        isValid = false;
+      } else if (isValid) {
+        clearError(validFromInput);
+        clearError(validToInput);
       }
 
-      if (!codeInput.value.trim()) {
-        showError(codeInput, 'Coupon code cannot be blank or contain only spaces');
-        formIsValid = false;
-      }
-
-      if (formIsValid) {
-        form.submit();
-      } else {
-        alert('Please fix the errors in the form before submitting.');
-      }
-    });
+      return isValid;
+    };
 
     inputs.forEach(input => {
-      input.addEventListener('input', function() {
-        validateInput(input);
-        if (input === discountAmountInput || input === discountTypeSelect) {
-          validateDiscountAmount();
-        }
-      });
-
       input.addEventListener('focusout', function() {
         validateInput(input);
         if (input === discountAmountInput || input === discountTypeSelect) {
           validateDiscountAmount();
         }
+        if (input === validFromInput || input === validToInput) {
+          validateDates();
+        }
       });
     });
 
-    // Add event listener for discount type change
     discountTypeSelect.addEventListener('change', validateDiscountAmount);
   });
 </script>
