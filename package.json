@@ -10,7 +10,7 @@
   "author": "Ajo Jose",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.587.0",
+    "@aws-sdk/client-s3": "^3.529.0",
     "@aws-sdk/s3-request-presigner": "^3.587.0",
     "aws-sdk": "^2.1626.0",
     "bcrypt": "^5.1.1",
@@ -30,6 +30,7 @@
     "express-flash": "^0.0.2",
     "express-formidable": "^1.2.0",
     "express-session": "^1.18.0",
+    "fast-xml-parser": "^4.4.1",
     "flash": "^1.1.0",
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
