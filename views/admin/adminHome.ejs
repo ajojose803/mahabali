@@ -1,4 +1,5 @@
 <%- include('../partials/adminHeader')-%>
+
   <ul class="list-unstyled">
     <li class="active"> <a href="/admin/dashboard"> <i class="icon-home"></i>Dashboard</a></li>
     <li><a href="/admin/users"> <i class="fa fa-bar-chart"></i>Users</a></li>
@@ -19,6 +20,24 @@
     </div>
 
     <style>
+      /* .main-content-wrapper {
+        margin-left: 30%;
+        width: calc(100% - [sidebar-width]);
+        min-height: 100vh;
+      } */
+/* 
+      body,
+      html {
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      .d-flex {
+        min-height: 100vh;
+      } */
+
+
+
       .excel {
         margin-left: -120px;
       }
@@ -47,7 +66,7 @@
         height: 200px;
         margin: 10px;
         border-radius: 10px;
-        background-color: #ece2f9;
+        background-color: #e5e6e2;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
       }
     </style>
@@ -60,28 +79,38 @@
         </div>
         <form action="/admin/downloadsales" method="post" class="mb-3">
           <div class="row align-items-end">
-            <div class="col-md-3 mb-3">
+            <div class="col-md-2 mb-2">
               <label for="startDate" class="form-label">Start Date:</label>
               <input type="date" id="startDate" name="startDate" class="form-control" placeholder="Start Date">
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-2 mb-2">
               <label for="endDate" class="form-label">End Date:</label>
               <input type="date" id="endDate" name="endDate" class="form-control" placeholder="End Date">
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-2 mb-2">
+              <label for="endDate" class="form-label">Quick Filter</label>
+              <select id="dateFilter" name="dateFilter" class="form-control">
+                <option value="">-- Select --</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div class="col-md-2 mb-2 m">
               <button type="submit" name="submitBtn" value="pdf" style="background-color: #3086d5;"
-                class="btn btn-primary btn-block w-50">
+                class="btn btn-primary ">
                 <i class="fa fa-download mr-1"></i> Pdf
               </button>
             </div>
-            <div class="col-md-3 mb-3">
-              <button type="submit" name="submitBtn" value="excel" style="background-color: #3086d5;"
-                class="btn btn-primary btn-block excel w-50">
+            <div class="col-md-2 mb-2">
+              <button type="submit" name="submitBtn" value="excel" style="background-color: #054c8f;"
+                class="btn btn-primary excel">
                 <i class="fa fa-download mr-1"></i> Excel
               </button>
             </div>
           </div>
         </form>
+
         <% if(errorMessages && errorMessages.length>0){ %>
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <button class="btn-close mt-2" style="float: inline-end;" type="button" data-bs-dismiss="alert"
@@ -132,7 +161,7 @@
           </div>
         </div>
 
-        <!-- <div class="card text-center" style="width: 25%;">
+        <div class="card text-center" style="width: 25%;">
           <div class="icon mt-2 mb-2">
             <svg width="50" height="50" fill="none" viewBox="0 0 24 24" stroke="currentColor"
               class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out">
@@ -147,7 +176,7 @@
             </h4>
             <span class="label">discount</span>
           </div>
-        </div> -->
+        </div>
 
         <div class="card text-center" style="width: 25%;">
           <div class="icon mt-2 mb-2">

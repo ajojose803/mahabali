@@ -44,9 +44,9 @@
               </td>
               <td>
                 <% if (data[i].isBlocked) { %>
-                  <a href="/admin/users/changeStatus?id=<%= data[i]._id %>" class="btn btn-success" onclick="confirmAndRedirect('<%= data[i]._id %>', event)">UnBlock</a>
+                  <a href="/admin/users/change-status?id=<%= data[i]._id %>" class="btn btn-success" onclick="confirmAndRedirect('<%= data[i]._id %>', event)">UnBlock</a>
                 <% } else { %>
-                  <a href="/admin/users/changeStatus?id=<%= data[i]._id %>" class="btn btn-danger" onclick="confirmAndRedirect('<%= data[i]._id %>', event)">Block</a>
+                  <a href="/admin/users/change-status?id=<%= data[i]._id %>" class="btn btn-danger" onclick="confirmAndRedirect('<%= data[i]._id %>', event)">Block</a>
                 <% } %>
               </td>
             </tr>
@@ -97,7 +97,7 @@
         });
 
         if (result.isConfirmed) {
-          window.location.href = "/admin/users/changeStatus?id=" + userId;
+          window.location.href = "/admin/users/change-status?id=" + userId;
         }
       }
     </script>

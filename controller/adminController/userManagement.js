@@ -23,6 +23,7 @@ const getUser = asyncHandler(async (req, res) => {
 
 const blockUser = asyncHandler(async (req,res)=>{
     const id = req.query.id;
+    console.log("Reaching block user: ", id);
     const user = await User.findById(id);
     user.isBlocked = !user.isBlocked;
     await user.save();

@@ -7,7 +7,7 @@ const Category = require('../../model/categoryModel');
 const Order = require('../../model/orderModel');
 const puppeteer = require('puppeteer')
 const { getObjectSignedUrl } = require('../../utils/s3');
-const exceljs = require('exceljs');
+const excel = require('exceljs');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -270,203 +270,238 @@ const isFutureDate = (selectedDate) => {
     }
 }
 
+
 const downloadsales = async (req, res) => {
-    try {
-        console.log("Reaching Download Sales");
+  try {
+    console.log("Reaching Download Sales");
 
-        const { startDate, endDate, submitBtn } = req.body;
-        console.log("req.body: ", req.body);
+    const { startDate, endDate, dateFilter, submitBtn } = req.body;
+    console.log("req.body: ", req.body);
 
-        let sdate = isFutureDate(startDate);
-        let edate = isFutureDate(endDate);
+    let sdate = isFutureDate(startDate);
+    let edate = isFutureDate(endDate);
 
-        if (!startDate || !endDate) {
-            req.flash('error', 'Choose a date');
-            return res.redirect('/admin/dashboard');
-        }
-        if (sdate) {
-            req.flash('error', 'Invalid date');
-            return res.redirect('/admin/dashboard');
-        }
-        if (edate) {
-            req.flash('error', 'Invalid date');
-            return res.redirect('/admin/dashboard');
-        }
-
-        const salesData = await Order.aggregate([
-            {
-                $match: {
-                    createdAt: {
-                        $gte: new Date(startDate),
-                        $lt: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
-                    },
-                    status: {
-                        $nin: ["Cancelled", "returned"]
-                    }
-                },
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalOrders: { $sum: 1 },
-                    totalAmount: { $sum: '$amount' },
-                },
-            },
-        ]);
-
-        const products = await Order.aggregate([
-            {
-                $match: {
-                    createdAt: {
-                        $gte: new Date(startDate),
-                        $lt: new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1)),
-                    },
-                    status: {
-                        $nin: ["Cancelled", "returned"]
-                    }
-                },
-            },
-            {
-                $unwind: '$items',
-            },
-            {
-                $group: {
-                    _id: '$items.productId',
-                    totalSold: { $sum: '$items.quantity' },
-                    totalRevenue: { $sum: { $multiply: ['$items.quantity', '$items.price'] } }
-                },
-            },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'productDetails',
-                },
-            },
-            {
-                $unwind: '$productDetails',
-            },
-            {
-                $project: {
-                    _id: 1,
-                    totalSold: 1,
-                    totalRevenue: 1,
-                    productName: '$productDetails.description',
-                },
-            },
-            {
-                $sort: { totalSold: -1 },
-            },
-        ]);
-
-        const htmlContent = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Sales Report</title>
-            <style>
-                body {
-                    margin-left: 20px;
-                }
-            </style>
-        </head>
-        <body>
-            <h2 align="center"> Sales Report</h2>
-            Start Date:${startDate}<br>
-            End Date:${endDate}<br> 
-            <center>
-                <table class="mt-5" style="border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th style="border: 1px solid #000; padding: 8px;">Sl No</th>
-                            <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
-                            <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
-                            <th style="border: 1px solid #000; padding: 8px;">Revenue</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${products
-                .map(
-                    (item, index) => `
-                                <tr>
-                                    <td style="border: 1px solid #000; padding: 8px;">${index + 1}</td>
-                                    <td style="border: 1px solid #000; padding: 8px;">${item.productName}</td>
-                                    <td style="border: 1px solid #000; padding: 8px;">${item.totalSold}</td>
-                                    <td style="border: 1px solid #000; padding: 8px;">${item.totalRevenue}</td>
-                                </tr>`
-                )
-                .join("")}
-                        <tr>
-                            <td style="border: 1px solid #000; padding: 8px;"></td>
-                            <td style="border: 1px solid #000; padding: 8px;">Total No of Orders</td>
-                            <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalOrders || 0}</td>
-                            <td style="border: 1px solid #000; padding: 8px;"></td>
-                        </tr>
-                        <tr>
-                            <td style="border: 1px solid #000; padding: 8px;"></td>
-                            <td style="border: 1px solid #000; padding: 8px;">Total Revenue</td>
-                            <td style="border: 1px solid #000; padding: 8px;"></td>
-                            <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalAmount || 0}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </center>
-        </body>
-        </html>
-    `;
-
-        if (submitBtn == 'pdf') {
-            const browser = await puppeteer.launch({
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                timeout: 60000 // Increase timeout to 60 seconds
-            });
-            const page = await browser.newPage();
-            await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-            const pdfBuffer = await page.pdf();
-            await browser.close();
-
-            const downloadsPath = path.join(os.homedir(), 'Downloads');
-            const pdfFilePath = path.join(downloadsPath, 'sales.pdf');
-
-            fs.writeFileSync(pdfFilePath, pdfBuffer);
-
-            res.setHeader('Content-Length', pdfBuffer.length);
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename=sales.pdf');
-            res.status(200).end(pdfBuffer);
-        } else {
-            const totalAmount = salesData[0]?.totalAmount || 0;
-            const workbook = new exceljs.Workbook();
-            const sheet = workbook.addWorksheet("Sales Report");
-            sheet.columns = [
-                { header: "Sl No", key: "slNo", width: 10 },
-                { header: "Product Name", key: "productName", width: 25 },
-                { header: "Quantity Sold", key: "productQuantity", width: 15 },
-                { header: "Revenue", key: "productRevenue", width: 15 },
-            ];
-            products.forEach((item, index) => {
-                sheet.addRow({
-                    slNo: index + 1,
-                    productName: item.productName,
-                    productQuantity: item.totalSold,
-                    productRevenue: item.totalRevenue,
-                });
-            });
-            sheet.addRow({});
-            sheet.addRow({ productName: 'Total No of Orders', productQuantity: salesData[0]?.totalOrders || 0 });
-            sheet.addRow({ productName: 'Total Revenue', productQuantity: totalAmount });
-            res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            res.setHeader("Content-Disposition", "attachment;filename=report.xlsx");
-            await workbook.xlsx.write(res);
-        }
-    } catch (err) {
-        console.error(err);
-        res.render("user/servererror");
+    if (!startDate && !endDate && !dateFilter) {
+      req.flash('error', 'Choose a date');
+      return res.redirect('/admin/dashboard');
     }
+
+    if (sdate) {
+      req.flash('error', 'Invalid date');
+      return res.redirect('/admin/dashboard');
+    }
+    if (edate) {
+      req.flash('error', 'Invalid date');
+      return res.redirect('/admin/dashboard');
+    }
+
+    // Determine the date range based on the filter type
+    let filterStartDate = startDate;
+    let filterEndDate = endDate;
+
+    if (dateFilter) {
+      const now = new Date();
+      if (dateFilter === 'weekly') {
+        filterStartDate = new Date(now.setDate(now.getDate() - now.getDay())); // Start of the week
+        filterEndDate = new Date(now.setDate(now.getDate() + (6 - now.getDay()))); // End of the week
+      } else if (dateFilter === 'monthly') {
+        filterStartDate = new Date(now.getFullYear(), now.getMonth(), 1); // Start of the month
+        filterEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0); // End of the month
+      } else if (dateFilter === 'yearly') {
+        filterStartDate = new Date(now.getFullYear(), 0, 1); // Start of the year
+        filterEndDate = new Date(now.getFullYear(), 11, 31); // End of the year
+      }
+    }
+
+    const salesData = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(filterStartDate),
+            $lt: new Date(new Date(filterEndDate).setDate(new Date(filterEndDate).getDate() + 1)),
+          },
+          status: {
+            $nin: ["Cancelled", "returned"]
+          }
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalOrders: { $sum: 1 },
+          totalAmount: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    const products = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(filterStartDate),
+            $lt: new Date(new Date(filterEndDate).setDate(new Date(filterEndDate).getDate() + 1)),
+          },
+          status: {
+            $nin: ["Cancelled", "returned"]
+          }
+        },
+      },
+      {
+        $unwind: '$items',
+      },
+      {
+        $group: {
+          _id: '$items.productId',
+          totalSold: { $sum: '$items.quantity' },
+          totalRevenue: { $sum: { $multiply: ['$items.quantity', '$items.price'] } }
+        },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'productDetails',
+        },
+      },
+      {
+        $unwind: '$productDetails',
+      },
+      {
+        $project: {
+          _id: 1,
+          totalSold: 1,
+          totalRevenue: 1,
+          productName: '$productDetails.description',
+        },
+      },
+      {
+        $sort: { totalSold: -1 },
+      },
+    ]);
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Sales Report</title>
+          <style>
+              body {
+                  margin-left: 20px;
+              }
+          </style>
+      </head>
+      <body>
+          <h2 align="center"> Sales Report</h2>
+          Start Date:${filterStartDate}<br>
+          End Date:${filterEndDate}<br> 
+          <center>
+              <table class="mt-5" style="border-collapse: collapse;">
+                  <thead>
+                      <tr>
+                          <th style="border: 1px solid #000; padding: 8px;">Sl No</th>
+                          <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
+                          <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
+                          <th style="border: 1px solid #000; padding: 8px;">Revenue</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      ${products
+              .map(
+                  (item, index) => `
+                              <tr>
+                                  <td style="border: 1px solid #000; padding: 8px;">${index + 1}</td>
+                                  <td style="border: 1px solid #000; padding: 8px;">${item.productName}</td>
+                                  <td style="border: 1px solid #000; padding: 8px;">${item.totalSold}</td>
+                                  <td style="border: 1px solid #000; padding: 8px;">${item.totalRevenue}</td>
+                              </tr>`
+              )
+              .join("")}
+                      <tr>
+                          <td style="border: 1px solid #000; padding: 8px;"></td>
+                          <td style="border: 1px solid #000; padding: 8px;">Total No of Orders</td>
+                          <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalOrders || 0}</td>
+                          <td style="border: 1px solid #000; padding: 8px;"></td>
+                      </tr>
+                      <tr>
+                          <td style="border: 1px solid #000; padding: 8px;"></td>
+                          <td style="border: 1px solid #000; padding: 8px;">Total Revenue</td>
+                          <td style="border: 1px solid #000; padding: 8px;"></td>
+                          <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalAmount || 0}</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </center>
+      </body>
+      </html>
+  `;
+
+    if (submitBtn === 'pdf') {
+      const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        timeout: 60000 // Increase timeout to 60 seconds
+      });
+      const page = await browser.newPage();
+      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+      
+      // Define the path to save the PDF
+      const pdfPath = path.join(__dirname, 'sales_report.pdf');
+      
+      await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
+      await browser.close();
+
+      res.download(pdfPath, 'sales_report.pdf', (err) => {
+        if (err) {
+          console.error("Error sending PDF:", err);
+          req.flash('error', 'An error occurred while sending the PDF');
+          res.redirect('/admin/dashboard');
+        } else {
+          fs.unlinkSync(pdfPath); // Remove the file after sending
+        }
+      });
+    } else if (submitBtn === 'excel') {
+      const workbook = new excel.Workbook();
+      const worksheet = workbook.addWorksheet('Sales Report');
+
+      worksheet.columns = [
+        { header: 'Sl No', key: 'slno', width: 10 },
+        { header: 'Product Name', key: 'productName', width: 30 },
+        { header: 'Quantity Sold', key: 'quantitySold', width: 20 },
+        { header: 'Revenue', key: 'revenue', width: 20 },
+      ];
+
+      products.forEach((item, index) => {
+        worksheet.addRow({
+          slno: index + 1,
+          productName: item.productName,
+          quantitySold: item.totalSold,
+          revenue: item.totalRevenue
+        });
+      });
+
+      worksheet.addRow([]);
+      worksheet.addRow({
+        productName: 'Total No of Orders',
+        quantitySold: salesData[0]?.totalOrders || 0
+      });
+      worksheet.addRow({
+        productName: 'Total Revenue',
+        revenue: salesData[0]?.totalAmount || 0
+      });
+
+      res.setHeader('Content-Disposition', 'attachment; filename=sales_report.xlsx');
+      await workbook.xlsx.write(res);
+      res.end();
+    }
+  } catch (error) {
+    console.error("Error while downloading sales:", error);
+    req.flash('error', 'An error occurred while generating the report');
+    res.redirect('/admin/dashboard');
+  }
 };
+
 
 const bestSellingProduct = async (req, res) => {
     try {
@@ -530,71 +565,70 @@ const bestSellingProduct = async (req, res) => {
     }
 }
 
-const bestSellingCategories = async (req, res) => {
+const bestSellingCategories=async(req,res)=>{
     try {
-        console.log("Reaching Best seelling Categ")
-
-        const bestSellingCategories = await Order.aggregate([
-            {
-                $unwind: "$items"
-            },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: 'items.productId',
-                    foreignField: '_id',
-                    as: 'productDetails'
-                }
-            },
-            {
-                $unwind: "$productDetails"
-            },
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: 'productDetails.category',
-                    foreignField: '_id',
-                    as: 'categoryDetails'
-                }
-            },
-            {
-                $unwind: "$categoryDetails"
-            },
-            {
-                $group: {
-                    _id: {
-                        categoryId: "$categoryDetails._id",
-                        categoryName: "$categoryDetails.name"
-                    },
-                    totalSales: { $sum: "$items.quantity" }
-                }
-            },
-            {
-                $sort: { totalSales: -1 }
-            },
-            {
-                $limit: 10
-            },
-            {
-                $project: {
-                    _id: 0,
-                    categoryId: "$_id.categoryId",
-                    categoryName: "$_id.categoryName",
-                    totalSales: 1
-                }
+        
+      const bestSellingCategories = await Order.aggregate([
+        {
+            $unwind: "$items"
+        },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'items.productId',
+                foreignField: '_id',
+                as: 'productDetails'
             }
-        ]);
-
-        res.status(200).json({ bestSellingCategories, item: 'Category' })
-
-
+        },
+        {
+            $unwind: "$productDetails"
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'productDetails.category',
+                foreignField: '_id',
+                as: 'categoryDetails'
+            }
+        },
+        {
+            $unwind: "$categoryDetails"
+        },
+        {
+            $group: {
+                _id: {
+                    categoryId: "$categoryDetails._id",
+                    categoryName: "$categoryDetails.name"
+                },
+                totalSales: { $sum: "$items.quantity" }
+            }
+        },
+        {
+            $sort: { totalSales: -1 }
+        },
+        {
+            $limit: 10
+        },
+        {
+            $project: {
+                _id: 0,
+                categoryId: "$_id.categoryId",
+                categoryName: "$_id.categoryName",
+                totalSales: 1
+            }
+        }
+    ]);
+  
+        res.status(200).json({bestSellingCategories,item:'Category'})
+      
+  
     } catch (error) {
-
-        console.log("error in best selling product", error)
-
-
+  
+        console.log("error in best selling product",error)
+  
+  
     }
-}
+  }
 
 
 module.exports =
