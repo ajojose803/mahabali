@@ -8,6 +8,7 @@ const auth = require("../middleware/sessionAuth")
 const nocache = require('nocache');
 const userProfile = require("../controller/UserController/userProfile")
 const checkout = require("../controller/UserController/checkoutController")
+const other = require("../controller/UserController/other")
 
 const userRouter = express.Router();
 
@@ -108,5 +109,9 @@ userRouter.route('/order/:orderId/cancel-product/:productId').get(auth.userAuth,
 userRouter.route('/order/invoice/:orderId').get(auth.userAuth,userProfile.downloadInvoice);
 userRouter.route('/order/:orderId/return').post(auth.userAuth,userProfile.returnReason);
 userRouter.route('/re-order/:id').post(auth.userAuth,userProfile.reOrder);
+
+//misc
+userRouter.route('/contact').get(auth.userAuth,other.loadContact);
+userRouter.route('/contact').post(auth.userAuth,other.contact);
 
 module.exports = userRouter;
