@@ -1,4 +1,4 @@
-<%- include('../../partials/userHeader')-%>
+<%- include('../partials/userHeader')-%>
 
 <style>
     .shop__sidebar {
@@ -88,18 +88,6 @@
         background-color: #811111;
     }
 
-    .form-group label {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: normal;
-        cursor: pointer;
-    }
-
-    .form-group label input[type="checkbox"] {
-        margin-right: 10px;
-    }
-
     .error-message {
         color: red;
         font-size: 14px;
@@ -120,7 +108,7 @@
                     <a href="/"><i class="fa fa-home"></i> Home</a>
                     <a href="/profile">My Account</a>
                     <a href="/profile">Address</a>
-                    <span> Add Address</span>
+                    <span> Edit Address</span>
                 </div>
             </div>
         </div>
@@ -134,95 +122,85 @@
         <div class="row">
             <div class="col-lg-3 col-md-3">
                 <div class="shop__sidebar">
-                    <!-- Filter Sidebar -->
                     <div class="contact__content">
                         <h5>My Account</h5>
                         <br>
                         <ul>
-                            <li><a href="/profile/"><span class="fa fa-info-circle" style="margin-right: 10px;"></span> Personal Information</a></li>
-                            <li><a href="/profile/address" class="active"><span class="fa fa-address-card" style="margin-right: 10px;"></span> Address</a></li>
-                            <li><a href="/profile/orders"><span class="fa fa-shopping-bag" style="margin-right: 10px;"></span> Orders</a></li>
-                            <li><a href="/profile/wallet"><span class="fa fa-credit-card" style="margin-right: 10px;"></span> Wallet</a></li>
-                            <li><a href="/profile/change-password"><span class="fa fa-key" style="margin-right: 10px;"></span> Change Password</a></li>
+                            <a href="/profile/">
+                                <span class="fa fa-info-circle" style="margin-right: 10px;"></span> Personal Information
+                            </a>
+                            <a href="/profile/address" class="active">
+                                <span class="fa fa-address-card" style="margin-right: 10px;"></span> Address
+                            </a>
+                            <a href="/profile/orders">
+                                <span class="fa fa-shopping-bag" style="margin-right: 10px;"></span> Orders
+                            </a>
+                            <a href="/profile/wallet">
+                                <span class="fa fa-credit-card" style="margin-right: 10px;"></span> Wallet
+                            </a>
+                            <a href="/profile/change-password">
+                                <span class="fa fa-key" style="margin-right: 10px;"></span> Change Password
+                            </a>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-lg-9 col-md-9">
                 <div class="form-container">
-                    <h2>Add Address</h2>
-                    <form id="addressForm" action="/profile/address/new" method="POST" class="checkout__form">
-                        <!-- Address fields with updated structure -->
+                    <h2>Edit Address</h2>
+                    <form id="addressForm" action="/profile/address/<%= address._id %>/edit" method="POST" class="checkout__form">
                         <div class="checkout__form__input">
                             <p>First Name <span>*</span></p>
-                            <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+                            <input type="text" id="firstName" name="firstName" placeholder="First Name" value="<%= address.firstName %>" required>
                             <div id="firstNameError" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>Last Name <span>*</span></p>
-                            <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+                            <input type="text" id="lastName" name="lastName" placeholder="Last Name" value="<%= address.lastName %>" required>
                             <div id="lastNameError" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>Phone <span>*</span></p>
-                            <input type="number" id="phone" name="phone" placeholder="Phone Number" required>
+                            <input type="number" id="phone" name="phone" placeholder="Phone Number" value="<%= address.phone %>" required>
                             <div id="phoneError" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>Email <span>*</span></p>
-                            <input type="email" id="email" name="email" placeholder="Email" required>
+                            <input type="email" id="email" name="email" placeholder="Email" value="<%= address.email %>" required>
                             <div id="emailError" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>Address Line 1 <span>*</span></p>
-                            <input type="text" id="addressline1" name="addressline1" placeholder="Address Line 1" required>
+                            <input type="text" id="addressline1" name="addressline1" placeholder="Address Line 1" value="<%= address.addressline1 %>" required>
                             <div id="addressline1Error" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>Address Line 2</p>
-                            <input type="text" id="addressline2" name="addressline2" placeholder="Address Line 2">
+                            <input type="text" id="addressline2" name="addressline2" placeholder="Address Line 2" value="<%= address.addressline2 %>">
                             <div id="addressline2Error" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>City <span>*</span></p>
-                            <input type="text" id="city" name="city" placeholder="City" required>
+                            <input type="text" id="city" name="city" placeholder="City" value="<%= address.city %>" required>
                             <div id="cityError" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>State <span>*</span></p>
-                            <input type="text" id="state" name="state" placeholder="State" required>
+                            <input type="text" id="state" name="state" placeholder="State" value="<%= address.state %>" required>
                             <div id="stateError" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>Country <span>*</span></p>
-                            <input type="text" id="country" name="country" placeholder="Country" required>
+                            <input type="text" id="country" name="country" placeholder="Country" value="<%= address.country %>" required>
                             <div id="countryError" class="error-message"></div>
                         </div>
-
                         <div class="checkout__form__input">
                             <p>Pincode <span>*</span></p>
-                            <input type="number" id="pincode" name="pincode" placeholder="Pincode" oninput="this.value=this.value.slice(0,6)" required >
+                            <input type="number" id="pincode" name="pincode" placeholder="Pincode" value="<%= address.pincode %>" required>
                             <div id="pincodeError" class="error-message"></div>
                         </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="setDefault" name="setDefault">
-                            <label class="form-check-label" for="setDefault">
-                                Make this my default address
-                            </label>
-                        </div>
-
-                        <!-- Add Address Button -->
                         <div class="site-btn-container">
-                            <button type="submit" class="site-btn">Add Address</button>
+                            <button type="submit" class="site-btn">Update Address</button>
                         </div>
                     </form>
                 </div>
@@ -230,6 +208,7 @@
         </div>
     </div>
 </section>
+<!-- Contact Section End -->
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -262,7 +241,7 @@
                     isValid = pincodeRegex.test(field.value.trim());
                     break;
                 default:
-                    isValid = field.value.trim() !== '';
+                    isValid = field.value.trim() !== ''; // Basic non-empty validation
             }
 
             if (!isValid) {
@@ -316,4 +295,4 @@
     });
 </script>
 
-<%- include('../../partials/userFooter')-%>
+<%- include('../partials/userFooter')-%>

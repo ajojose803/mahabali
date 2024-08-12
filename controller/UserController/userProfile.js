@@ -96,7 +96,7 @@ const LoadAddAddress = async (req, res) => {
         const id = req.session.userId;
         const user = await User.findOne({ _id: id });
         const itemCount = req.session.cartCount;
-        res.render('user/profile/addAddress', { user, categories, itemCount, currentPage, user });
+        res.render('user/addAddress', { user, categories, itemCount, currentPage, user });
     } catch (error) {
         console.log(error);
         res.render('user/servererror');
@@ -188,7 +188,7 @@ const LoadEditAddress = async (req, res) => {
             return res.redirect('/profile/address');
         }
 
-        res.render('user/profile/editAddress', { user, address, itemCount, categories, currentPage });
+        res.render('user/editAddress', { user, address, itemCount, categories, currentPage });
     } catch (error) {
         console.error("Error loading edit address page:", error);
         res.render('user/servererror');
@@ -304,7 +304,7 @@ const LoadResetPassword = async (req, res) => {
         const categories = await Category.find({ status: true }).limit(3)
         const pass = req.flash('pass')
         const itemCount = req.session.cartCount;
-        res.render('user/profile/changePassword', { user, currentPassword: pass, itemCount, categories, currentPage })
+        res.render('user/changePassword', { user, currentPassword: pass, itemCount, categories, currentPage })
     } catch (error) {
         console.log(error)
         res.render('user/servererror')
@@ -385,7 +385,7 @@ const loadOrderList = asyncHandler(async (req, res) => {
     //console.log(order);
 
     // Render the orders page with the user's orders
-    res.render("user/profile/orderList", { order, user });
+    res.render("user/orderList", { order, user });
 });
 
 // const cancelOrder = asyncHandler(async (req, res) => {
@@ -641,7 +641,7 @@ const loadWallet = async (req, res) => {
             { $sort: { "history.date": -1 } }
         ]);
       const itemCount = req.session.cartCount;
-        res.render('user/profile/wallet', { wallet: wallet, user: user,itemCount, categories,title:"Mahabali - Wallet",currentPage })
+        res.render('user/wallet', { wallet: wallet, user: user,itemCount, categories,title:"Mahabali - Wallet",currentPage })
     } catch (error) {
         console.log(error)
         res.render('user/servererror')
