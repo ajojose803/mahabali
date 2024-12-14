@@ -1,0 +1,51 @@
+# Ignore node_modules and other dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Ignore logs
+logs
+*.log
+*.log.*
+
+# Ignore environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore test files
+coverage
+*.lcov
+*.lcov.*
+
+# Ignore build output
+dist
+build
+
+# Ignore editor and OS specific files
+.DS_Store
+*.swp
+*.swo
+.vscode
+.idea
+
+# Ignore Docker files (if you don't want them included in the build)
+Dockerfile
+.dockerignore
+
+# Ignore temporary files and folders
+tmp
+temp
+*.tmp
+*.temp
+
+# Ignore any other files or directories not relevant to the application
+.git
+.gitignore
+.svn
+
+# Ignore Kubernetes YAML files
+*.yaml
+*.yml
