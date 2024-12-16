@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mahabali-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mahabali
+  template:
+    metadata:
+      labels:
+        app: mahabali
+    spec:
+      containers:
+        - name: mahabali-container
+          image: ajojose/mahabali:v1
+          ports:
+            - containerPort: 7000
+          env:
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: PORT
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: MONGODB_URI
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GOOGLE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: GOOGLE_PASSWORD
+            - name: EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: EMAIL
+            - name: AWS_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: AWS_BUCKET_NAME
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: AWS_ACCESS_KEY
