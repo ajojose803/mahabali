@@ -1,3 +1,4 @@
 .env
 node_modules/
 views/user/archive/
+k8s/secrets.yaml
