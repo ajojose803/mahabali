@@ -58,3 +58,38 @@ spec:
                 secretKeyRef:
                   name: mahabali-secrets
                   key: AWS_ACCESS_KEY
+            - name: RAZORPAY_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: RAZORPAY_KEY_ID
+            - name: RAZORPAY_KEY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: RAZORPAY_KEY_SECRET
+            - name: AWS_BUCKET_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: AWS_BUCKET_REGION
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: HOST
+            - name: PORT_NUMBER
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: PORT_NUMBER
+            - name: SERVICE
+              valueFrom:
+                secretKeyRef:
+                  name: mahabali-secrets
+                  key: SERVICE
