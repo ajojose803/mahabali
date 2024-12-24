@@ -1,36 +1,28 @@
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
-    name:
-    {
+    name: {
         type: String,
         required: true
     },
-    normalized_name:
-    {
+    normalized_name: {
         type: String,
         required: true,
-        unique: true
-
+        unique: true // This will automatically create the index
     },
-    description:
-    {
+    description: {
         type: String,
         required: true
     },
-
-    discount:
-    {
+    discount: {
         type: Number,
         default: 0
     },
-    isListed:{
+    isListed: {
         type: Boolean,
-        default: true,
+        default: true
     }
 });
-
-categorySchema.index({ normalized_name: 1 }, { unique: true });
 
 const Category = mongoose.model('Category', categorySchema);
 
