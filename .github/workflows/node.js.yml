@@ -27,6 +27,6 @@ jobs:
     - run: npm ci
     - name: Create and populate .env file
       run: |
-          touch .env
+          New-Item -Path . -Name ".env" -ItemType "File" -Force
           echo "${{ secrets.MAHABALI_ENV_FILE }}" > .env
     - run: pm2 restart server.js
