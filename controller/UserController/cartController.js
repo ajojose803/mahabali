@@ -60,7 +60,7 @@ const addtocart = asyncHandler(async (req, res) => {
   return res.redirect('/cart');
 });
 
-
+//Handler
 
 // Handler to load the cart
 const LoadCart = asyncHandler(async (req, res) => {
