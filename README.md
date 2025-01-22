@@ -30,6 +30,7 @@ Mahabali is a robust, feature-rich e-commerce platform built using Node.js and E
 - **Logging**: Winston, Morgan
 - **Containerization**: Docker
 - **Orchestration**: Kubernetes
+- **CI/CD**: Github Actions
 
 ---
 
